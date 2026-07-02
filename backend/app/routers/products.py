@@ -34,6 +34,15 @@ def search(
     return product_service.search_products(db, q)
 
 
+@router.get("/suggestions", summary="Autocomplete suggestions (name + price + image only)")
+def suggestions(
+    q: str = Query(..., min_length=1, description="Partial search query"),
+    limit: int = Query(6, ge=1, le=10),
+    db: Database = Depends(get_db),
+):
+    return product_service.get_suggestions(db, q, limit)
+
+
 @router.get("", summary="Paginated, filtered product listing")
 def list_products(
     page: int = Query(1, ge=1),

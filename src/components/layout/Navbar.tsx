@@ -3,13 +3,14 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ShoppingCart, Heart, Sun, Moon, Menu, X,
-  User, LogOut, Package, LayoutDashboard, ChevronDown,
+  User, LogOut, Package, LayoutDashboard, ChevronDown, Search,
 } from 'lucide-react'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { toggleDarkMode, toggleMobileMenu, setCartOpen } from '@/store/slices/uiSlice'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { NotificationBell } from '@/components/shared/NotificationBell'
+import { GlobalSearch, useGlobalSearch } from '@/components/shared/GlobalSearch'
 import { CONFIG } from '@/constants/config'
 import { ROUTES } from '@/constants/routes'
 
@@ -25,6 +26,14 @@ export default function Navbar() {
 
   const [isUserMenuOpen, setUserMenuOpen] = React.useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
+  const { isOpen: searchOpen, open: openSearch, close: closeSearch } = useGlobalSearch()
+
+  // Listen for the Ctrl/Cmd+K event dispatched by GlobalSearch
+  useEffect(() => {
+    const handler = () => openSearch()
+    window.addEventListener('divya:search:open', handler)
+    return () => window.removeEventListener('divya:search:open', handler)
+  }, [openSearch])
 
   // Close user dropdown when clicking outside
   useEffect(() => {
@@ -88,6 +97,19 @@ export default function Navbar() {
 
         {/* ── Right actions ────────────────────────────────────── */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+
+          {/* Search */}
+          <button
+            onClick={openSearch}
+            aria-label="Search products (Ctrl+K)"
+            title="Search (Ctrl+K)"
+            className="flex items-center gap-2 p-2.5 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
+          >
+            <Search size={18} />
+            <span className="hidden lg:inline-flex items-center gap-1 text-xs text-ocean-400 border border-ocean-700 rounded px-1.5 py-0.5">
+              <span>⌘K</span>
+            </span>
+          </button>
 
           {/* Dark mode toggle */}
           <button
@@ -279,6 +301,8 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <GlobalSearch isOpen={searchOpen} onClose={closeSearch} />
     </header>
   )
 }

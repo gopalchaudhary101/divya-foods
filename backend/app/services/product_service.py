@@ -151,23 +151,104 @@ def get_best_sellers(db: Database, limit: int = 8) -> dict:
     return {"success": True, "data": [_to_list_item(d) for d in docs]}
 
 
+# ─── Synonym map ─────────────────────────────────────────────────────────────
+# When a user types one of these words we silently expand the $text query
+# so the MongoDB full-text engine also scores documents containing synonyms.
+
+_SYNONYMS: dict[str, list[str]] = {
+    "fish":      ["salmon", "tuna", "fish"],
+    "seafood":   ["salmon", "tuna", "prawn", "crab", "lobster", "squid"],
+    "shrimp":    ["prawns", "shrimp", "vannamei", "tiger"],
+    "prawn":     ["prawns", "prawn", "shrimp"],
+    "calamari":  ["squid", "calamari"],
+    "squid":     ["squid", "calamari"],
+    "seaweed":   ["nori", "seaweed"],
+    "soy":       ["soy sauce", "shoyu", "kikkoman"],
+    "mayo":      ["mayonnaise", "kewpie"],
+    "stock":     ["dashi", "stock", "broth"],
+    "broth":     ["dashi", "stock"],
+    "rice wine": ["mirin", "sake"],
+    "miso":      ["miso"],
+    "japanese":  ["japanese", "miso", "mirin", "nori", "dashi", "shoyu"],
+    "frozen":    ["frozen", "seafood"],
+    "sashimi":   ["sashimi", "salmon", "tuna", "bluefin"],
+}
+
+
+def _expand_query(raw: str) -> str:
+    """
+    Returns a whitespace-separated string of terms for $text: $search.
+    Includes the original query plus any synonym expansions.
+    MongoDB $text treats whitespace-separated tokens as OR-joined,
+    so extra terms widen the result set and improve recall.
+    """
+    lower = raw.lower().strip()
+    extra: set[str] = set()
+    for trigger, expansions in _SYNONYMS.items():
+        if trigger in lower:
+            extra.update(expansions)
+    if extra:
+        return f"{raw} {' '.join(extra)}"
+    return raw
+
+
 def search_products(db: Database, query: str, limit: int = 20) -> dict:
     """
-    Full-text search using the MongoDB text index created in db_init.py.
+    Full-text search using the MongoDB text index.
     Field weights: name(10) > tags(5) > brand(3) > description(1).
+    Synonym expansion widens recall for common aliases (fish → salmon/tuna, etc.)
     """
     if not query or len(query.strip()) < 2:
         return {"success": True, "data": []}
 
+    expanded = _expand_query(query)
     docs = list(
         db.products.find(
-            {"$text": {"$search": query.strip()}},
+            {"$text": {"$search": expanded}},
             {"score": {"$meta": "textScore"}},
         )
         .sort([("score", {"$meta": "textScore"})])
         .limit(limit)
     )
     return {"success": True, "data": [_to_list_item(d) for d in docs]}
+
+
+def get_suggestions(db: Database, query: str, limit: int = 6) -> dict:
+    """
+    Lightweight autocomplete: returns only the fields the search dropdown needs.
+    Uses the same synonym-expanded $text query but returns a stripped-down dict
+    so the payload is tiny and the round-trip is fast.
+    """
+    if not query or len(query.strip()) < 1:
+        return {"success": True, "data": []}
+
+    expanded = _expand_query(query)
+    docs = list(
+        db.products.find(
+            {"$text": {"$search": expanded}},
+            {
+                "_id": 1, "name": 1, "slug": 1,
+                "price": 1, "images": 1, "brand": 1,
+                "score": {"$meta": "textScore"},
+            },
+        )
+        .sort([("score", {"$meta": "textScore"})])
+        .limit(limit)
+    )
+    return {
+        "success": True,
+        "data": [
+            {
+                "id":    str(d["_id"]),
+                "name":  d["name"],
+                "slug":  d["slug"],
+                "price": d["price"],
+                "image": d.get("images", [None])[0],
+                "brand": d.get("brand"),
+            }
+            for d in docs
+        ],
+    }
 
 
 # ─── Admin helpers ───────────────────────────────────────────────────────────

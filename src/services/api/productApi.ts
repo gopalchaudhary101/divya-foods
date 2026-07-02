@@ -71,4 +71,25 @@ export const productApi = {
     )
     return data.data
   },
+
+  /**
+   * Lightweight autocomplete — returns id/name/slug/price/image only.
+   * Powers the global search modal dropdown.
+   */
+  getSuggestions: async (q: string, limit = 6): Promise<ProductSuggestion[]> => {
+    const { data } = await axiosInstance.get<ApiResponse<ProductSuggestion[]>>(
+      '/products/suggestions',
+      { params: { q, limit } },
+    )
+    return data.data
+  },
+}
+
+export interface ProductSuggestion {
+  id: string
+  name: string
+  slug: string
+  price: number
+  image: string | null
+  brand: string | null
 }
