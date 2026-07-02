@@ -390,7 +390,7 @@ export default function CheckoutPage() {
                   <Button
                     variant="primary" size="lg" className="flex-1"
                     onClick={handlePay}
-                    isLoading={isLoading}
+                    loading={isLoading}
                     leftIcon={<Shield size={16} />}
                   >
                     Pay {formatCurrency(orderTotal)}

@@ -231,7 +231,7 @@ export default function AdminAnalyticsPage() {
                       outerRadius={80}
                       innerRadius={45}
                       paddingAngle={3}
-                      label={({ status, count }) => `${status} (${count})`}
+                      label={(props) => `${(props as unknown as { status: string; count: number }).status} (${(props as unknown as { status: string; count: number }).count})`}
                       labelLine={false}
                     >
                       {raw?.ordersByStatus.map((entry, i) => (

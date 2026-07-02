@@ -153,9 +153,9 @@ function OrderDetail({ orderId }: { orderId: string }) {
       <div className="bg-white dark:bg-ocean-900 border border-ocean-100 dark:border-ocean-800 rounded-2xl p-5 mb-4">
         <h3 className="font-semibold text-ocean-900 dark:text-white mb-3">Delivery Address</h3>
         <p className="text-sm text-ocean-700 dark:text-ocean-200">
-          <strong>{order.deliveryAddress.full_name}</strong> · {order.deliveryAddress.phone}<br />
-          {order.deliveryAddress.address_line1}
-          {order.deliveryAddress.address_line2 ? `, ${order.deliveryAddress.address_line2}` : ''}<br />
+          <strong>{order.deliveryAddress.fullName}</strong> · {order.deliveryAddress.phone}<br />
+          {order.deliveryAddress.addressLine1}
+          {order.deliveryAddress.addressLine2 ? `, ${order.deliveryAddress.addressLine2}` : ''}<br />
           {order.deliveryAddress.city}, {order.deliveryAddress.state} — {order.deliveryAddress.pincode}
         </p>
       </div>

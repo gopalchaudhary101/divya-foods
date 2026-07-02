@@ -183,7 +183,7 @@ function OrderRow({ order, onSelect }: { order: Order; onSelect: (o: Order) => v
     <tr className="border-b border-ocean-50 dark:border-ocean-800 hover:bg-ocean-50/50 dark:hover:bg-ocean-800/30 transition-colors">
       <td className="px-4 py-3 text-sm font-medium text-ocean-900 dark:text-white whitespace-nowrap">{order.orderNumber}</td>
       <td className="px-4 py-3 text-sm text-ocean-600 dark:text-ocean-300 whitespace-nowrap">
-        {order.deliveryAddress?.full_name ?? '—'}
+        {order.deliveryAddress?.fullName ?? '—'}
       </td>
       <td className="px-4 py-3 text-sm text-ocean-600 dark:text-ocean-300 whitespace-nowrap">{formatDate(order.createdAt)}</td>
       <td className="px-4 py-3 text-sm font-semibold text-ocean-900 dark:text-white whitespace-nowrap">{formatCurrency(order.total)}</td>
@@ -390,7 +390,7 @@ export default function AdminDashboardPage() {
                     <CheckCircle size={14} className="text-mint-500 shrink-0" />
                     <span className="font-medium text-ocean-700 dark:text-ocean-200">{o.orderNumber}</span>
                     <span className="text-ocean-400">·</span>
-                    <span className="text-ocean-500">{o.deliveryAddress?.full_name ?? '—'}</span>
+                    <span className="text-ocean-500">{o.deliveryAddress?.fullName ?? '—'}</span>
                     <span className="text-ocean-400">·</span>
                     <span className="font-semibold text-ocean-800 dark:text-ocean-100">{formatCurrency(o.total)}</span>
                     <span className="ml-auto"><StatusPill status={o.status} /></span>

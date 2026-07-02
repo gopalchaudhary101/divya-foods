@@ -78,7 +78,7 @@ export default function ProductsPage() {
   const total = data?.total ?? 0
   const totalPages = data?.totalPages ?? 0
   const page = filters.page ?? 1
-  const categories = categoriesData?.data ?? []
+  const categories = categoriesData ?? []
 
   const activeCategory = searchParams.get('category')
   const activeSort = searchParams.get('sort') || 'newest'
