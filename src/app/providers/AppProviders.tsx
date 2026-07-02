@@ -6,6 +6,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import { store } from '@/store'
 import { AuthInitializer } from '@/features/auth/components/AuthInitializer'
 import { InstallPrompt } from '@/components/shared/InstallPrompt'
+import { ChatAssistant } from '@/components/shared/ChatAssistant'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +45,7 @@ export function AppProviders({ children }: AppProvidersProps) {
             }}
           />
           <InstallPrompt />
+          <ChatAssistant />
         </QueryClientProvider>
 
       </Provider>

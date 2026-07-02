@@ -51,5 +51,8 @@ class Settings(BaseSettings):
     VAPID_PRIVATE_KEY: str = ""
     VAPID_EMAIL: str = "mailto:salesdivyafoods@gmail.com"
 
+    # AI Chat
+    ANTHROPIC_API_KEY: str = ""
+
 
 settings = Settings()
