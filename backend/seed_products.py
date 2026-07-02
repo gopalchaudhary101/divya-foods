@@ -363,6 +363,182 @@ PRODUCTS = [
         "is_best_seller": False,
         "attributes": {"alcohol_pct": 14, "type": "Hon Mirin"},
     },
+    {
+        "name": "Kikkoman Koikuchi Soy Sauce",
+        "slug": "kikkoman-koikuchi-soy-sauce",
+        "category_slug": "japanese-grocery",
+        "description": (
+            "The original Kikkoman naturally brewed soy sauce — made in Japan since 1630. "
+            "Lighter, sweeter and more aromatic than Chinese soy sauce. "
+            "Brewed from soy, wheat, salt and water using traditional fermentation over months. "
+            "The definitive all-purpose Japanese soy sauce for dipping, marinading and cooking."
+        ),
+        "price": 349.0,
+        "original_price": None,
+        "images": [picsum("kikkoman-soy-sauce"), picsum("soy-sauce-dipping")],
+        "weight": "500ml",
+        "origin": "Japan",
+        "brand": "Kikkoman",
+        "stock_quantity": 50,
+        "tags": ["japanese", "soy sauce", "shoyu", "pantry", "kikkoman"],
+        "is_featured": True,
+        "is_best_seller": True,
+        "attributes": {"type": "Koikuchi (Dark)", "naturally_brewed": True},
+    },
+    {
+        "name": "Premium Roasted Nori Seaweed Sheets",
+        "slug": "premium-roasted-nori-seaweed-sheets",
+        "category_slug": "japanese-grocery",
+        "description": (
+            "Full-size roasted nori sheets for sushi rolls, onigiri and hand rolls. "
+            "Sourced from the clean coastal waters of Japan, kiln-roasted for a crisp texture and deep umami flavour. "
+            "Each sheet measures 19 x 21 cm — standard sushi size. "
+            "Resealable pack to keep sheets crisp between uses."
+        ),
+        "price": 449.0,
+        "original_price": 549.0,
+        "images": [picsum("nori-seaweed-sheets"), picsum("sushi-roll-nori")],
+        "weight": "25g (10 full sheets)",
+        "origin": "Japan",
+        "brand": "Yakinori",
+        "stock_quantity": 45,
+        "tags": ["japanese", "nori", "seaweed", "sushi", "onigiri", "pantry"],
+        "is_featured": False,
+        "is_best_seller": True,
+        "attributes": {"sheets": 10, "size_cm": "19x21", "roasted": True},
+    },
+    {
+        "name": "Hondashi Instant Dashi Stock Granules",
+        "slug": "hondashi-instant-dashi-stock-granules",
+        "category_slug": "japanese-grocery",
+        "description": (
+            "Ajinomoto's Hondashi — Japan's most widely used instant dashi granules. "
+            "Dissolve in hot water in seconds to make a rich, authentic bonito dashi broth. "
+            "Use as the base for miso soup, ramen, udon, chawanmushi and noodle sauces. "
+            "One 50g pack makes approximately 20 cups of dashi stock."
+        ),
+        "price": 299.0,
+        "original_price": None,
+        "images": [picsum("hondashi-granules"), picsum("dashi-broth-bowl")],
+        "weight": "50g",
+        "origin": "Japan",
+        "brand": "Ajinomoto",
+        "stock_quantity": 60,
+        "tags": ["japanese", "dashi", "stock", "bonito", "pantry", "instant"],
+        "is_featured": False,
+        "is_best_seller": False,
+        "attributes": {"servings": 20, "type": "Bonito Dashi"},
+    },
+    {
+        "name": "Japanese Short-Grain Sushi Rice (Koshihikari)",
+        "slug": "japanese-short-grain-sushi-rice-koshihikari",
+        "category_slug": "japanese-grocery",
+        "description": (
+            "Authentic Koshihikari-variety Japanese short-grain rice — the gold standard for sushi. "
+            "Small, round grains that become perfectly sticky when cooked, "
+            "holding together in nigiri and rolls without falling apart. "
+            "Also superb for plain steamed rice, onigiri and donburi bowls."
+        ),
+        "price": 699.0,
+        "original_price": 899.0,
+        "images": [picsum("koshihikari-rice-bag"), picsum("japanese-rice-bowl")],
+        "weight": "1 kg",
+        "origin": "Japan",
+        "brand": "Tamaki Gold",
+        "stock_quantity": 35,
+        "tags": ["japanese", "rice", "sushi rice", "koshihikari", "pantry"],
+        "is_featured": True,
+        "is_best_seller": False,
+        "attributes": {"variety": "Koshihikari", "grain": "Short"},
+    },
+    {
+        "name": "Japanese Rice Vinegar (Yonezu)",
+        "slug": "japanese-rice-vinegar-yonezu",
+        "category_slug": "japanese-grocery",
+        "description": (
+            "Pure Japanese rice vinegar — much milder and slightly sweeter than white wine vinegar. "
+            "Essential for seasoning sushi rice, making ponzu sauce and Japanese-style pickles (tsukemono). "
+            "Made from fermented rice with no additives or artificial flavours. "
+            "One bottle seasons approximately 4 kg of cooked sushi rice."
+        ),
+        "price": 249.0,
+        "original_price": None,
+        "images": [picsum("rice-vinegar-bottle"), picsum("sushi-rice-seasoning")],
+        "weight": "360ml",
+        "origin": "Japan",
+        "brand": "Mizkan",
+        "stock_quantity": 45,
+        "tags": ["japanese", "vinegar", "rice vinegar", "sushi", "pantry"],
+        "is_featured": False,
+        "is_best_seller": False,
+        "attributes": {"type": "Rice vinegar", "acidity_pct": 4.2},
+    },
+    {
+        "name": "Wasabi Paste (Japanese Horseradish Tube)",
+        "slug": "wasabi-paste-tube",
+        "category_slug": "japanese-grocery",
+        "description": (
+            "Ready-to-use wasabi paste in a convenient squeeze tube. "
+            "A blend of real wasabi and horseradish for authentic heat and aroma. "
+            "Serve alongside sashimi, sushi and ramen — or mix with soy sauce for a dipping sauce. "
+            "Refrigerate after opening and use within 1 month."
+        ),
+        "price": 349.0,
+        "original_price": 399.0,
+        "images": [picsum("wasabi-paste-tube"), picsum("wasabi-sushi-plate")],
+        "weight": "43g",
+        "origin": "Japan",
+        "brand": "S&B",
+        "stock_quantity": 55,
+        "tags": ["japanese", "wasabi", "condiment", "sushi", "sashimi"],
+        "is_featured": False,
+        "is_best_seller": True,
+        "attributes": {"real_wasabi": True, "tube": True},
+    },
+    {
+        "name": "Kewpie Japanese Mayonnaise",
+        "slug": "kewpie-japanese-mayonnaise",
+        "category_slug": "japanese-grocery",
+        "description": (
+            "Kewpie mayo — Japan's most iconic condiment. "
+            "Creamier, richer and slightly tangier than Western mayonnaise, "
+            "made with egg yolks only (no whole egg) and rice vinegar instead of white vinegar. "
+            "Used in sushi rolls, okonomiyaki, takoyaki, potato salad and Japanese sandwiches (sando)."
+        ),
+        "price": 549.0,
+        "original_price": 649.0,
+        "images": [picsum("kewpie-mayo-squeeze"), picsum("japanese-mayo-dishes")],
+        "weight": "300ml squeeze bottle",
+        "origin": "Japan",
+        "brand": "Kewpie",
+        "stock_quantity": 40,
+        "tags": ["japanese", "mayonnaise", "kewpie", "condiment", "pantry"],
+        "is_featured": False,
+        "is_best_seller": True,
+        "attributes": {"egg_yolk_only": True, "vinegar": "Rice vinegar"},
+    },
+    {
+        "name": "Kikkoman Teriyaki Marinade & Sauce",
+        "slug": "kikkoman-teriyaki-sauce",
+        "category_slug": "japanese-grocery",
+        "description": (
+            "Kikkoman's classic teriyaki sauce — a balanced blend of soy sauce, mirin and sugar "
+            "that glazes, marinates and sauces in one bottle. "
+            "Use as a marinade for chicken, salmon or tofu (30 mins), or brush on during grilling for a glossy caramelised finish. "
+            "Also excellent as a stir-fry sauce."
+        ),
+        "price": 299.0,
+        "original_price": None,
+        "images": [picsum("kikkoman-teriyaki-bottle"), picsum("teriyaki-salmon-glaze")],
+        "weight": "250ml",
+        "origin": "Japan",
+        "brand": "Kikkoman",
+        "stock_quantity": 50,
+        "tags": ["japanese", "teriyaki", "sauce", "marinade", "kikkoman"],
+        "is_featured": False,
+        "is_best_seller": False,
+        "attributes": {"type": "Marinade & Sauce"},
+    },
 ]
 
 

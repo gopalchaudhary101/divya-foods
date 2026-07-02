@@ -9,6 +9,7 @@ export const ROUTES = {
   ORDER_DETAIL: '/orders/:id',
   PROFILE: '/profile',
   RECIPES: '/recipes',
+  JAPANESE_GROCERY: '/japanese-grocery',
   AUTH: {
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',

@@ -73,6 +73,12 @@ export default function Navbar() {
           <NavLink to={ROUTES.PRODUCTS} className={navLinkClass}>
             Products
           </NavLink>
+          <NavLink to={ROUTES.JAPANESE_GROCERY} className={navLinkClass}>
+            🍱 Japanese
+          </NavLink>
+          <NavLink to={ROUTES.RECIPES} className={navLinkClass}>
+            Recipes
+          </NavLink>
           {isAuthenticated && (
             <NavLink to={ROUTES.ORDERS} className={navLinkClass}>
               My Orders
@@ -221,6 +227,12 @@ export default function Navbar() {
             <div className="px-4 py-4 flex flex-col gap-1">
               <MobileLink to={ROUTES.PRODUCTS} onClick={() => dispatch(toggleMobileMenu())}>
                 Products
+              </MobileLink>
+              <MobileLink to={ROUTES.JAPANESE_GROCERY} onClick={() => dispatch(toggleMobileMenu())}>
+                🍱 Japanese Grocery
+              </MobileLink>
+              <MobileLink to={ROUTES.RECIPES} onClick={() => dispatch(toggleMobileMenu())}>
+                Recipes
               </MobileLink>
               <MobileLink to={ROUTES.WISHLIST} onClick={() => dispatch(toggleMobileMenu())}>
                 Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
