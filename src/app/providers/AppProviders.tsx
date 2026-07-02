@@ -6,7 +6,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import { store } from '@/store'
 import { AuthInitializer } from '@/features/auth/components/AuthInitializer'
 import { InstallPrompt } from '@/components/shared/InstallPrompt'
-import { ChatAssistant } from '@/components/shared/ChatAssistant'
+import { FreeChatbot } from '@/components/shared/FreeChatbot'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,7 +45,7 @@ export function AppProviders({ children }: AppProvidersProps) {
             }}
           />
           <InstallPrompt />
-          <ChatAssistant />
+          <FreeChatbot />
         </QueryClientProvider>
 
       </Provider>
