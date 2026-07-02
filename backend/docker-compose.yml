@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+
+  mongodb:
+    image: mongo:7.0
+    restart: unless-stopped
+    ports:
+      - "27017:27017"          # expose so you can connect with Compass / seed script
+    volumes:
+      - mongo_data:/data/db    # data survives container restarts
+    environment:
+      MONGO_INITDB_DATABASE: divyafoods
+    networks:
+      - divya_net
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      # Override MONGODB_URL so the API talks to the mongodb container, not localhost
+      MONGODB_URL: mongodb://mongodb:27017
+    volumes:
+      - .:/app                  # hot-reload: code changes reflect instantly
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    networks:
+      - divya_net
+
+volumes:
+  mongo_data:
+
+networks:
+  divya_net:
+    driver: bridge

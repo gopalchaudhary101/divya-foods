@@ -1,0 +1,51 @@
+services:
+  - type: web
+    name: divya-foods-api
+    env: python
+    region: singapore        # closest region to Delhi NCR
+    plan: starter            # $7/month — always-on, no cold starts
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app.main:app -w 2 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+    healthCheckPath: /health
+
+    envVars:
+      # ── Database ────────────────────────────────────────────────────────────
+      - key: MONGODB_URL
+        sync: false          # paste your Atlas connection string in the dashboard
+      - key: DATABASE_NAME
+        value: divyafoods
+
+      # ── Security ────────────────────────────────────────────────────────────
+      - key: JWT_SECRET_KEY
+        generateValue: true  # Render auto-generates a strong random secret
+
+      # ── CORS — set AFTER you know your Vercel URL ────────────────────────────
+      - key: ALLOWED_ORIGINS
+        sync: false          # example: ["https://divyafoods.vercel.app","https://www.divyafoods.com"]
+
+      # ── Razorpay ────────────────────────────────────────────────────────────
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+
+      # ── Email (Gmail App Password) ───────────────────────────────────────────
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USERNAME
+        value: salesdivyafoods@gmail.com
+      - key: SMTP_PASSWORD
+        sync: false          # Gmail App Password (not your login password)
+      - key: EMAIL_FROM
+        value: salesdivyafoods@gmail.com
+
+      # ── Cloudinary (image uploads) ───────────────────────────────────────────
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

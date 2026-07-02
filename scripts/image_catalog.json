@@ -1,0 +1,1742 @@
+{
+  "seafood/prawns-iqf": {
+    "product_name": "Frozen IQF Prawns",
+    "category": "Frozen Seafood",
+    "folder": "seafood/prawns-iqf",
+    "images": [
+      "assets\\products\\seafood\\prawns-iqf\\prawns-iqf-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\prawns-iqf\\prawns-iqf-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/prawns-fresh": {
+    "product_name": "Fresh Head-On Prawns",
+    "category": "Frozen Seafood",
+    "folder": "seafood/prawns-fresh",
+    "images": [
+      "assets\\products\\seafood\\prawns-fresh\\prawns-fresh-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\prawns-fresh\\prawns-fresh-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/prawns-tempura": {
+    "product_name": "Tempura Prawns",
+    "category": "Frozen Seafood",
+    "folder": "seafood/prawns-tempura",
+    "images": [
+      "assets\\products\\seafood\\prawns-tempura\\prawns-tempura-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\prawns-tempura\\prawns-tempura-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/tilapia-fillet": {
+    "product_name": "Tilapia Fish Fillet",
+    "category": "Frozen Seafood",
+    "folder": "seafood/tilapia-fillet",
+    "images": [
+      "assets\\products\\seafood\\tilapia-fillet\\tilapia-fillet-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\tilapia-fillet\\tilapia-fillet-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/basa-fillet-indian": {
+    "product_name": "Indian Basa Fish Fillet",
+    "category": "Frozen Seafood",
+    "folder": "seafood/basa-fillet-indian",
+    "images": [
+      "assets\\products\\seafood\\basa-fillet-indian\\basa-fillet-indian-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\basa-fillet-indian\\basa-fillet-indian-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/basa-fillet-vietnamese": {
+    "product_name": "Vietnamese Basa Fish Fillet",
+    "category": "Frozen Seafood",
+    "folder": "seafood/basa-fillet-vietnamese",
+    "images": [
+      "assets\\products\\seafood\\basa-fillet-vietnamese\\basa-fillet-vietnamese-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\basa-fillet-vietnamese\\basa-fillet-vietnamese-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/seabass-bethki": {
+    "product_name": "Bethki Indian Seabass Fillet",
+    "category": "Frozen Seafood",
+    "folder": "seafood/seabass-bethki",
+    "images": [
+      "assets\\products\\seafood\\seabass-bethki\\seabass-bethki-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\seabass-bethki\\seabass-bethki-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/river-sole-fillet": {
+    "product_name": "River Sole Fish Fillet",
+    "category": "Frozen Seafood",
+    "folder": "seafood/river-sole-fillet",
+    "images": [
+      "assets\\products\\seafood\\river-sole-fillet\\river-sole-fillet-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\river-sole-fillet\\river-sole-fillet-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/surmai-seer-fish": {
+    "product_name": "Surmai Seer Fish",
+    "category": "Frozen Seafood",
+    "folder": "seafood/surmai-seer-fish",
+    "images": [
+      "assets\\products\\seafood\\surmai-seer-fish\\surmai-seer-fish-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\surmai-seer-fish\\surmai-seer-fish-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/red-snapper-fillet": {
+    "product_name": "Red Snapper Fish Fillet",
+    "category": "Frozen Seafood",
+    "folder": "seafood/red-snapper-fillet",
+    "images": [
+      "assets\\products\\seafood\\red-snapper-fillet\\red-snapper-fillet-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\red-snapper-fillet\\red-snapper-fillet-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/pomfret-white": {
+    "product_name": "White Pomfret Fish",
+    "category": "Frozen Seafood",
+    "folder": "seafood/pomfret-white",
+    "images": [
+      "assets\\products\\seafood\\pomfret-white\\pomfret-white-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\pomfret-white\\pomfret-white-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/octopus-whole": {
+    "product_name": "Octopus Whole",
+    "category": "Frozen Seafood",
+    "folder": "seafood/octopus-whole",
+    "images": [
+      "assets\\products\\seafood\\octopus-whole\\octopus-whole-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\octopus-whole\\octopus-whole-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/squid-tube": {
+    "product_name": "Squid Tube IQF",
+    "category": "Frozen Seafood",
+    "folder": "seafood/squid-tube",
+    "images": [
+      "assets\\products\\seafood\\squid-tube\\squid-tube-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\squid-tube\\squid-tube-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/squid-ring": {
+    "product_name": "Squid Ring",
+    "category": "Frozen Seafood",
+    "folder": "seafood/squid-ring",
+    "images": [
+      "assets\\products\\seafood\\squid-ring\\squid-ring-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\squid-ring\\squid-ring-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/squid-ink": {
+    "product_name": "Squid Ink",
+    "category": "Frozen Seafood",
+    "folder": "seafood/squid-ink",
+    "images": [
+      "assets\\products\\seafood\\squid-ink\\squid-ink-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\squid-ink\\squid-ink-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/soft-shell-crabs": {
+    "product_name": "Soft Shell Crabs",
+    "category": "Frozen Seafood",
+    "folder": "seafood/soft-shell-crabs",
+    "images": [
+      "assets\\products\\seafood\\soft-shell-crabs\\soft-shell-crabs-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\soft-shell-crabs\\soft-shell-crabs-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/blue-crabs": {
+    "product_name": "Blue Crabs",
+    "category": "Frozen Seafood",
+    "folder": "seafood/blue-crabs",
+    "images": [
+      "assets\\products\\seafood\\blue-crabs\\blue-crabs-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\blue-crabs\\blue-crabs-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/mud-crabs": {
+    "product_name": "Mud Crabs",
+    "category": "Frozen Seafood",
+    "folder": "seafood/mud-crabs",
+    "images": [
+      "assets\\products\\seafood\\mud-crabs\\mud-crabs-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\mud-crabs\\mud-crabs-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/lobster-whole": {
+    "product_name": "Lobster Whole",
+    "category": "Frozen Seafood",
+    "folder": "seafood/lobster-whole",
+    "images": [
+      "assets\\products\\seafood\\lobster-whole\\lobster-whole-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\lobster-whole\\lobster-whole-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/lobster-tail": {
+    "product_name": "Lobster Tail",
+    "category": "Frozen Seafood",
+    "folder": "seafood/lobster-tail",
+    "images": [
+      "assets\\products\\seafood\\lobster-tail\\lobster-tail-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\lobster-tail\\lobster-tail-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/salmon-fillet-norwegian": {
+    "product_name": "Norwegian Salmon Fillet Sushi Grade",
+    "category": "Frozen Seafood",
+    "folder": "seafood/salmon-fillet-norwegian",
+    "images": [
+      "assets\\products\\seafood\\salmon-fillet-norwegian\\salmon-fillet-norwegian-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\salmon-fillet-norwegian\\salmon-fillet-norwegian-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/salmon-smoked-fillet": {
+    "product_name": "Smoked Salmon Fillet",
+    "category": "Frozen Seafood",
+    "folder": "seafood/salmon-smoked-fillet",
+    "images": [
+      "assets\\products\\seafood\\salmon-smoked-fillet\\salmon-smoked-fillet-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\salmon-smoked-fillet\\salmon-smoked-fillet-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/salmon-portions": {
+    "product_name": "Salmon Portions",
+    "category": "Frozen Seafood",
+    "folder": "seafood/salmon-portions",
+    "images": [
+      "assets\\products\\seafood\\salmon-portions\\salmon-portions-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\salmon-portions\\salmon-portions-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/salmon-smoked-portions": {
+    "product_name": "Smoked Salmon Portions",
+    "category": "Frozen Seafood",
+    "folder": "seafood/salmon-smoked-portions",
+    "images": [
+      "assets\\products\\seafood\\salmon-smoked-portions\\salmon-smoked-portions-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\salmon-smoked-portions\\salmon-smoked-portions-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/salmon-loin": {
+    "product_name": "Salmon Loin Boneless",
+    "category": "Frozen Seafood",
+    "folder": "seafood/salmon-loin",
+    "images": [
+      "assets\\products\\seafood\\salmon-loin\\salmon-loin-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\salmon-loin\\salmon-loin-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/salmon-head": {
+    "product_name": "Salmon Head Gutted",
+    "category": "Frozen Seafood",
+    "folder": "seafood/salmon-head",
+    "images": [
+      "assets\\products\\seafood\\salmon-head\\salmon-head-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\salmon-head\\salmon-head-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/salmon-fresh-whole": {
+    "product_name": "Fresh Whole Salmon Gutted",
+    "category": "Frozen Seafood",
+    "folder": "seafood/salmon-fresh-whole",
+    "images": [
+      "assets\\products\\seafood\\salmon-fresh-whole\\salmon-fresh-whole-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\salmon-fresh-whole\\salmon-fresh-whole-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/salmon-fresh-steaks": {
+    "product_name": "Fresh Salmon Steaks",
+    "category": "Frozen Seafood",
+    "folder": "seafood/salmon-fresh-steaks",
+    "images": [
+      "assets\\products\\seafood\\salmon-fresh-steaks\\salmon-fresh-steaks-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\salmon-fresh-steaks\\salmon-fresh-steaks-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/tuna-yellowfin-saku": {
+    "product_name": "Yellowfin Tuna Saku Block",
+    "category": "Frozen Seafood",
+    "folder": "seafood/tuna-yellowfin-saku",
+    "images": [
+      "assets\\products\\seafood\\tuna-yellowfin-saku\\tuna-yellowfin-saku-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\tuna-yellowfin-saku\\tuna-yellowfin-saku-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/chilean-sea-bass": {
+    "product_name": "Chilean Sea Bass",
+    "category": "Frozen Seafood",
+    "folder": "seafood/chilean-sea-bass",
+    "images": [
+      "assets\\products\\seafood\\chilean-sea-bass\\chilean-sea-bass-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\chilean-sea-bass\\chilean-sea-bass-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/black-cod": {
+    "product_name": "Black Cod Headless",
+    "category": "Frozen Seafood",
+    "folder": "seafood/black-cod",
+    "images": [
+      "assets\\products\\seafood\\black-cod\\black-cod-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\black-cod\\black-cod-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/imitation-crab-sticks": {
+    "product_name": "Imitation Crab Sticks",
+    "category": "Frozen Seafood",
+    "folder": "seafood/imitation-crab-sticks",
+    "images": [
+      "assets\\products\\seafood\\imitation-crab-sticks\\imitation-crab-sticks-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\imitation-crab-sticks\\imitation-crab-sticks-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "seafood/tempura-prawns": {
+    "product_name": "Tempura Prawns Battered",
+    "category": "Frozen Seafood",
+    "folder": "seafood/tempura-prawns",
+    "images": [
+      "assets\\products\\seafood\\tempura-prawns\\tempura-prawns-01.webp"
+    ],
+    "thumbnail": "assets\\products\\seafood\\tempura-prawns\\tempura-prawns-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/hamachi-fillet": {
+    "product_name": "Hamachi Yellowtail Fillet",
+    "category": "Japanese Products",
+    "folder": "japanese/hamachi-fillet",
+    "images": [
+      "assets\\products\\japanese\\hamachi-fillet\\hamachi-fillet-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\hamachi-fillet\\hamachi-fillet-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/kampachi-fillet": {
+    "product_name": "Kampachi Amberjack Fillet",
+    "category": "Japanese Products",
+    "folder": "japanese/kampachi-fillet",
+    "images": [
+      "assets\\products\\japanese\\kampachi-fillet\\kampachi-fillet-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\kampachi-fillet\\kampachi-fillet-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/unagi-kabayaki": {
+    "product_name": "Unagi Kabayaki Grilled Eel",
+    "category": "Japanese Products",
+    "folder": "japanese/unagi-kabayaki",
+    "images": [
+      "assets\\products\\japanese\\unagi-kabayaki\\unagi-kabayaki-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\unagi-kabayaki\\unagi-kabayaki-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/tuna-loins": {
+    "product_name": "Tuna Loins Sushi Grade",
+    "category": "Japanese Products",
+    "folder": "japanese/tuna-loins",
+    "images": [
+      "assets\\products\\japanese\\tuna-loins\\tuna-loins-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\tuna-loins\\tuna-loins-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/octopus-boiled": {
+    "product_name": "Japanese Octopus Boiled",
+    "category": "Japanese Products",
+    "folder": "japanese/octopus-boiled",
+    "images": [
+      "assets\\products\\japanese\\octopus-boiled\\octopus-boiled-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\octopus-boiled\\octopus-boiled-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/prawns-nobashi": {
+    "product_name": "Nobashi Prawns Japanese",
+    "category": "Japanese Products",
+    "folder": "japanese/prawns-nobashi",
+    "images": [
+      "assets\\products\\japanese\\prawns-nobashi\\prawns-nobashi-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\prawns-nobashi\\prawns-nobashi-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/prawns-sweet": {
+    "product_name": "Sweet Prawns Japanese",
+    "category": "Japanese Products",
+    "folder": "japanese/prawns-sweet",
+    "images": [
+      "assets\\products\\japanese\\prawns-sweet\\prawns-sweet-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\prawns-sweet\\prawns-sweet-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/scallops-hotate": {
+    "product_name": "Scallops Hotate",
+    "category": "Japanese Products",
+    "folder": "japanese/scallops-hotate",
+    "images": [
+      "assets\\products\\japanese\\scallops-hotate\\scallops-hotate-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\scallops-hotate\\scallops-hotate-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/ikura-salmon-roe": {
+    "product_name": "Ikura Salmon Roe",
+    "category": "Japanese Products",
+    "folder": "japanese/ikura-salmon-roe",
+    "images": [
+      "assets\\products\\japanese\\ikura-salmon-roe\\ikura-salmon-roe-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\ikura-salmon-roe\\ikura-salmon-roe-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/tobikko-orange": {
+    "product_name": "Tobikko Orange Flying Fish Roe",
+    "category": "Japanese Products",
+    "folder": "japanese/tobikko-orange",
+    "images": [
+      "assets\\products\\japanese\\tobikko-orange\\tobikko-orange-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\tobikko-orange\\tobikko-orange-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/tobikko-black": {
+    "product_name": "Tobikko Black Flying Fish Roe",
+    "category": "Japanese Products",
+    "folder": "japanese/tobikko-black",
+    "images": [
+      "assets\\products\\japanese\\tobikko-black\\tobikko-black-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\tobikko-black\\tobikko-black-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/tobikko-green": {
+    "product_name": "Tobikko Green Flying Fish Roe",
+    "category": "Japanese Products",
+    "folder": "japanese/tobikko-green",
+    "images": [
+      "assets\\products\\japanese\\tobikko-green\\tobikko-green-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\tobikko-green\\tobikko-green-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/edamame": {
+    "product_name": "Edamame Green Soybeans",
+    "category": "Japanese Products",
+    "folder": "japanese/edamame",
+    "images": [
+      "assets\\products\\japanese\\edamame\\edamame-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\edamame\\edamame-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/wakame-chuke": {
+    "product_name": "Chuka Wakame Seaweed Salad",
+    "category": "Japanese Products",
+    "folder": "japanese/wakame-chuke",
+    "images": [
+      "assets\\products\\japanese\\wakame-chuke\\wakame-chuke-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\wakame-chuke\\wakame-chuke-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/wakame-dry": {
+    "product_name": "Dried Wakame Seaweed",
+    "category": "Japanese Products",
+    "folder": "japanese/wakame-dry",
+    "images": [
+      "assets\\products\\japanese\\wakame-dry\\wakame-dry-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\wakame-dry\\wakame-dry-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/kaiso-salad": {
+    "product_name": "Kaiso Mixed Seaweed Salad",
+    "category": "Japanese Products",
+    "folder": "japanese/kaiso-salad",
+    "images": [
+      "assets\\products\\japanese\\kaiso-salad\\kaiso-salad-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\kaiso-salad\\kaiso-salad-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/nori-sheet": {
+    "product_name": "Nori Seaweed Sheet",
+    "category": "Japanese Products",
+    "folder": "japanese/nori-sheet",
+    "images": [
+      "assets\\products\\japanese\\nori-sheet\\nori-sheet-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\nori-sheet\\nori-sheet-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/konbu-kelp": {
+    "product_name": "Konbu Dry Kelp",
+    "category": "Japanese Products",
+    "folder": "japanese/konbu-kelp",
+    "images": [
+      "assets\\products\\japanese\\konbu-kelp\\konbu-kelp-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\konbu-kelp\\konbu-kelp-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/mamenori": {
+    "product_name": "Mamenori Colored Soy Sheet",
+    "category": "Japanese Products",
+    "folder": "japanese/mamenori",
+    "images": [
+      "assets\\products\\japanese\\mamenori\\mamenori-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\mamenori\\mamenori-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/hijiki": {
+    "product_name": "Hijiki Black Seaweed",
+    "category": "Japanese Products",
+    "folder": "japanese/hijiki",
+    "images": [
+      "assets\\products\\japanese\\hijiki\\hijiki-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\hijiki\\hijiki-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/bamboo-leaf": {
+    "product_name": "Bamboo Leaf Sushi",
+    "category": "Japanese Products",
+    "folder": "japanese/bamboo-leaf",
+    "images": [
+      "assets\\products\\japanese\\bamboo-leaf\\bamboo-leaf-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\bamboo-leaf\\bamboo-leaf-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/gyoza-sheet": {
+    "product_name": "Gyoza Dumpling Sheet",
+    "category": "Japanese Products",
+    "folder": "japanese/gyoza-sheet",
+    "images": [
+      "assets\\products\\japanese\\gyoza-sheet\\gyoza-sheet-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\gyoza-sheet\\gyoza-sheet-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/wonton-sheet-white": {
+    "product_name": "Wonton Sheet White",
+    "category": "Japanese Products",
+    "folder": "japanese/wonton-sheet-white",
+    "images": [
+      "assets\\products\\japanese\\wonton-sheet-white\\wonton-sheet-white-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\wonton-sheet-white\\wonton-sheet-white-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/wonton-sheet-yellow": {
+    "product_name": "Wonton Sheet Yellow",
+    "category": "Japanese Products",
+    "folder": "japanese/wonton-sheet-yellow",
+    "images": [
+      "assets\\products\\japanese\\wonton-sheet-yellow\\wonton-sheet-yellow-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\wonton-sheet-yellow\\wonton-sheet-yellow-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/spring-roll-sheet": {
+    "product_name": "Spring Roll Sheet",
+    "category": "Japanese Products",
+    "folder": "japanese/spring-roll-sheet",
+    "images": [
+      "assets\\products\\japanese\\spring-roll-sheet\\spring-roll-sheet-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\spring-roll-sheet\\spring-roll-sheet-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/wasabi-paste": {
+    "product_name": "Wasabi Paste",
+    "category": "Japanese Products",
+    "folder": "japanese/wasabi-paste",
+    "images": [
+      "assets\\products\\japanese\\wasabi-paste\\wasabi-paste-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\wasabi-paste\\wasabi-paste-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/wasabi-powder": {
+    "product_name": "Wasabi Powder Horseradish",
+    "category": "Japanese Products",
+    "folder": "japanese/wasabi-powder",
+    "images": [
+      "assets\\products\\japanese\\wasabi-powder\\wasabi-powder-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\wasabi-powder\\wasabi-powder-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/wasabi-oil": {
+    "product_name": "Wasabi Oil",
+    "category": "Japanese Products",
+    "folder": "japanese/wasabi-oil",
+    "images": [
+      "assets\\products\\japanese\\wasabi-oil\\wasabi-oil-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\wasabi-oil\\wasabi-oil-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/sushi-rice": {
+    "product_name": "Sushi Rice Premium",
+    "category": "Japanese Products",
+    "folder": "japanese/sushi-rice",
+    "images": [
+      "assets\\products\\japanese\\sushi-rice\\sushi-rice-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\sushi-rice\\sushi-rice-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/thai-rice-jasmine": {
+    "product_name": "Thai Jasmine Rice",
+    "category": "Japanese Products",
+    "folder": "japanese/thai-rice-jasmine",
+    "images": [
+      "assets\\products\\japanese\\thai-rice-jasmine\\thai-rice-jasmine-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\thai-rice-jasmine\\thai-rice-jasmine-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/hondashi": {
+    "product_name": "Hondashi Dashi Stock",
+    "category": "Japanese Products",
+    "folder": "japanese/hondashi",
+    "images": [
+      "assets\\products\\japanese\\hondashi\\hondashi-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\hondashi\\hondashi-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/konbudashi": {
+    "product_name": "Konbudashi Kelp Stock",
+    "category": "Japanese Products",
+    "folder": "japanese/konbudashi",
+    "images": [
+      "assets\\products\\japanese\\konbudashi\\konbudashi-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\konbudashi\\konbudashi-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/furikake": {
+    "product_name": "Furikake Rice Seasoning",
+    "category": "Japanese Products",
+    "folder": "japanese/furikake",
+    "images": [
+      "assets\\products\\japanese\\furikake\\furikake-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\furikake\\furikake-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/matcha-powder": {
+    "product_name": "Matcha Green Tea Powder",
+    "category": "Japanese Products",
+    "folder": "japanese/matcha-powder",
+    "images": [
+      "assets\\products\\japanese\\matcha-powder\\matcha-powder-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\matcha-powder\\matcha-powder-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/japanese-pepper": {
+    "product_name": "Shichimi Ichimi Pepper",
+    "category": "Japanese Products",
+    "folder": "japanese/japanese-pepper",
+    "images": [
+      "assets\\products\\japanese\\japanese-pepper\\japanese-pepper-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\japanese-pepper\\japanese-pepper-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/katsuobushi": {
+    "product_name": "Katsuobushi Bonito Flakes",
+    "category": "Japanese Products",
+    "folder": "japanese/katsuobushi",
+    "images": [
+      "assets\\products\\japanese\\katsuobushi\\katsuobushi-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\katsuobushi\\katsuobushi-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/panko-crumbs": {
+    "product_name": "Panko Bread Crumbs",
+    "category": "Japanese Products",
+    "folder": "japanese/panko-crumbs",
+    "images": [
+      "assets\\products\\japanese\\panko-crumbs\\panko-crumbs-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\panko-crumbs\\panko-crumbs-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/sesame-seeds": {
+    "product_name": "Sesame Seeds Black White",
+    "category": "Japanese Products",
+    "folder": "japanese/sesame-seeds",
+    "images": [
+      "assets\\products\\japanese\\sesame-seeds\\sesame-seeds-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\sesame-seeds\\sesame-seeds-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/sesame-paste": {
+    "product_name": "Atari Goma Sesame Paste",
+    "category": "Japanese Products",
+    "folder": "japanese/sesame-paste",
+    "images": [
+      "assets\\products\\japanese\\sesame-paste\\sesame-paste-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\sesame-paste\\sesame-paste-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/miso-paste": {
+    "product_name": "Miso Paste White",
+    "category": "Japanese Products",
+    "folder": "japanese/miso-paste",
+    "images": [
+      "assets\\products\\japanese\\miso-paste\\miso-paste-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\miso-paste\\miso-paste-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/japanese-curry": {
+    "product_name": "Japanese Curry Golden Vermont",
+    "category": "Japanese Products",
+    "folder": "japanese/japanese-curry",
+    "images": [
+      "assets\\products\\japanese\\japanese-curry\\japanese-curry-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\japanese-curry\\japanese-curry-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/gari-pink": {
+    "product_name": "Gari Pink Pickled Ginger",
+    "category": "Japanese Products",
+    "folder": "japanese/gari-pink",
+    "images": [
+      "assets\\products\\japanese\\gari-pink\\gari-pink-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\gari-pink\\gari-pink-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/gari-white": {
+    "product_name": "Gari White Pickled Ginger",
+    "category": "Japanese Products",
+    "folder": "japanese/gari-white",
+    "images": [
+      "assets\\products\\japanese\\gari-white\\gari-white-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\gari-white\\gari-white-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/pickle-benishouga": {
+    "product_name": "Benishouga Red Ginger Pickle",
+    "category": "Japanese Products",
+    "folder": "japanese/pickle-benishouga",
+    "images": [
+      "assets\\products\\japanese\\pickle-benishouga\\pickle-benishouga-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\pickle-benishouga\\pickle-benishouga-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/pickle-takuwan": {
+    "product_name": "Takuwan Yellow Pickled Radish",
+    "category": "Japanese Products",
+    "folder": "japanese/pickle-takuwan",
+    "images": [
+      "assets\\products\\japanese\\pickle-takuwan\\pickle-takuwan-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\pickle-takuwan\\pickle-takuwan-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/pickle-umeboshi": {
+    "product_name": "Umeboshi Plum Pickle",
+    "category": "Japanese Products",
+    "folder": "japanese/pickle-umeboshi",
+    "images": [
+      "assets\\products\\japanese\\pickle-umeboshi\\pickle-umeboshi-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\pickle-umeboshi\\pickle-umeboshi-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/ginger-hajikami": {
+    "product_name": "Hajikami Ginger Stick",
+    "category": "Japanese Products",
+    "folder": "japanese/ginger-hajikami",
+    "images": [
+      "assets\\products\\japanese\\ginger-hajikami\\ginger-hajikami-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\ginger-hajikami\\ginger-hajikami-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/ramen-noodle": {
+    "product_name": "Ramen Noodle",
+    "category": "Japanese Products",
+    "folder": "japanese/ramen-noodle",
+    "images": [
+      "assets\\products\\japanese\\ramen-noodle\\ramen-noodle-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\ramen-noodle\\ramen-noodle-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/udon-noodle": {
+    "product_name": "Udon Noodle Thick",
+    "category": "Japanese Products",
+    "folder": "japanese/udon-noodle",
+    "images": [
+      "assets\\products\\japanese\\udon-noodle\\udon-noodle-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\udon-noodle\\udon-noodle-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/soba-noodle": {
+    "product_name": "Soba Buckwheat Noodle",
+    "category": "Japanese Products",
+    "folder": "japanese/soba-noodle",
+    "images": [
+      "assets\\products\\japanese\\soba-noodle\\soba-noodle-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\soba-noodle\\soba-noodle-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/somen-noodle": {
+    "product_name": "Somen Thin Noodle",
+    "category": "Japanese Products",
+    "folder": "japanese/somen-noodle",
+    "images": [
+      "assets\\products\\japanese\\somen-noodle\\somen-noodle-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\somen-noodle\\somen-noodle-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/glass-noodle": {
+    "product_name": "Glass Noodle Cellophane",
+    "category": "Japanese Products",
+    "folder": "japanese/glass-noodle",
+    "images": [
+      "assets\\products\\japanese\\glass-noodle\\glass-noodle-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\glass-noodle\\glass-noodle-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/pad-thai-noodle": {
+    "product_name": "Pad Thai Rice Noodle",
+    "category": "Japanese Products",
+    "folder": "japanese/pad-thai-noodle",
+    "images": [
+      "assets\\products\\japanese\\pad-thai-noodle\\pad-thai-noodle-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\pad-thai-noodle\\pad-thai-noodle-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/gochujang-paste": {
+    "product_name": "Gochujang Korean Chili Paste",
+    "category": "Japanese Products",
+    "folder": "japanese/gochujang-paste",
+    "images": [
+      "assets\\products\\japanese\\gochujang-paste\\gochujang-paste-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\gochujang-paste\\gochujang-paste-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/thai-curry-paste": {
+    "product_name": "Thai Curry Paste",
+    "category": "Japanese Products",
+    "folder": "japanese/thai-curry-paste",
+    "images": [
+      "assets\\products\\japanese\\thai-curry-paste\\thai-curry-paste-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\thai-curry-paste\\thai-curry-paste-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/yuzu-koshu": {
+    "product_name": "Yuzu Koshu Citrus Paste",
+    "category": "Japanese Products",
+    "folder": "japanese/yuzu-koshu",
+    "images": [
+      "assets\\products\\japanese\\yuzu-koshu\\yuzu-koshu-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\yuzu-koshu\\yuzu-koshu-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/sesame-dressing": {
+    "product_name": "Roasted Sesame Dressing",
+    "category": "Japanese Products",
+    "folder": "japanese/sesame-dressing",
+    "images": [
+      "assets\\products\\japanese\\sesame-dressing\\sesame-dressing-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\sesame-dressing\\sesame-dressing-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/tofu": {
+    "product_name": "Tofu Silken Firm",
+    "category": "Japanese Products",
+    "folder": "japanese/tofu",
+    "images": [
+      "assets\\products\\japanese\\tofu\\tofu-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\tofu\\tofu-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "japanese/bamboo-shoot": {
+    "product_name": "Bamboo Shoot Canned",
+    "category": "Japanese Products",
+    "folder": "japanese/bamboo-shoot",
+    "images": [
+      "assets\\products\\japanese\\bamboo-shoot\\bamboo-shoot-01.webp"
+    ],
+    "thumbnail": "assets\\products\\japanese\\bamboo-shoot\\bamboo-shoot-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/duck-whole": {
+    "product_name": "Whole Duck Eden Duck Thailand",
+    "category": "Imported Meat",
+    "folder": "meat/duck-whole",
+    "images": [
+      "assets\\products\\meat\\duck-whole\\duck-whole-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\duck-whole\\duck-whole-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/duck-breast-raw": {
+    "product_name": "Raw Duck Breast",
+    "category": "Imported Meat",
+    "folder": "meat/duck-breast-raw",
+    "images": [
+      "assets\\products\\meat\\duck-breast-raw\\duck-breast-raw-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\duck-breast-raw\\duck-breast-raw-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/duck-breast-smoked": {
+    "product_name": "Smoked Duck Breast",
+    "category": "Imported Meat",
+    "folder": "meat/duck-breast-smoked",
+    "images": [
+      "assets\\products\\meat\\duck-breast-smoked\\duck-breast-smoked-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\duck-breast-smoked\\duck-breast-smoked-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/duck-legs": {
+    "product_name": "Duck Legs",
+    "category": "Imported Meat",
+    "folder": "meat/duck-legs",
+    "images": [
+      "assets\\products\\meat\\duck-legs\\duck-legs-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\duck-legs\\duck-legs-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/turkey-whole": {
+    "product_name": "Whole Turkey Butterball",
+    "category": "Imported Meat",
+    "folder": "meat/turkey-whole",
+    "images": [
+      "assets\\products\\meat\\turkey-whole\\turkey-whole-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\turkey-whole\\turkey-whole-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/pork-bacon-streaky": {
+    "product_name": "Pork Streaky Bacon",
+    "category": "Imported Meat",
+    "folder": "meat/pork-bacon-streaky",
+    "images": [
+      "assets\\products\\meat\\pork-bacon-streaky\\pork-bacon-streaky-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\pork-bacon-streaky\\pork-bacon-streaky-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/pork-bacon-back": {
+    "product_name": "Pork Back Bacon Sliced",
+    "category": "Imported Meat",
+    "folder": "meat/pork-bacon-back",
+    "images": [
+      "assets\\products\\meat\\pork-bacon-back\\pork-bacon-back-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\pork-bacon-back\\pork-bacon-back-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/pork-loin-ribs": {
+    "product_name": "Pork Loin Ribs",
+    "category": "Imported Meat",
+    "folder": "meat/pork-loin-ribs",
+    "images": [
+      "assets\\products\\meat\\pork-loin-ribs\\pork-loin-ribs-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\pork-loin-ribs\\pork-loin-ribs-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/pork-tenderloin": {
+    "product_name": "Pork Tenderloin",
+    "category": "Imported Meat",
+    "folder": "meat/pork-tenderloin",
+    "images": [
+      "assets\\products\\meat\\pork-tenderloin\\pork-tenderloin-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\pork-tenderloin\\pork-tenderloin-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/pork-collar": {
+    "product_name": "Pork Collar Boston Butt",
+    "category": "Imported Meat",
+    "folder": "meat/pork-collar",
+    "images": [
+      "assets\\products\\meat\\pork-collar\\pork-collar-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\pork-collar\\pork-collar-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/pork-loin-chops": {
+    "product_name": "Pork Loin Chops Bone-In",
+    "category": "Imported Meat",
+    "folder": "meat/pork-loin-chops",
+    "images": [
+      "assets\\products\\meat\\pork-loin-chops\\pork-loin-chops-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\pork-loin-chops\\pork-loin-chops-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/pork-belly": {
+    "product_name": "Pork Belly Skin On",
+    "category": "Imported Meat",
+    "folder": "meat/pork-belly",
+    "images": [
+      "assets\\products\\meat\\pork-belly\\pork-belly-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\pork-belly\\pork-belly-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/pork-loin-boneless": {
+    "product_name": "Pork Loin Boneless",
+    "category": "Imported Meat",
+    "folder": "meat/pork-loin-boneless",
+    "images": [
+      "assets\\products\\meat\\pork-loin-boneless\\pork-loin-boneless-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\pork-loin-boneless\\pork-loin-boneless-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/lamb-rack-cap-off": {
+    "product_name": "Lamb Rack Cap Off New Zealand",
+    "category": "Imported Meat",
+    "folder": "meat/lamb-rack-cap-off",
+    "images": [
+      "assets\\products\\meat\\lamb-rack-cap-off\\lamb-rack-cap-off-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\lamb-rack-cap-off\\lamb-rack-cap-off-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/lamb-rack-cap-on": {
+    "product_name": "Lamb Rack Cap On New Zealand",
+    "category": "Imported Meat",
+    "folder": "meat/lamb-rack-cap-on",
+    "images": [
+      "assets\\products\\meat\\lamb-rack-cap-on\\lamb-rack-cap-on-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\lamb-rack-cap-on\\lamb-rack-cap-on-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/lamb-shank": {
+    "product_name": "Lamb Shank Hind",
+    "category": "Imported Meat",
+    "folder": "meat/lamb-shank",
+    "images": [
+      "assets\\products\\meat\\lamb-shank\\lamb-shank-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\lamb-shank\\lamb-shank-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/lamb-loin-boneless": {
+    "product_name": "Lamb Loin Boneless",
+    "category": "Imported Meat",
+    "folder": "meat/lamb-loin-boneless",
+    "images": [
+      "assets\\products\\meat\\lamb-loin-boneless\\lamb-loin-boneless-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\lamb-loin-boneless\\lamb-loin-boneless-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/lamb-loin-chop": {
+    "product_name": "Lamb Loin Chop T-Bone",
+    "category": "Imported Meat",
+    "folder": "meat/lamb-loin-chop",
+    "images": [
+      "assets\\products\\meat\\lamb-loin-chop\\lamb-loin-chop-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\lamb-loin-chop\\lamb-loin-chop-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "meat/lamb-leg-boneless": {
+    "product_name": "Lamb Leg Boneless",
+    "category": "Imported Meat",
+    "folder": "meat/lamb-leg-boneless",
+    "images": [
+      "assets\\products\\meat\\lamb-leg-boneless\\lamb-leg-boneless-01.webp"
+    ],
+    "thumbnail": "assets\\products\\meat\\lamb-leg-boneless\\lamb-leg-boneless-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/filo-pastry": {
+    "product_name": "Filo Pastry Sheets",
+    "category": "Groceries",
+    "folder": "groceries/filo-pastry",
+    "images": [
+      "assets\\products\\groceries\\filo-pastry\\filo-pastry-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\filo-pastry\\filo-pastry-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/kataifi-pastry": {
+    "product_name": "Kataifi Shredded Pastry",
+    "category": "Groceries",
+    "folder": "groceries/kataifi-pastry",
+    "images": [
+      "assets\\products\\groceries\\kataifi-pastry\\kataifi-pastry-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\kataifi-pastry\\kataifi-pastry-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/puff-pastry": {
+    "product_name": "Puff Pastry Ready Rolled",
+    "category": "Groceries",
+    "folder": "groceries/puff-pastry",
+    "images": [
+      "assets\\products\\groceries\\puff-pastry\\puff-pastry-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\puff-pastry\\puff-pastry-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/ajinomoto": {
+    "product_name": "Ajinomoto Monosodium Glutamate",
+    "category": "Groceries",
+    "folder": "groceries/ajinomoto",
+    "images": [
+      "assets\\products\\groceries\\ajinomoto\\ajinomoto-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\ajinomoto\\ajinomoto-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/tempura-powder": {
+    "product_name": "Tempura Batter Powder",
+    "category": "Groceries",
+    "folder": "groceries/tempura-powder",
+    "images": [
+      "assets\\products\\groceries\\tempura-powder\\tempura-powder-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\tempura-powder\\tempura-powder-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/chicken-seasoning-knorr": {
+    "product_name": "Knorr Chicken Seasoning Powder",
+    "category": "Groceries",
+    "folder": "groceries/chicken-seasoning-knorr",
+    "images": [
+      "assets\\products\\groceries\\chicken-seasoning-knorr\\chicken-seasoning-knorr-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\chicken-seasoning-knorr\\chicken-seasoning-knorr-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/rice-flour-glutinous": {
+    "product_name": "Glutinous Rice Flour",
+    "category": "Groceries",
+    "folder": "groceries/rice-flour-glutinous",
+    "images": [
+      "assets\\products\\groceries\\rice-flour-glutinous\\rice-flour-glutinous-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\rice-flour-glutinous\\rice-flour-glutinous-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/red-lotus-flour": {
+    "product_name": "Red Lotus Rice Flour",
+    "category": "Groceries",
+    "folder": "groceries/red-lotus-flour",
+    "images": [
+      "assets\\products\\groceries\\red-lotus-flour\\red-lotus-flour-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\red-lotus-flour\\red-lotus-flour-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/potato-starch": {
+    "product_name": "Potato Starch",
+    "category": "Groceries",
+    "folder": "groceries/potato-starch",
+    "images": [
+      "assets\\products\\groceries\\potato-starch\\potato-starch-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\potato-starch\\potato-starch-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/wheat-starch": {
+    "product_name": "Wheat Starch",
+    "category": "Groceries",
+    "folder": "groceries/wheat-starch",
+    "images": [
+      "assets\\products\\groceries\\wheat-starch\\wheat-starch-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\wheat-starch\\wheat-starch-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/mushroom-shiitake": {
+    "product_name": "Shiitake Mushroom Dried",
+    "category": "Groceries",
+    "folder": "groceries/mushroom-shiitake",
+    "images": [
+      "assets\\products\\groceries\\mushroom-shiitake\\mushroom-shiitake-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\mushroom-shiitake\\mushroom-shiitake-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/mushroom-porcini": {
+    "product_name": "Porcini Mushroom Dried",
+    "category": "Groceries",
+    "folder": "groceries/mushroom-porcini",
+    "images": [
+      "assets\\products\\groceries\\mushroom-porcini\\mushroom-porcini-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\mushroom-porcini\\mushroom-porcini-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/mushroom-straw-canned": {
+    "product_name": "Straw Mushroom Canned",
+    "category": "Groceries",
+    "folder": "groceries/mushroom-straw-canned",
+    "images": [
+      "assets\\products\\groceries\\mushroom-straw-canned\\mushroom-straw-canned-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\mushroom-straw-canned\\mushroom-straw-canned-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/black-fungus": {
+    "product_name": "Black Wood Ear Fungus",
+    "category": "Groceries",
+    "folder": "groceries/black-fungus",
+    "images": [
+      "assets\\products\\groceries\\black-fungus\\black-fungus-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\black-fungus\\black-fungus-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/white-fungus": {
+    "product_name": "White Silver Ear Fungus",
+    "category": "Groceries",
+    "folder": "groceries/white-fungus",
+    "images": [
+      "assets\\products\\groceries\\white-fungus\\white-fungus-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\white-fungus\\white-fungus-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/szechuan-pepper": {
+    "product_name": "Szechuan Pepper Corn",
+    "category": "Groceries",
+    "folder": "groceries/szechuan-pepper",
+    "images": [
+      "assets\\products\\groceries\\szechuan-pepper\\szechuan-pepper-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\szechuan-pepper\\szechuan-pepper-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/black-bean-dry": {
+    "product_name": "Black Bean Dry",
+    "category": "Groceries",
+    "folder": "groceries/black-bean-dry",
+    "images": [
+      "assets\\products\\groceries\\black-bean-dry\\black-bean-dry-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\black-bean-dry\\black-bean-dry-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "groceries/thai-curry-paste": {
+    "product_name": "Thai Curry Paste Namjai",
+    "category": "Groceries",
+    "folder": "groceries/thai-curry-paste",
+    "images": [
+      "assets\\products\\groceries\\thai-curry-paste\\thai-curry-paste-01.webp"
+    ],
+    "thumbnail": "assets\\products\\groceries\\thai-curry-paste\\thai-curry-paste-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "sauces/sushi-vinegar": {
+    "product_name": "Sushi Vinegar Mizkan",
+    "category": "Sauces",
+    "folder": "sauces/sushi-vinegar",
+    "images": [
+      "assets\\products\\sauces\\sushi-vinegar\\sushi-vinegar-01.webp"
+    ],
+    "thumbnail": "assets\\products\\sauces\\sushi-vinegar\\sushi-vinegar-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "sauces/mirin": {
+    "product_name": "Mirin Sweet Rice Wine",
+    "category": "Sauces",
+    "folder": "sauces/mirin",
+    "images": [
+      "assets\\products\\sauces\\mirin\\mirin-01.webp"
+    ],
+    "thumbnail": "assets\\products\\sauces\\mirin\\mirin-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "sauces/sake": {
+    "product_name": "Sake Japanese Rice Wine",
+    "category": "Sauces",
+    "folder": "sauces/sake",
+    "images": [
+      "assets\\products\\sauces\\sake\\sake-01.webp"
+    ],
+    "thumbnail": "assets\\products\\sauces\\sake\\sake-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "sauces/soy-sauce-kikkoman": {
+    "product_name": "Kikkoman Soy Sauce",
+    "category": "Sauces",
+    "folder": "sauces/soy-sauce-kikkoman",
+    "images": [
+      "assets\\products\\sauces\\soy-sauce-kikkoman\\soy-sauce-kikkoman-01.webp"
+    ],
+    "thumbnail": "assets\\products\\sauces\\soy-sauce-kikkoman\\soy-sauce-kikkoman-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "sauces/soy-sauce-tamari": {
+    "product_name": "Tamari Soy Sauce Gluten Free",
+    "category": "Sauces",
+    "folder": "sauces/soy-sauce-tamari",
+    "images": [
+      "assets\\products\\sauces\\soy-sauce-tamari\\soy-sauce-tamari-01.webp"
+    ],
+    "thumbnail": "assets\\products\\sauces\\soy-sauce-tamari\\soy-sauce-tamari-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "sauces/mayonnaise-kewpie": {
+    "product_name": "Kewpie Mayonnaise Japanese",
+    "category": "Sauces",
+    "folder": "sauces/mayonnaise-kewpie",
+    "images": [
+      "assets\\products\\sauces\\mayonnaise-kewpie\\mayonnaise-kewpie-01.webp"
+    ],
+    "thumbnail": "assets\\products\\sauces\\mayonnaise-kewpie\\mayonnaise-kewpie-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "sauces/oyster-sauce": {
+    "product_name": "Oyster Sauce LKK",
+    "category": "Sauces",
+    "folder": "sauces/oyster-sauce",
+    "images": [
+      "assets\\products\\sauces\\oyster-sauce\\oyster-sauce-01.webp"
+    ],
+    "thumbnail": "assets\\products\\sauces\\oyster-sauce\\oyster-sauce-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "sauces/sesame-oil": {
+    "product_name": "Sesame Oil Kadoya",
+    "category": "Sauces",
+    "folder": "sauces/sesame-oil",
+    "images": [
+      "assets\\products\\sauces\\sesame-oil\\sesame-oil-01.webp"
+    ],
+    "thumbnail": "assets\\products\\sauces\\sesame-oil\\sesame-oil-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "sauces/tonkatsu-sauce": {
+    "product_name": "Tonkatsu Sauce Bulldog",
+    "category": "Sauces",
+    "folder": "sauces/tonkatsu-sauce",
+    "images": [
+      "assets\\products\\sauces\\tonkatsu-sauce\\tonkatsu-sauce-01.webp"
+    ],
+    "thumbnail": "assets\\products\\sauces\\tonkatsu-sauce\\tonkatsu-sauce-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "sauces/sriracha-hot-sauce": {
+    "product_name": "Sriracha Hot Chilli Sauce",
+    "category": "Sauces",
+    "folder": "sauces/sriracha-hot-sauce",
+    "images": [
+      "assets\\products\\sauces\\sriracha-hot-sauce\\sriracha-hot-sauce-01.webp"
+    ],
+    "thumbnail": "assets\\products\\sauces\\sriracha-hot-sauce\\sriracha-hot-sauce-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "sauces/sweet-chilli-sauce": {
+    "product_name": "Sweet Chilli Sauce",
+    "category": "Sauces",
+    "folder": "sauces/sweet-chilli-sauce",
+    "images": [
+      "assets\\products\\sauces\\sweet-chilli-sauce\\sweet-chilli-sauce-01.webp"
+    ],
+    "thumbnail": "assets\\products\\sauces\\sweet-chilli-sauce\\sweet-chilli-sauce-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "sauces/tabasco": {
+    "product_name": "Tabasco Hot Sauce",
+    "category": "Sauces",
+    "folder": "sauces/tabasco",
+    "images": [
+      "assets\\products\\sauces\\tabasco\\tabasco-01.webp"
+    ],
+    "thumbnail": "assets\\products\\sauces\\tabasco\\tabasco-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "gourmet/beluga-caviar": {
+    "product_name": "Beluga Caviar Premium Russian",
+    "category": "Gourmet Products",
+    "folder": "gourmet/beluga-caviar",
+    "images": [
+      "assets\\products\\gourmet\\beluga-caviar\\beluga-caviar-01.webp"
+    ],
+    "thumbnail": "assets\\products\\gourmet\\beluga-caviar\\beluga-caviar-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "gourmet/osectra-caviar": {
+    "product_name": "Osectra Caviar Premium",
+    "category": "Gourmet Products",
+    "folder": "gourmet/osectra-caviar",
+    "images": [
+      "assets\\products\\gourmet\\osectra-caviar\\osectra-caviar-01.webp"
+    ],
+    "thumbnail": "assets\\products\\gourmet\\osectra-caviar\\osectra-caviar-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "gourmet/ikura-salmon-roe": {
+    "product_name": "Ikura Salmon Roe Gourmet",
+    "category": "Gourmet Products",
+    "folder": "gourmet/ikura-salmon-roe",
+    "images": [
+      "assets\\products\\gourmet\\ikura-salmon-roe\\ikura-salmon-roe-01.webp"
+    ],
+    "thumbnail": "assets\\products\\gourmet\\ikura-salmon-roe\\ikura-salmon-roe-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  },
+  "gourmet/tobikko": {
+    "product_name": "Tobikko Flying Fish Roe Mix",
+    "category": "Gourmet Products",
+    "folder": "gourmet/tobikko",
+    "images": [
+      "assets\\products\\gourmet\\tobikko\\tobikko-01.webp"
+    ],
+    "thumbnail": "assets\\products\\gourmet\\tobikko\\tobikko-thumb.webp",
+    "needs_custom_image": true,
+    "image_sources": [],
+    "license": "Placeholder — Needs replacement"
+  }
+}

@@ -1,0 +1,31 @@
+# ─── Frontend ────────────────────────────────────────────────────────────────
+node_modules/
+dist/
+build/
+
+# ─── Secrets — never commit these ────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# ─── Backend ──────────────────────────────────────────────────────────────────
+backend/__pycache__/
+backend/**/__pycache__/
+**/__pycache__/
+*.py[cod]
+backend/.venv/
+backend/venv/
+backend/.pytest_cache/
+backend/*.egg-info/
+
+# ─── OS / Editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+*.swp
+
+# ─── Tool-specific local configs ─────────────────────────────────────────────
+.claude/

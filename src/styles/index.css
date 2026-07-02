@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ocean-900: #042C53;
+  --ocean-700: #0C447C;
+  --ocean-500: #185FA5;
+  --gold-500: #EF9F27;
+  --gold-400: #FAC775;
+  --cream: #FAEEDA;
+  --mint-400: #5DCAA5;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--ocean-900);
+  background-color: #FBFCFE;
+}
+
+.dark body {
+  background-color: #03182E;
+  color: #E6F1FB;
+}
+
+h1, h2, h3, .font-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass {
+  background: rgba(4, 44, 83, 0.4);
+  border: 1px solid rgba(133, 183, 235, 0.15);
+}
+
+.product-card {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+  transform-style: preserve-3d;
+}
+.product-card:hover {
+  transform: translateY(-8px) rotateX(2deg);
+  box-shadow: 0 20px 50px -12px rgba(4, 44, 83, 0.3);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #E6F1FB 25%, #B5D4F4 37%, #E6F1FB 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+.dark .skeleton {
+  background: linear-gradient(90deg, #0C447C 25%, #185FA5 37%, #0C447C 63%);
+  background-size: 400% 100%;
+}
+@keyframes shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.wave-divider {
+  position: relative;
+  overflow: hidden;
+}
+.wave-divider svg {
+  display: block;
+  width: 200%;
+  animation: wave 12s linear infinite;
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(181, 212, 244, 0.8), rgba(133, 183, 235, 0.2));
+  animation: bubble linear infinite;
+  pointer-events: none;
+}
+
+.input-field {
+  @apply px-3 py-2.5 border border-ocean-200 dark:border-ocean-700 rounded-xl bg-white dark:bg-ocean-800 text-ocean-900 dark:text-white placeholder-ocean-300 dark:placeholder-ocean-500 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-colors text-sm;
+}
+
+.form-label {
+  @apply block text-xs font-semibold text-ocean-500 dark:text-ocean-400 uppercase tracking-widest mb-1.5;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--ocean-500); border-radius: 4px; }
