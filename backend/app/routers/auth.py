@@ -9,7 +9,8 @@ Rules:
   - Return Pydantic models; FastAPI serialises them to JSON automatically.
 """
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 from pymongo.database import Database
 
 from app.dependencies import get_db, get_current_user
@@ -22,7 +23,9 @@ from app.models.user import (
     ForgotPasswordRequest,
     ResetPasswordRequest,
 )
+from app.models.base import utcnow
 from app.services import auth_service
+from app.utils.security import hash_password, verify_password
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -104,3 +107,28 @@ def forgot_password(payload: ForgotPasswordRequest, db: Database = Depends(get_d
 def reset_password(payload: ResetPasswordRequest, db: Database = Depends(get_db)):
     auth_service.reset_password(db, payload.token, payload.new_password)
     return {"message": "Password updated successfully. Please log in with your new password."}
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(..., min_length=8)
+
+
+@router.post(
+    "/change-password",
+    status_code=status.HTTP_200_OK,
+    summary="Change password while logged in",
+)
+def change_password(
+    payload: ChangePasswordRequest,
+    db: Database = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    if not verify_password(payload.current_password, current_user["password_hash"]):
+        raise HTTPException(status_code=400, detail="Current password is incorrect.")
+
+    db.users.update_one(
+        {"_id": current_user["_id"]},
+        {"$set": {"password_hash": hash_password(payload.new_password), "updated_at": utcnow()}},
+    )
+    return {"message": "Password changed successfully."}
