@@ -8,6 +8,7 @@ export const ROUTES = {
   ORDERS: '/orders',
   ORDER_DETAIL: '/orders/:id',
   PROFILE: '/profile',
+  RECIPES: '/recipes',
   AUTH: {
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',

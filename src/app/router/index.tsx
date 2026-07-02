@@ -17,6 +17,7 @@ const AdminDashboardPage  = lazy(() => import('@/pages/Admin/Dashboard'))
 const AdminProductsPage   = lazy(() => import('@/pages/Admin/Products'))
 const AdminAnalyticsPage  = lazy(() => import('@/pages/Admin/Analytics'))
 const WishlistPage = lazy(() => import('@/pages/Wishlist'))
+const RecipesPage  = lazy(() => import('@/pages/Recipes'))
 const NotFoundPage = lazy(() => import('@/pages/NotFound'))
 
 const PageLoader: React.FC = () => (
@@ -46,6 +47,7 @@ const router = createBrowserRouter([
       { path: ROUTES.ORDERS, element: wrap(<OrdersPage />) },
       { path: ROUTES.ORDER_DETAIL, element: wrap(<OrdersPage />) },
       { path: ROUTES.PROFILE, element: wrap(<ProfilePage />) },
+      { path: ROUTES.RECIPES, element: wrap(<RecipesPage />) },
     ],
   },
   { path: ROUTES.AUTH.LOGIN, element: wrap(<LoginPage />) },
