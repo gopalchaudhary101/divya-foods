@@ -7,7 +7,7 @@ from app.routers import (
     auth, products, categories, orders, cart,
     wishlist, users, coupons, banners, reviews, admin,
 )
-from app.routers import notifications, chat
+from app.routers import notifications, chat, upload
 
 
 @asynccontextmanager
@@ -57,6 +57,7 @@ app.include_router(reviews.router)
 app.include_router(admin.router)
 app.include_router(notifications.router)
 app.include_router(chat.router)
+app.include_router(upload.router)
 
 
 # ─── Health Endpoints ─────────────────────────────────────────────────────────

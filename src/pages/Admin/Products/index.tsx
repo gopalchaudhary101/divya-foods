@@ -10,6 +10,7 @@ import {
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
+import { ImageUploader } from '@/components/shared/ImageUploader'
 import { formatCurrency } from '@/utils/formatCurrency'
 import axiosInstance from '@/services/api/axiosInstance'
 import type { ApiResponse } from '@/types'
@@ -206,10 +207,6 @@ function ProductFormDrawer({
     },
   })
 
-  const addImageRow    = () => setImages(prev => [...prev, ''])
-  const removeImageRow = (i: number) => setImages(prev => prev.filter((_, idx) => idx !== i))
-  const updateImage    = (i: number, val: string) => setImages(prev => prev.map((v, idx) => idx === i ? val : v))
-
   return (
     <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
@@ -348,34 +345,13 @@ function ProductFormDrawer({
 
           {/* Images */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="form-label mb-0">Image URLs</label>
-              <button
-                type="button"
-                onClick={addImageRow}
-                className="text-xs text-ocean-500 hover:text-ocean-700 font-medium flex items-center gap-1"
-              >
-                <Plus size={12} /> Add URL
-              </button>
-            </div>
-            <div className="space-y-2">
-              {images.map((url, i) => (
-                <div key={i} className="flex gap-2 items-center">
-                  <ImageIcon size={14} className="text-ocean-300 shrink-0" />
-                  <input
-                    value={url}
-                    onChange={e => updateImage(i, e.target.value)}
-                    placeholder="/assets/products/seafood/salmon-01.webp"
-                    className="input-field flex-1 font-mono text-xs"
-                  />
-                  {images.length > 1 && (
-                    <button type="button" onClick={() => removeImageRow(i)}>
-                      <X size={14} className="text-ocean-300 hover:text-red-400" />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+            <label className="form-label mb-2 block">Product Images</label>
+            <ImageUploader
+              value={images.filter(Boolean)}
+              onChange={setImages}
+              maxImages={5}
+              disabled={mutation.isPending}
+            />
           </div>
 
           {/* Toggles */}

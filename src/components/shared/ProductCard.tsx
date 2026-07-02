@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Heart, ShoppingCart, Package } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -11,6 +11,42 @@ import { useIsWishlisted, useToggleWishlist } from '@/hooks/useWishlist'
 interface ProductCardProps {
   product: Product
   onAddToCart?: (product: Product) => void
+}
+
+// Blur-up image: renders a low-opacity skeleton then fades to full opacity on load.
+// Falls back to Package icon if the URL fails (broken/404).
+function ProductImage({ src, alt }: { src: string | null; alt: string }) {
+  const [loaded, setLoaded] = useState(false)
+  const [errored, setErrored] = useState(false)
+
+  if (!src || errored) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-ocean-50 dark:bg-ocean-800">
+        <Package className="text-ocean-200 dark:text-ocean-600" size={48} />
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {/* Skeleton shown while image is loading */}
+      {!loaded && (
+        <div className="absolute inset-0 bg-ocean-100 dark:bg-ocean-800 animate-pulse" />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        onError={() => setErrored(true)}
+        className={[
+          'w-full h-full object-cover transition-all duration-500 group-hover:scale-110',
+          loaded ? 'opacity-100' : 'opacity-0',
+        ].join(' ')}
+      />
+    </>
+  )
 }
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
@@ -31,22 +67,14 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* Image */}
-      <Link to={`/products/${product.slug}`} className="relative block aspect-square overflow-hidden bg-ocean-50 dark:bg-ocean-800">
-        {primaryImage ? (
-          <img
-            src={primaryImage}
-            alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            loading="lazy"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Package className="text-ocean-200" size={48} />
-          </div>
-        )}
+      <Link
+        to={`/products/${product.slug}`}
+        className="relative block aspect-square overflow-hidden bg-ocean-50 dark:bg-ocean-800"
+      >
+        <ProductImage src={primaryImage} alt={product.name} />
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
           {discountPct && (
             <Badge variant="danger" className="text-xs font-semibold">
               -{discountPct}%
@@ -71,7 +99,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             toggleWishlist(product.id)
           }}
           aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white/80 dark:bg-ocean-900/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform"
+          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 dark:bg-ocean-900/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform"
         >
           <Heart
             size={16}
