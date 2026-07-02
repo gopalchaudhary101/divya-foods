@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import { HelmetProvider } from 'react-helmet-async'
 import { store } from '@/store'
 import { AuthInitializer } from '@/features/auth/components/AuthInitializer'
+import { InstallPrompt } from '@/components/shared/InstallPrompt'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,6 +43,7 @@ export function AppProviders({ children }: AppProvidersProps) {
               error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
             }}
           />
+          <InstallPrompt />
         </QueryClientProvider>
 
       </Provider>

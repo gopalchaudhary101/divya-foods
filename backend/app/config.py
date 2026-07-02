@@ -46,5 +46,10 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     EMAIL_FROM: str = "salesdivyafoods@gmail.com"
 
+    # Web Push (VAPID)
+    VAPID_PUBLIC_KEY: str = ""
+    VAPID_PRIVATE_KEY: str = ""
+    VAPID_EMAIL: str = "mailto:salesdivyafoods@gmail.com"
+
 
 settings = Settings()

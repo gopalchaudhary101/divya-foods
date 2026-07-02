@@ -72,6 +72,7 @@ export default function CheckoutPage() {
   const [discount, setDiscount] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError]       = useState('')
+  const [deliverySlot, setDeliverySlot] = useState('')
 
   const deliveryCharge = totalPrice >= CONFIG.DELIVERY.FREE_DELIVERY_ABOVE ? 0 : CONFIG.DELIVERY.STANDARD_CHARGE
   const orderTotal     = totalPrice + deliveryCharge - discount
@@ -128,6 +129,7 @@ export default function CheckoutPage() {
         },
         items,
         couponApplied ? coupon : undefined,
+        deliverySlot ? `Preferred delivery slot: ${deliverySlot}` : undefined,
       )
 
       // Step 2 — open Razorpay popup
@@ -279,6 +281,36 @@ export default function CheckoutPage() {
                   We deliver to Delhi NCR, Gurgaon, Noida and Greater Noida
                 </p>
 
+                {/* Delivery time slot */}
+                <div className="mt-5">
+                  <label className="block text-xs font-semibold text-ocean-500 uppercase tracking-widest mb-2">
+                    Preferred Delivery Slot <span className="text-ocean-300 font-normal normal-case">(optional)</span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'morning',   label: 'Morning',   time: '8 AM – 12 PM' },
+                      { id: 'afternoon', label: 'Afternoon', time: '12 PM – 5 PM' },
+                      { id: 'evening',   label: 'Evening',   time: '5 PM – 9 PM' },
+                      { id: 'nextday',   label: 'Next Day',  time: 'Anytime' },
+                    ].map(({ id, label, time }) => (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setDeliverySlot(deliverySlot === id ? '' : id)}
+                        className={[
+                          'text-left px-3 py-2.5 rounded-xl border-2 text-sm transition-all',
+                          deliverySlot === id
+                            ? 'border-ocean-600 bg-ocean-50 dark:bg-ocean-800 text-ocean-900 dark:text-white'
+                            : 'border-ocean-100 dark:border-ocean-700 text-ocean-600 dark:text-ocean-300 hover:border-ocean-300',
+                        ].join(' ')}
+                      >
+                        <p className="font-semibold text-xs">{label}</p>
+                        <p className="text-[10px] opacity-70 mt-0.5">{time}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <Button type="submit" variant="primary" size="lg" className="w-full mt-6" rightIcon={<ChevronRight size={16} />}>
                   Continue to Review
                 </Button>
@@ -303,6 +335,11 @@ export default function CheckoutPage() {
                       {v.city}, {v.state} — {v.pincode}
                     </p>
                   )})()}
+                  {deliverySlot && (
+                    <p className="text-xs text-ocean-500 mt-1 capitalize">
+                      Slot: {deliverySlot} delivery
+                    </p>
+                  )}
                   <button onClick={() => setStep(0)} className="text-xs text-ocean-500 hover:text-ocean-700 mt-1">
                     Change address
                   </button>

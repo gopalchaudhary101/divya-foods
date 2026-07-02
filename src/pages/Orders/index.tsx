@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async'
 import { Link, useParams, useLocation } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Package, ChevronRight, CheckCircle, Clock, Truck, XCircle, AlertTriangle } from 'lucide-react'
+import { DeliveryStatusStepper } from '@/components/shared/DeliveryStatusStepper'
 import toast from 'react-hot-toast'
 import { orderApi, type Order } from '@/services/api/orderApi'
 import { queryKeys } from '@/services/queryKeys'
@@ -103,6 +104,12 @@ function OrderDetail({ orderId }: { orderId: string }) {
           <p className="text-sm text-ocean-400 mt-0.5">Placed on {formatDate(order.createdAt)}</p>
         </div>
         <StatusBadge status={order.status} />
+      </div>
+
+      {/* Visual status stepper */}
+      <div className="bg-white dark:bg-ocean-900 border border-ocean-100 dark:border-ocean-800 rounded-2xl p-5 mb-4">
+        <p className="text-xs font-semibold text-ocean-400 uppercase tracking-widest mb-4">Order Progress</p>
+        <DeliveryStatusStepper status={order.status} />
       </div>
 
       {/* Items */}

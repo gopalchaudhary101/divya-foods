@@ -19,6 +19,7 @@ import { formatDate } from '@/utils/formatDate'
 import { CONFIG } from '@/constants/config'
 import { ROUTES } from '@/constants/routes'
 import toast from 'react-hot-toast'
+import { PincodeChecker } from '@/components/shared/PincodeChecker'
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -308,6 +309,9 @@ export default function ProductDetailPage() {
                 100% fresh quality guarantee
               </div>
             </div>
+
+            {/* Pincode delivery checker */}
+            <PincodeChecker />
           </div>
         </div>
 

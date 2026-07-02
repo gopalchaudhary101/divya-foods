@@ -147,12 +147,12 @@ export default function CartPage() {
                               ? dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity - 1 }))
                               : dispatch(removeFromCart(item.productId))
                           }
-                          className="px-3 py-2 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
+                          className="px-3 py-3 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
                           aria-label="Decrease quantity"
                         >
                           <Minus size={13} />
                         </button>
-                        <span className="px-4 py-2 text-sm font-semibold min-w-[2.5rem] text-center">
+                        <span className="px-4 py-3 text-sm font-semibold min-w-[2.5rem] text-center">
                           {item.quantity}
                         </span>
                         <button
@@ -160,7 +160,7 @@ export default function CartPage() {
                             dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity + 1 }))
                           }
                           disabled={item.quantity >= item.maxQuantity}
-                          className="px-3 py-2 hover:bg-ocean-50 dark:hover:bg-ocean-800 disabled:opacity-40 transition-colors"
+                          className="px-3 py-3 hover:bg-ocean-50 dark:hover:bg-ocean-800 disabled:opacity-40 transition-colors"
                           aria-label="Increase quantity"
                         >
                           <Plus size={13} />

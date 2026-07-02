@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 import razorpay
+from app.utils import push_service
 from bson import ObjectId
 from fastapi import HTTPException, status
 from pymongo.database import Database
@@ -535,5 +536,36 @@ def admin_update_status(
         email_service.order_delivered(order_dict, customer_email)
     elif new_status == "cancelled":
         email_service.order_cancelled(order_dict, customer_email, note)
+
+    # Push + in-app notification
+    _PUSH_MESSAGES = {
+        "confirmed":  ("Order Confirmed ✓", f"Order {doc['order_number']} is confirmed and being prepared."),
+        "processing": ("Packing Your Order 📦", f"Order {doc['order_number']} is now being packed."),
+        "shipped":    ("Order Shipped 🚚", f"Order {doc['order_number']} is on its way! {note or ''}".strip()),
+        "delivered":  ("Order Delivered 🎉", f"Order {doc['order_number']} has been delivered. Enjoy your seafood!"),
+        "cancelled":  ("Order Cancelled", f"Order {doc['order_number']} has been cancelled. {note or ''}".strip()),
+    }
+    if new_status in _PUSH_MESSAGES:
+        push_title, push_body = _PUSH_MESSAGES[new_status]
+        order_url = f"/orders/{order_id}"
+
+        # Save in-app notification
+        db.notifications.insert_one({
+            "user_id":    doc["user_id"],
+            "type":       "order_update",
+            "title":      push_title,
+            "message":    push_body,
+            "is_read":    False,
+            "data":       {"order_id": order_id, "order_number": doc.get("order_number", "")},
+            "created_at": _utcnow(),
+        })
+
+        # Send browser push (best-effort, non-blocking)
+        try:
+            push_service.send_push_to_user(
+                db, doc["user_id"], push_title, push_body, url=order_url
+            )
+        except Exception:  # noqa: BLE001
+            pass
 
     return {"success": True, "data": order_dict}

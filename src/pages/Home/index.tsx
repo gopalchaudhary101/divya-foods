@@ -42,9 +42,6 @@ const HomePage: React.FC = () => {
           <div className="mt-20 text-center text-ocean-300 text-sm">
             <p>Delivering across {CONFIG.DELIVERY.AREAS.join(' · ')}</p>
           </div>
-          <div className="absolute bottom-8 text-xs text-ocean-400 bg-ocean-900/50 px-4 py-2 rounded-full">
-            Phase 2 Complete ✓ — Full homepage coming in Phase 7
-          </div>
         </div>
       </div>
     </>

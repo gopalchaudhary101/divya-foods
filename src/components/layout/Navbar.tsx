@@ -9,6 +9,7 @@ import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { toggleDarkMode, toggleMobileMenu, setCartOpen } from '@/store/slices/uiSlice'
 import { useAuth } from '@/features/auth/hooks/useAuth'
+import { NotificationBell } from '@/components/shared/NotificationBell'
 import { CONFIG } from '@/constants/config'
 import { ROUTES } from '@/constants/routes'
 
@@ -86,7 +87,7 @@ export default function Navbar() {
           <button
             onClick={() => dispatch(toggleDarkMode())}
             aria-label="Toggle dark mode"
-            className="p-2 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
+            className="p-2.5 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
           >
             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
@@ -95,7 +96,7 @@ export default function Navbar() {
           <Link
             to={ROUTES.WISHLIST}
             aria-label={`Wishlist (${wishlistCount} items)`}
-            className="relative p-2 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
+            className="relative p-2.5 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
           >
             <Heart size={18} />
             {wishlistCount > 0 && (
@@ -105,11 +106,14 @@ export default function Navbar() {
             )}
           </Link>
 
+          {/* Notification bell — authenticated users only */}
+          <NotificationBell />
+
           {/* Cart */}
           <button
             onClick={() => dispatch(setCartOpen(true))}
             aria-label={`Cart (${cartCount} items)`}
-            className="relative p-2 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
+            className="relative p-2.5 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
           >
             <ShoppingCart size={18} />
             {cartCount > 0 && (
@@ -197,7 +201,7 @@ export default function Navbar() {
             onClick={() => dispatch(toggleMobileMenu())}
             aria-label="Toggle navigation menu"
             aria-expanded={isMobileMenuOpen}
-            className="md:hidden p-2 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
+            className="md:hidden p-2.5 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>

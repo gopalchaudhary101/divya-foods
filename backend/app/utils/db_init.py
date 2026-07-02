@@ -99,4 +99,8 @@ def create_indexes(db: Database) -> None:
     db.notifications.create_index("is_read")
     db.notifications.create_index([("user_id", 1), ("created_at", -1)])
 
+    # ── push_subscriptions ────────────────────────────────────────────────────
+    db.push_subscriptions.create_index("endpoint", unique=True)
+    db.push_subscriptions.create_index("user_id")
+
     print("[DB] All indexes created successfully")

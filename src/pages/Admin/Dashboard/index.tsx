@@ -241,12 +241,12 @@ export default function AdminDashboardPage() {
 
       <div className="min-h-screen bg-ocean-50 dark:bg-[#03182E]">
         {/* Top bar */}
-        <div className="bg-white dark:bg-ocean-950 border-b border-ocean-100 dark:border-ocean-800 px-6 py-4 flex items-center justify-between">
+        <div className="bg-white dark:bg-ocean-950 border-b border-ocean-100 dark:border-ocean-800 px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-y-2 gap-x-3">
           <div>
-            <h1 className="font-display text-xl font-semibold text-ocean-900 dark:text-white">Admin Dashboard</h1>
+            <h1 className="font-display text-lg sm:text-xl font-semibold text-ocean-900 dark:text-white">Admin Dashboard</h1>
             <p className="text-xs text-ocean-400">Welcome, {user?.name ?? 'Admin'}</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               to={ROUTES.ADMIN.PRODUCTS}
               className="text-xs font-medium text-ocean-600 dark:text-ocean-300 hover:text-ocean-900 dark:hover:text-white flex items-center gap-1.5 px-3 py-1.5 border border-ocean-200 dark:border-ocean-700 rounded-lg hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
@@ -259,7 +259,7 @@ export default function AdminDashboardPage() {
             >
               <TrendingUp size={13} /> Analytics
             </Link>
-            <span className="text-xs bg-ocean-100 dark:bg-ocean-800 text-ocean-600 dark:text-ocean-300 px-3 py-1 rounded-full font-medium">
+            <span className="hidden sm:block text-xs bg-ocean-100 dark:bg-ocean-800 text-ocean-600 dark:text-ocean-300 px-3 py-1 rounded-full font-medium">
               Divya Foods
             </span>
           </div>
