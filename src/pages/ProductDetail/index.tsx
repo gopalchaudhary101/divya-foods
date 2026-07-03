@@ -3,13 +3,15 @@ import { useParams, Link } from 'react-router-dom'
 import { PageSEO } from '@/components/shared/PageSEO'
 import {
   Heart, ShoppingCart, Minus, Plus, Package,
-  Truck, Shield, ChevronRight, Star,
+  Truck, Shield, ChevronRight, Star, Pencil, Trash2,
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useProduct } from '@/hooks/useProducts'
 import { useIsWishlisted, useToggleWishlist } from '@/hooks/useWishlist'
-import { useReviews } from '@/hooks/useReviews'
+import { useReviews, useCanReview, useDeleteReview } from '@/hooks/useReviews'
+import { WriteReviewModal } from '@/components/shared/WriteReviewModal'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
+import { useAppSelector } from '@/hooks/useAppSelector'
 import { addToCart } from '@/features/cart/cartSlice'
 import { StarRating } from '@/components/shared/StarRating'
 import { Badge } from '@/components/ui/Badge'
@@ -62,9 +64,13 @@ export default function ProductDetailPage() {
   const [activeImage, setActiveImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description')
+  const [showReviewModal, setShowReviewModal] = useState(false)
 
+  const isAuthenticated = useAppSelector(s => s.auth.isAuthenticated)
   const { data: reviewsData } = useReviews(product?.id ?? '', 1)
   const reviews = reviewsData?.data ?? []
+  const { data: eligibility } = useCanReview(product?.id ?? '')
+  const deleteMutation = useDeleteReview(product?.id ?? '')
 
   const discountPct =
     product?.originalPrice && product.originalPrice > product.price
@@ -388,37 +394,77 @@ export default function ProductDetailPage() {
             </div>
           ) : (
             <div className="max-w-3xl">
+              {/* Rating summary + write CTA */}
+              <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+                {product.reviewCount > 0 && (
+                  <div className="flex items-center gap-4">
+                    <div className="text-center">
+                      <p className="text-4xl font-bold text-ocean-900 dark:text-white">{product.rating.toFixed(1)}</p>
+                      <StarRating rating={product.rating} showCount={false} size={14} />
+                      <p className="text-xs text-ocean-400 mt-1">{product.reviewCount} review{product.reviewCount !== 1 ? 's' : ''}</p>
+                    </div>
+                  </div>
+                )}
+                {isAuthenticated && eligibility?.canReview && (
+                  <button
+                    onClick={() => setShowReviewModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 border-2 border-ocean-200 dark:border-ocean-700 rounded-xl text-sm font-medium text-ocean-700 dark:text-ocean-200 hover:border-gold-400 hover:text-gold-600 transition-all"
+                  >
+                    <Pencil size={14} /> Write a Review
+                  </button>
+                )}
+                {isAuthenticated && eligibility?.reason === 'already_reviewed' && (
+                  <span className="text-xs text-mint-600 dark:text-mint-400 flex items-center gap-1">
+                    ✓ You've reviewed this product
+                  </span>
+                )}
+              </div>
+
+              {/* Reviews list */}
               {reviews.length === 0 ? (
                 <div className="text-center py-12 text-ocean-400">
                   <Star size={32} className="mx-auto mb-3 opacity-30" />
-                  <p>No reviews yet. Be the first to review this product!</p>
+                  <p className="text-sm">No reviews yet.</p>
+                  {isAuthenticated && eligibility?.canReview && (
+                    <button
+                      onClick={() => setShowReviewModal(true)}
+                      className="mt-3 text-ocean-600 dark:text-ocean-300 underline text-sm"
+                    >
+                      Be the first to review this product
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="flex flex-col gap-4">
-                  {reviews.map((review: { id: string; userName: string; rating: number; comment: string; createdAt: string; isVerifiedPurchase?: boolean }) => (
+                  {reviews.map(review => (
                     <div
                       key={review.id}
                       className="p-5 rounded-xl bg-ocean-50 dark:bg-ocean-900 border border-ocean-100 dark:border-ocean-800"
                     >
                       <div className="flex items-start justify-between gap-4 mb-2">
                         <div>
-                          <p className="font-medium text-ocean-900 dark:text-white text-sm">
-                            {review.userName}
-                          </p>
+                          <p className="font-medium text-ocean-900 dark:text-white text-sm">{review.userName}</p>
                           <StarRating rating={review.rating} showCount={false} size={13} />
                         </div>
-                        <div className="text-right">
-                          <p className="text-xs text-ocean-400">{formatDate(review.createdAt)}</p>
-                          {review.isVerifiedPurchase && (
-                            <Badge variant="success" className="text-[10px] mt-1">
-                              Verified Purchase
-                            </Badge>
+                        <div className="flex items-center gap-2">
+                          <div className="text-right">
+                            <p className="text-xs text-ocean-400">{formatDate(review.createdAt)}</p>
+                            {review.isVerifiedPurchase && (
+                              <Badge variant="success" className="text-[10px] mt-1">Verified Purchase</Badge>
+                            )}
+                          </div>
+                          {eligibility?.reviewId === review.id && (
+                            <button
+                              onClick={() => deleteMutation.mutate(review.id)}
+                              aria-label="Delete your review"
+                              className="p-1 text-ocean-300 hover:text-red-500 transition-colors"
+                            >
+                              <Trash2 size={14} />
+                            </button>
                           )}
                         </div>
                       </div>
-                      <p className="text-sm text-ocean-700 dark:text-ocean-200 leading-relaxed">
-                        {review.comment}
-                      </p>
+                      <p className="text-sm text-ocean-700 dark:text-ocean-200 leading-relaxed">{review.comment}</p>
                     </div>
                   ))}
                 </div>
@@ -427,6 +473,14 @@ export default function ProductDetailPage() {
           )}
         </div>
       </div>
+
+      {showReviewModal && product && (
+        <WriteReviewModal
+          productId={product.id}
+          productName={product.name}
+          onClose={() => setShowReviewModal(false)}
+        />
+      )}
     </>
   )
 }

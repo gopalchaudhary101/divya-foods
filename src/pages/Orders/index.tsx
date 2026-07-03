@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link, useParams, useLocation } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Package, ChevronRight, CheckCircle, Clock, Truck, XCircle, AlertTriangle } from 'lucide-react'
+import { Package, ChevronRight, CheckCircle, Clock, Truck, XCircle, AlertTriangle, Star } from 'lucide-react'
+import { WriteReviewModal } from '@/components/shared/WriteReviewModal'
 import { DeliveryStatusStepper } from '@/components/shared/DeliveryStatusStepper'
 import toast from 'react-hot-toast'
 import { orderApi, type Order } from '@/services/api/orderApi'
@@ -42,6 +43,7 @@ function OrderDetail({ orderId }: { orderId: string }) {
   const justOrdered = (location.state as { justOrdered?: boolean })?.justOrdered
   const [showCancel, setShowCancel] = useState(false)
   const [cancelReason, setCancelReason] = useState('')
+  const [reviewTarget, setReviewTarget] = useState<{ productId: string; productName: string } | null>(null)
 
   const { data: order, isLoading, isError } = useQuery({
     queryKey: queryKeys.orders.detail(orderId),
@@ -126,6 +128,14 @@ function OrderDetail({ orderId }: { orderId: string }) {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-ocean-900 dark:text-white line-clamp-1">{item.name}</p>
                 <p className="text-xs text-ocean-400">Qty: {item.quantity} × {formatCurrency(item.price)}</p>
+                {order.status === 'delivered' && (
+                  <button
+                    onClick={() => setReviewTarget({ productId: item.productId, productName: item.name })}
+                    className="mt-1 text-xs text-ocean-500 hover:text-gold-600 transition-colors flex items-center gap-1"
+                  >
+                    <Star size={11} /> Rate this item
+                  </button>
+                )}
               </div>
               <span className="text-sm font-bold text-ocean-900 dark:text-white shrink-0">
                 {formatCurrency(item.price * item.quantity)}
@@ -242,6 +252,14 @@ function OrderDetail({ orderId }: { orderId: string }) {
           Continue Shopping
         </Link>
       </div>
+
+      {reviewTarget && (
+        <WriteReviewModal
+          productId={reviewTarget.productId}
+          productName={reviewTarget.productName}
+          onClose={() => setReviewTarget(null)}
+        />
+      )}
     </div>
   )
 }

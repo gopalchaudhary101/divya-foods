@@ -113,6 +113,7 @@ export interface Review {
   userName: string
   rating: number
   comment: string
+  isVerifiedPurchase: boolean
   createdAt: string
 }
 

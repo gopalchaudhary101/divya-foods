@@ -56,7 +56,8 @@ export const queryKeys = {
 
   // ─── Reviews ──────────────────────────────────────────────────────────────
   reviews: {
-    byProduct: (productId: string) => ['reviews', productId] as const,
+    byProduct:  (productId: string) => ['reviews', productId] as const,
+    canReview:  (productId: string) => ['reviews', 'can-review', productId] as const,
   },
 
   // ─── Banners ──────────────────────────────────────────────────────────────
