@@ -25,6 +25,9 @@ const JapaneseGroceryPage = lazy(() => import('@/pages/JapaneseGrocery'))
 const NotFoundPage        = lazy(() => import('@/pages/NotFound'))
 const AdminOrdersPage     = lazy(() => import('@/pages/Admin/Orders'))
 const AdminBundlesPage    = lazy(() => import('@/pages/Admin/Bundles'))
+const LoyaltyPage         = lazy(() => import('@/pages/Loyalty'))
+const FlashSalesPage      = lazy(() => import('@/pages/FlashSales'))
+const SubscriptionsPage   = lazy(() => import('@/pages/Subscriptions'))
 
 const PageLoader: React.FC = () => (
   <div className="min-h-screen flex items-center justify-center bg-ocean-50">
@@ -55,6 +58,9 @@ const router = createBrowserRouter([
       { path: ROUTES.PROFILE, element: wrap(<ProfilePage />) },
       { path: ROUTES.REFERRAL, element: wrap(<ReferralPage />) },
       { path: ROUTES.BUNDLES, element: wrap(<BundlesPage />) },
+      { path: ROUTES.LOYALTY, element: wrap(<LoyaltyPage />) },
+      { path: ROUTES.FLASH_SALES, element: wrap(<FlashSalesPage />) },
+      { path: ROUTES.SUBSCRIPTIONS, element: wrap(<SubscriptionsPage />) },
       { path: ROUTES.RECIPES, element: wrap(<RecipesPage />) },
       { path: ROUTES.JAPANESE_GROCERY, element: wrap(<JapaneseGroceryPage />) },
     ],

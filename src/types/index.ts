@@ -17,6 +17,8 @@ export interface Product {
   description: string
   price: number
   originalPrice?: number
+  salePrice?: number
+  saleEndsAt?: string
   images: string[]
   category: string
   subcategory?: string
@@ -161,4 +163,49 @@ export interface Banner {
   link?: string
   isActive: boolean
   order: number
+}
+
+// ─── Q&A ──────────────────────────────────────────────────────────────────────
+export interface QA {
+  id: string
+  productId: string
+  userId: string
+  userName: string
+  question: string
+  answer: string | null
+  answeredAt: string | null
+  createdAt: string
+}
+
+// ─── Subscription ─────────────────────────────────────────────────────────────
+export type SubscriptionFrequency = 'weekly' | 'biweekly' | 'monthly'
+export type SubscriptionStatus = 'active' | 'paused' | 'cancelled'
+
+export interface Subscription {
+  id: string
+  productId: string
+  productName: string
+  productImage?: string
+  productPrice: number
+  quantity: number
+  frequency: SubscriptionFrequency
+  status: SubscriptionStatus
+  discountPct: number
+  nextDelivery: string | null
+  createdAt: string
+}
+
+// ─── Loyalty ──────────────────────────────────────────────────────────────────
+export interface LoyaltyBalance {
+  earned: number
+  redeemed: number
+  available: number
+  discountPerPoint: number
+  minRedeem: number
+  recentOrders: {
+    orderNumber: string
+    total: number
+    points: number
+    date: string
+  }[]
 }

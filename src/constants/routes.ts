@@ -10,6 +10,9 @@ export const ROUTES = {
   PROFILE: '/profile',
   REFERRAL: '/referral',
   BUNDLES: '/bundles',
+  LOYALTY: '/loyalty',
+  FLASH_SALES: '/flash-sales',
+  SUBSCRIPTIONS: '/subscriptions',
   RECIPES: '/recipes',
   JAPANESE_GROCERY: '/japanese-grocery',
   AUTH: {

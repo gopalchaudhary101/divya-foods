@@ -73,4 +73,22 @@ export const queryKeys = {
     customers: () => ['admin', 'customers'] as const,
     analytics: () => ['admin', 'analytics'] as const,
   },
+
+  // ─── Q&A ──────────────────────────────────────────────────────────────────
+  qa: (productId: string) => ['qa', productId] as const,
+
+  // ─── Subscriptions ────────────────────────────────────────────────────────
+  subscriptions: {
+    all: () => ['subscriptions'] as const,
+  },
+
+  // ─── Loyalty ──────────────────────────────────────────────────────────────
+  loyalty: {
+    balance: () => ['loyalty', 'balance'] as const,
+  },
+
+  // ─── Flash Sales ──────────────────────────────────────────────────────────
+  flashSales: {
+    all: () => ['flash-sales'] as const,
+  },
 } as const

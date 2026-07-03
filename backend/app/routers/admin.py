@@ -518,3 +518,130 @@ def admin_export_orders_csv(
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=orders.csv"},
     )
+
+
+# ─── Flash sales ──────────────────────────────────────────────────────────────
+
+class FlashSaleRequest(BaseModel):
+    salePrice: Optional[float] = None
+    saleEndsAt: Optional[str] = None
+
+
+@router.put("/products/{product_id}/flash-sale")
+def admin_set_flash_sale(
+    product_id: str,
+    body: FlashSaleRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    try:
+        oid = ObjectId(product_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid product ID.")
+
+    if body.salePrice is None:
+        db.products.update_one({"_id": oid}, {"$unset": {"sale_price": "", "sale_ends_at": ""}})
+        return {"success": True, "data": {"cleared": True}}
+
+    sale_ends = None
+    if body.saleEndsAt:
+        try:
+            sale_ends = datetime.fromisoformat(body.saleEndsAt.replace("Z", "+00:00"))
+        except ValueError:
+            raise HTTPException(status_code=422, detail="Invalid saleEndsAt date.")
+
+    db.products.update_one(
+        {"_id": oid},
+        {"$set": {"sale_price": body.salePrice, "sale_ends_at": sale_ends}},
+    )
+    return {"success": True, "data": {"salePrice": body.salePrice}}
+
+
+# ─── Q&A moderation ───────────────────────────────────────────────────────────
+
+class QAAnswerRequest(BaseModel):
+    answer: str
+
+
+@router.put("/qa/{qa_id}")
+def admin_answer_question(
+    qa_id: str,
+    body: QAAnswerRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    try:
+        oid = ObjectId(qa_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid Q&A ID.")
+    db.qa.update_one(
+        {"_id": oid},
+        {"$set": {"answer": body.answer.strip(), "answered_at": datetime.now(timezone.utc)}},
+    )
+    return {"success": True}
+
+
+@router.delete("/qa/{qa_id}", status_code=204)
+def admin_delete_question(
+    qa_id: str,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    try:
+        oid = ObjectId(qa_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid Q&A ID.")
+    db.qa.delete_one({"_id": oid})
+
+
+@router.get("/qa")
+def admin_list_qa(
+    unanswered: bool = Query(False),
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    query = {"answer": None} if unanswered else {}
+    docs = list(db.qa.find(query).sort("created_at", -1).limit(100))
+    return {
+        "success": True,
+        "data": [
+            {
+                "id":         str(d["_id"]),
+                "productId":  d.get("product_id", ""),
+                "userName":   d.get("user_name", ""),
+                "question":   d.get("question", ""),
+                "answer":     d.get("answer"),
+                "createdAt":  d["created_at"].isoformat() if d.get("created_at") else "",
+            }
+            for d in docs
+        ],
+    }
+
+
+# ─── Subscriptions (admin view) ───────────────────────────────────────────────
+
+@router.get("/subscriptions")
+def admin_list_subscriptions(
+    status: Optional[str] = Query(None),
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    query: dict = {}
+    if status:
+        query["status"] = status
+    docs = list(db.subscriptions.find(query).sort("created_at", -1).limit(200))
+    return {
+        "success": True,
+        "data": [
+            {
+                "id":          str(d["_id"]),
+                "userId":      d.get("user_id", ""),
+                "productName": d.get("product_name", ""),
+                "quantity":    d.get("quantity", 1),
+                "frequency":   d.get("frequency", "monthly"),
+                "status":      d.get("status", "active"),
+                "nextDelivery": d["next_delivery"].isoformat() if d.get("next_delivery") else None,
+            }
+            for d in docs
+        ],
+    }

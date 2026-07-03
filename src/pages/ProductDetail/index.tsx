@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { PageSEO } from '@/components/shared/PageSEO'
 import {
   Heart, ShoppingCart, Minus, Plus, Package,
-  Truck, Shield, ChevronRight, Star, Pencil, Trash2,
+  Truck, Shield, ChevronRight, Star, Pencil, Trash2, RefreshCw,
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useProduct } from '@/hooks/useProducts'
@@ -22,6 +22,10 @@ import { CONFIG } from '@/constants/config'
 import { ROUTES } from '@/constants/routes'
 import toast from 'react-hot-toast'
 import { PincodeChecker } from '@/components/shared/PincodeChecker'
+import ProductQA from '@/components/shared/ProductQA'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import axiosInstance from '@/services/api/axiosInstance'
+import { queryKeys } from '@/services/queryKeys'
 import type { Product } from '@/types'
 
 function getProductLD(p: Product) {
@@ -63,7 +67,29 @@ export default function ProductDetailPage() {
 
   const [activeImage, setActiveImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
-  const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description')
+  const [activeTab, setActiveTab] = useState<'description' | 'reviews' | 'qa'>('description')
+  const [subFrequency, setSubFrequency] = useState<'weekly' | 'biweekly' | 'monthly'>('monthly')
+  const qc = useQueryClient()
+  const subscribeMutation = useMutation({
+    mutationFn: async () => {
+      if (!product) return
+      await axiosInstance.post('/subscriptions', {
+        productId: product.id,
+        productName: product.name,
+        productImage: product.images[0] ?? null,
+        productPrice: product.price,
+        quantity,
+        frequency: subFrequency,
+      })
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.subscriptions.all() })
+      toast.success('Subscribed! You save 10% on every delivery.')
+    },
+    onError: (err: { response?: { data?: { detail?: string } } }) => {
+      toast.error(err?.response?.data?.detail ?? 'Could not create subscription.')
+    },
+  })
   const [showReviewModal, setShowReviewModal] = useState(false)
 
   const isAuthenticated = useAppSelector(s => s.auth.isAuthenticated)
@@ -353,6 +379,44 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
+            {/* Subscribe & Save */}
+            {product.inStock && isAuthenticated && (
+              <div className="border border-ocean-200 dark:border-ocean-700 rounded-xl p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <RefreshCw size={15} className="text-green-600" />
+                  <span className="text-sm font-semibold text-ocean-800 dark:text-ocean-200">
+                    Subscribe &amp; Save 10%
+                  </span>
+                  <Badge variant="success" className="text-[10px]">Auto-delivery</Badge>
+                </div>
+                <p className="text-xs text-ocean-500">
+                  {formatCurrency(product.price * 0.9)} / delivery — cancel anytime
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                  {(['weekly', 'biweekly', 'monthly'] as const).map(f => (
+                    <button
+                      key={f}
+                      onClick={() => setSubFrequency(f)}
+                      className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                        subFrequency === f
+                          ? 'bg-green-600 text-white border-green-600'
+                          : 'border-ocean-200 dark:border-ocean-700 text-ocean-600 dark:text-ocean-400 hover:border-green-400'
+                      }`}
+                    >
+                      {f === 'biweekly' ? 'Every 2 weeks' : f.charAt(0).toUpperCase() + f.slice(1)}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => subscribeMutation.mutate()}
+                  disabled={subscribeMutation.isPending}
+                  className="w-full py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                >
+                  {subscribeMutation.isPending ? 'Subscribing…' : 'Subscribe & Save'}
+                </button>
+              </div>
+            )}
+
             {/* Pincode delivery checker */}
             <PincodeChecker />
           </div>
@@ -361,7 +425,7 @@ export default function ProductDetailPage() {
         {/* ── Tabs: Description / Reviews ────────────── */}
         <div className="mb-16">
           <div className="flex gap-1 border-b border-ocean-100 dark:border-ocean-800 mb-6">
-            {(['description', 'reviews'] as const).map((tab) => (
+            {(['description', 'reviews', 'qa'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -372,12 +436,16 @@ export default function ProductDetailPage() {
                     : 'border-transparent text-ocean-400 hover:text-ocean-700',
                 ].join(' ')}
               >
-                {tab === 'reviews' ? `Reviews (${product.reviewCount})` : 'Description'}
+                {tab === 'reviews' ? `Reviews (${product.reviewCount})` : tab === 'qa' ? 'Q&A' : 'Description'}
               </button>
             ))}
           </div>
 
-          {activeTab === 'description' ? (
+          {activeTab === 'qa' ? (
+            <div className="max-w-3xl">
+              <ProductQA productId={product.id} />
+            </div>
+          ) : activeTab === 'description' ? (
             <div className="max-w-3xl">
               <p className="text-ocean-700 dark:text-ocean-200 leading-relaxed whitespace-pre-line">
                 {product.description}
