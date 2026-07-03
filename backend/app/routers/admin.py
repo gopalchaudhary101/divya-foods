@@ -349,3 +349,172 @@ def admin_delete_coupon(
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Coupon not found.")
     return {"success": True, "data": {"deleted": True}}
+
+
+# ─── Bundles ──────────────────────────────────────────────────────────────────
+
+class BundleItemInput(BaseModel):
+    productId: str
+    quantity: int = 1
+
+
+class BundleUpsertRequest(BaseModel):
+    name: str
+    description: str = ""
+    image: Optional[str] = None
+    bundlePrice: float
+    isActive: bool = True
+    items: list[BundleItemInput]
+
+
+def _bundle_list_item(doc: dict, db) -> dict:
+    items = []
+    for item in doc.get("items", []):
+        try:
+            p = db.products.find_one({"_id": ObjectId(item["product_id"])}, {"name": 1})
+            name = p["name"] if p else "Unknown"
+        except Exception:
+            name = "Unknown"
+        items.append({"productId": item["product_id"], "quantity": item["quantity"], "name": name})
+    return {
+        "id":          str(doc["_id"]),
+        "name":        doc.get("name", ""),
+        "description": doc.get("description", ""),
+        "image":       doc.get("image"),
+        "bundlePrice": doc.get("bundle_price", 0),
+        "isActive":    doc.get("is_active", True),
+        "items":       items,
+    }
+
+
+@router.get("/bundles")
+def admin_list_bundles(db: Database = Depends(get_db), _admin: dict = Depends(require_admin)):
+    docs = list(db.bundles.find({}).sort("created_at", -1))
+    return {"success": True, "data": [_bundle_list_item(d, db) for d in docs]}
+
+
+@router.post("/bundles", status_code=201)
+def admin_create_bundle(
+    body: BundleUpsertRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    doc = {
+        "name":         body.name,
+        "description":  body.description,
+        "image":        body.image,
+        "bundle_price": body.bundlePrice,
+        "is_active":    body.isActive,
+        "items":        [{"product_id": i.productId, "quantity": i.quantity} for i in body.items],
+        "created_at":   datetime.now(timezone.utc),
+    }
+    result = db.bundles.insert_one(doc)
+    return {"success": True, "data": {"id": str(result.inserted_id)}}
+
+
+@router.put("/bundles/{bundle_id}")
+def admin_update_bundle(
+    bundle_id: str,
+    body: BundleUpsertRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    try:
+        oid = ObjectId(bundle_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid bundle ID.")
+    db.bundles.update_one({"_id": oid}, {"$set": {
+        "name":         body.name,
+        "description":  body.description,
+        "image":        body.image,
+        "bundle_price": body.bundlePrice,
+        "is_active":    body.isActive,
+        "items":        [{"product_id": i.productId, "quantity": i.quantity} for i in body.items],
+        "updated_at":   datetime.now(timezone.utc),
+    }})
+    return {"success": True, "data": {"id": bundle_id}}
+
+
+@router.delete("/bundles/{bundle_id}", status_code=204)
+def admin_delete_bundle(
+    bundle_id: str,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    try:
+        oid = ObjectId(bundle_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid bundle ID.")
+    db.bundles.delete_one({"_id": oid})
+
+
+# ─── Bulk order actions ───────────────────────────────────────────────────────
+
+class BulkStatusRequest(BaseModel):
+    order_ids: list[str]
+    status: str
+
+
+@router.put("/bulk-order-status")
+def admin_bulk_order_status(
+    body: BulkStatusRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    valid = {"confirmed", "processing", "shipped", "delivered", "cancelled"}
+    if body.status not in valid:
+        raise HTTPException(status_code=422, detail=f"Status must be one of: {', '.join(valid)}")
+    oids = []
+    for s in body.order_ids:
+        try:
+            oids.append(ObjectId(s))
+        except Exception:
+            pass
+    if not oids:
+        raise HTTPException(status_code=400, detail="No valid order IDs provided.")
+    result = db.orders.update_many(
+        {"_id": {"$in": oids}},
+        {"$set": {"status": body.status, "updated_at": datetime.now(timezone.utc)}},
+    )
+    return {"success": True, "data": {"updated": result.modified_count}}
+
+
+@router.get("/export-orders")
+def admin_export_orders_csv(
+    status: Optional[str] = Query(None),
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    import csv
+    import io
+    from fastapi.responses import StreamingResponse
+
+    query: dict = {}
+    if status:
+        query["status"] = status
+
+    docs = list(db.orders.find(query).sort("created_at", -1).limit(2000))
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Order Number", "Customer", "Phone", "Status", "Payment", "Total (₹)", "Items", "Date"])
+    for doc in docs:
+        addr = doc.get("delivery_address", {})
+        created = doc.get("created_at")
+        writer.writerow([
+            doc.get("order_number", ""),
+            addr.get("full_name", ""),
+            addr.get("phone", ""),
+            doc.get("status", ""),
+            doc.get("payment_status", ""),
+            doc.get("total", 0),
+            len(doc.get("items", [])),
+            created.strftime("%Y-%m-%d") if created else "",
+        ])
+
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=orders.csv"},
+    )

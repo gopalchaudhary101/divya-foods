@@ -18,9 +18,13 @@ const AdminProductsPage   = lazy(() => import('@/pages/Admin/Products'))
 const AdminAnalyticsPage  = lazy(() => import('@/pages/Admin/Analytics'))
 const AdminCouponsPage    = lazy(() => import('@/pages/Admin/Coupons'))
 const WishlistPage        = lazy(() => import('@/pages/Wishlist'))
+const ReferralPage        = lazy(() => import('@/pages/Referral'))
+const BundlesPage         = lazy(() => import('@/pages/Bundles'))
 const RecipesPage         = lazy(() => import('@/pages/Recipes'))
 const JapaneseGroceryPage = lazy(() => import('@/pages/JapaneseGrocery'))
 const NotFoundPage        = lazy(() => import('@/pages/NotFound'))
+const AdminOrdersPage     = lazy(() => import('@/pages/Admin/Orders'))
+const AdminBundlesPage    = lazy(() => import('@/pages/Admin/Bundles'))
 
 const PageLoader: React.FC = () => (
   <div className="min-h-screen flex items-center justify-center bg-ocean-50">
@@ -49,6 +53,8 @@ const router = createBrowserRouter([
       { path: ROUTES.ORDERS, element: wrap(<OrdersPage />) },
       { path: ROUTES.ORDER_DETAIL, element: wrap(<OrdersPage />) },
       { path: ROUTES.PROFILE, element: wrap(<ProfilePage />) },
+      { path: ROUTES.REFERRAL, element: wrap(<ReferralPage />) },
+      { path: ROUTES.BUNDLES, element: wrap(<BundlesPage />) },
       { path: ROUTES.RECIPES, element: wrap(<RecipesPage />) },
       { path: ROUTES.JAPANESE_GROCERY, element: wrap(<JapaneseGroceryPage />) },
     ],
@@ -59,6 +65,8 @@ const router = createBrowserRouter([
   { path: ROUTES.ADMIN.PRODUCTS,   element: wrap(<AdminProductsPage />) },
   { path: ROUTES.ADMIN.ANALYTICS,  element: wrap(<AdminAnalyticsPage />) },
   { path: ROUTES.ADMIN.COUPONS,    element: wrap(<AdminCouponsPage />) },
+  { path: ROUTES.ADMIN.ORDERS,    element: wrap(<AdminOrdersPage />) },
+  { path: ROUTES.ADMIN.BUNDLES,   element: wrap(<AdminBundlesPage />) },
   { path: '*', element: wrap(<NotFoundPage />) },
 ])
 

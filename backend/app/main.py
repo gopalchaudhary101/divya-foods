@@ -12,7 +12,7 @@ from app.routers import (
     auth, products, categories, orders, cart,
     wishlist, users, coupons, banners, reviews, admin,
 )
-from app.routers import notifications, chat, upload
+from app.routers import notifications, chat, upload, referrals, bundles
 
 _MONGO_OP = re.compile(r'\$[a-zA-Z]')
 
@@ -80,6 +80,8 @@ app.include_router(admin.router)
 app.include_router(notifications.router)
 app.include_router(chat.router)
 app.include_router(upload.router)
+app.include_router(referrals.router)
+app.include_router(bundles.router)
 
 
 # ─── Health Endpoints ─────────────────────────────────────────────────────────

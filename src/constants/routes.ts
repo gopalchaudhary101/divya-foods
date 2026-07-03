@@ -8,6 +8,8 @@ export const ROUTES = {
   ORDERS: '/orders',
   ORDER_DETAIL: '/orders/:id',
   PROFILE: '/profile',
+  REFERRAL: '/referral',
+  BUNDLES: '/bundles',
   RECIPES: '/recipes',
   JAPANESE_GROCERY: '/japanese-grocery',
   AUTH: {
@@ -25,5 +27,6 @@ export const ROUTES = {
     BANNERS: '/admin/banners',
     COUPONS: '/admin/coupons',
     ANALYTICS: '/admin/analytics',
+    BUNDLES: '/admin/bundles',
   },
 } as const
