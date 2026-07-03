@@ -176,14 +176,37 @@ def admin_stats(
         .limit(5)
     )
 
+    # Low-stock products (stock_quantity <= 5, still marked in_stock)
+    LOW_STOCK_THRESHOLD = 5
+    low_stock_raw = list(
+        db.products.find(
+            {"stock_quantity": {"$lte": LOW_STOCK_THRESHOLD}},
+            {"name": 1, "slug": 1, "stock_quantity": 1, "images": 1, "in_stock": 1},
+        )
+        .sort("stock_quantity", 1)
+        .limit(10)
+    )
+    low_stock_products = [
+        {
+            "id":            str(p["_id"]),
+            "name":          p["name"],
+            "slug":          p.get("slug", ""),
+            "stockQuantity": p.get("stock_quantity", 0),
+            "inStock":       p.get("in_stock", True),
+            "image":         (p.get("images") or [None])[0],
+        }
+        for p in low_stock_raw
+    ]
+
     return {
         "success": True,
         "data": {
-            "totalOrders":    total_orders,
-            "pendingOrders":  pending_orders,
-            "totalProducts":  total_products,
-            "totalCustomers": total_customers,
-            "totalRevenue":   round(total_revenue, 2),
-            "recentOrders":   [order_service._order_to_dict(o) for o in recent],
+            "totalOrders":       total_orders,
+            "pendingOrders":     pending_orders,
+            "totalProducts":     total_products,
+            "totalCustomers":    total_customers,
+            "totalRevenue":      round(total_revenue, 2),
+            "recentOrders":      [order_service._order_to_dict(o) for o in recent],
+            "lowStockProducts":  low_stock_products,
         },
     }
