@@ -1,13 +1,20 @@
+import re
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
+from slowapi import _rate_limit_exceeded_handler
 from app.config import settings
 from app.database import connect_to_mongo, close_mongo_connection, ping_database
+from app.limiter import limiter
 from app.routers import (
     auth, products, categories, orders, cart,
     wishlist, users, coupons, banners, reviews, admin,
 )
 from app.routers import notifications, chat, upload
+
+_MONGO_OP = re.compile(r'\$[a-zA-Z]')
 
 
 @asynccontextmanager
@@ -35,6 +42,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
@@ -42,6 +52,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def block_mongo_injection(request: Request, call_next):
+    """Reject requests whose query params contain MongoDB operator characters ($word)."""
+    for key, val in request.query_params.items():
+        if _MONGO_OP.search(key) or _MONGO_OP.search(val):
+            return JSONResponse(
+                status_code=422,
+                content={"detail": "Invalid characters in request parameters."},
+            )
+    return await call_next(request)
 
 # ─── Routers ──────────────────────────────────────────────────────────────────
 app.include_router(auth.router)

@@ -9,11 +9,12 @@ Rules:
   - Return Pydantic models; FastAPI serialises them to JSON automatically.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 from pymongo.database import Database
 
 from app.dependencies import get_db, get_current_user
+from app.limiter import limiter
 from app.models.user import (
     UserCreate,
     UserLogin,
@@ -36,7 +37,8 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
     status_code=status.HTTP_201_CREATED,
     summary="Create a new customer account",
 )
-def register(payload: UserCreate, db: Database = Depends(get_db)):
+@limiter.limit("10/minute")
+def register(request: Request, payload: UserCreate, db: Database = Depends(get_db)):
     return auth_service.register_user(db, payload)
 
 
@@ -45,7 +47,8 @@ def register(payload: UserCreate, db: Database = Depends(get_db)):
     response_model=TokenResponse,
     summary="Login with email and password",
 )
-def login(payload: UserLogin, db: Database = Depends(get_db)):
+@limiter.limit("5/minute")
+def login(request: Request, payload: UserLogin, db: Database = Depends(get_db)):
     return auth_service.login_user(db, payload)
 
 
@@ -90,7 +93,8 @@ def get_me(current_user: dict = Depends(get_current_user)):
     status_code=status.HTTP_200_OK,
     summary="Request a password reset email",
 )
-def forgot_password(payload: ForgotPasswordRequest, db: Database = Depends(get_db)):
+@limiter.limit("3/minute")
+def forgot_password(request: Request, payload: ForgotPasswordRequest, db: Database = Depends(get_db)):
     """
     Always returns 200 — even if the email doesn't exist.
     This prevents email enumeration attacks.
