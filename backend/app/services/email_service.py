@@ -194,3 +194,67 @@ def order_cancelled(order: dict, customer_email: str, reason: str = "") -> None:
   &#128722; <a href="https://www.divyafoods.com">Continue shopping</a> for premium imported foods.
 </div>""")
     send_async(customer_email, f"Order Cancelled — {order['orderNumber']} | Divya Foods", html)
+
+
+def order_processing(order: dict, customer_email: str) -> None:
+    a = order.get("deliveryAddress", {})
+    html = _wrap(f"""
+<h2>We're Packing Your Order &#128230;</h2>
+<p style="color:#6B7280;margin:0 0 18px">Hi {a.get("full_name","there")}, your order is now being packed and prepared for dispatch.</p>
+<p><strong>Order Number:</strong> {order["orderNumber"]} &nbsp;
+   <span class="badge badge-blue">Processing</span></p>
+{_items_table(order["items"], order["subtotal"], order["deliveryCharge"],
+              order.get("discount",0), order["total"], order.get("couponCode",""))}
+<div class="info-box">
+  &#128666; Your order will be dispatched soon — you'll get a shipping email with tracking details.<br>
+  &#128222; Questions? Call <strong>+91&nbsp;9999123242</strong> or reply to this email.
+</div>""")
+    send_async(customer_email, f"Packing Your Order — {order['orderNumber']} | Divya Foods", html)
+
+
+# ─── Auth emails ──────────────────────────────────────────────────────────────
+
+SITE_URL = "https://divya-foods.vercel.app"
+
+
+def welcome(name: str, customer_email: str) -> None:
+    html = _wrap(f"""
+<h2>Welcome to Divya Foods! &#127881;</h2>
+<p style="color:#6B7280;margin:0 0 18px">Hi {name}, your account has been created successfully.</p>
+<div class="info-box">
+  &#127827; Browse our premium selection of <strong>imported frozen seafood</strong> from Norway, Japan, and beyond.<br>
+  &#127869; Explore our <strong>Japanese grocery</strong> range &mdash; miso, nori, wasabi, and more.<br>
+  &#128666; Free delivery on orders above &#8377;999 across Delhi NCR, Gurgaon &amp; Noida.
+</div>
+<p style="text-align:center;margin:24px 0">
+  <a href="{SITE_URL}/products"
+     style="background:#042C53;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
+    Shop Now
+  </a>
+</p>
+<p style="font-size:12px;color:#9CA3AF;text-align:center">
+  Questions? Call <strong>+91&nbsp;9999123242</strong> or reply to this email.
+</p>""")
+    send_async(customer_email, "Welcome to Divya Foods!", html)
+
+
+def password_reset(customer_email: str, reset_token: str) -> None:
+    reset_url = f"{SITE_URL}/auth/reset-password?token={reset_token}"
+    html = _wrap(f"""
+<h2>Reset Your Password &#128274;</h2>
+<p style="color:#6B7280;margin:0 0 18px">We received a request to reset the password for your Divya Foods account.</p>
+<p style="text-align:center;margin:28px 0">
+  <a href="{reset_url}"
+     style="background:#042C53;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
+    Reset Password
+  </a>
+</p>
+<div class="info-box">
+  &#9200; This link expires in <strong>1 hour</strong>.<br>
+  &#128274; If you didn't request a password reset, you can safely ignore this email &mdash; your password won't change.
+</div>
+<p style="font-size:11px;color:#9CA3AF;margin-top:20px">
+  If the button above doesn't work, copy and paste this link into your browser:<br>
+  <a href="{reset_url}" style="color:#0C447C;word-break:break-all">{reset_url}</a>
+</p>""")
+    send_async(customer_email, "Reset Your Password — Divya Foods", html)

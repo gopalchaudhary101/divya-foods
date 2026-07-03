@@ -36,6 +36,7 @@ from app.utils.security import (
     decode_access_token,
 )
 from app.config import settings
+from app.services import email_service
 
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -125,6 +126,8 @@ def register_user(db: Database, payload: UserCreate) -> TokenResponse:
         {"_id": result.inserted_id},
         {"$set": {"refresh_token": hashed_rt}},
     )
+
+    email_service.welcome(user_doc["name"], user_doc["email"])
 
     return token_response
 
@@ -283,8 +286,7 @@ def request_password_reset(db: Database, email: str) -> None:
         }},
     )
 
-    # TODO Phase 13: send_reset_email(email, reset_token)
-    print(f"[AUTH] Password reset token for {email}: {reset_token}")  # dev only
+    email_service.password_reset(email, reset_token)
 
 
 # ─── Reset Password ───────────────────────────────────────────────────────────

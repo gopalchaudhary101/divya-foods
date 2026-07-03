@@ -249,6 +249,11 @@ def initiate_order(db: Database, user: dict, body: dict) -> dict:
     result = db.orders.insert_one(doc)
     order_id = str(result.inserted_id)
 
+    # For COD orders send confirmation immediately (Razorpay orders send it after verify_payment)
+    if payment_method != "razorpay":
+        customer_email = _get_customer_email(db, user_id)
+        email_service.order_confirmation(_order_to_dict(db.orders.find_one({"_id": result.inserted_id})), customer_email)
+
     return {
         "success": True,
         "data": {
@@ -530,7 +535,9 @@ def admin_update_status(
 
     # Send status-change emails (non-blocking)
     customer_email = _get_customer_email(db, doc["user_id"])
-    if new_status == "shipped":
+    if new_status == "processing":
+        email_service.order_processing(order_dict, customer_email)
+    elif new_status == "shipped":
         email_service.order_shipped(order_dict, customer_email, note)
     elif new_status == "delivered":
         email_service.order_delivered(order_dict, customer_email)
