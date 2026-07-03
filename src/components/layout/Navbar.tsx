@@ -157,7 +157,10 @@ export default function Navbar() {
               <div ref={userMenuRef} className="relative">
                 <button
                   onClick={() => setUserMenuOpen((v) => !v)}
-                  className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-ocean-100 hover:text-white hover:bg-ocean-700 transition-colors text-sm font-medium"
+                  aria-expanded={isUserMenuOpen}
+                  aria-haspopup="menu"
+                  aria-label="Account menu"
+                  className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-ocean-100 hover:text-white hover:bg-ocean-700 transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ocean-400"
                 >
                   {user?.avatar ? (
                     <img
@@ -166,17 +169,18 @@ export default function Navbar() {
                       className="w-6 h-6 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-ocean-700 flex items-center justify-center text-xs text-white font-bold">
+                    <div className="w-6 h-6 rounded-full bg-ocean-700 flex items-center justify-center text-xs text-white font-bold" aria-hidden="true">
                       {user?.name?.[0]?.toUpperCase() ?? 'U'}
                     </div>
                   )}
-                  <span className="hidden lg:block max-w-[80px] truncate">{user?.name}</span>
-                  <ChevronDown size={14} className={`transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                  <span className="hidden lg:block max-w-[80px] truncate" aria-hidden="true">{user?.name}</span>
+                  <ChevronDown size={14} className={`transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
                 </button>
 
                 <AnimatePresence>
                   {isUserMenuOpen && (
                     <motion.div
+                      role="menu"
                       initial={{ opacity: 0, y: -8, scale: 0.97 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -8, scale: 0.97 }}
@@ -194,12 +198,13 @@ export default function Navbar() {
                           Admin Panel
                         </DropdownLink>
                       )}
-                      <hr className="my-1 border-ocean-100 dark:border-ocean-700" />
+                      <hr className="my-1 border-ocean-100 dark:border-ocean-700" aria-hidden="true" />
                       <button
+                        role="menuitem"
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors focus-visible:outline-none focus-visible:bg-red-50 dark:focus-visible:bg-red-900/20"
                       >
-                        <LogOut size={14} />
+                        <LogOut size={14} aria-hidden="true" />
                         Sign Out
                       </button>
                     </motion.div>
@@ -323,10 +328,11 @@ function DropdownLink({
   return (
     <Link
       to={to}
+      role="menuitem"
       onClick={onClick}
-      className="flex items-center gap-2.5 px-4 py-2 text-sm text-ocean-800 dark:text-ocean-100 hover:bg-ocean-50 dark:hover:bg-ocean-700 transition-colors"
+      className="flex items-center gap-2.5 px-4 py-2 text-sm text-ocean-800 dark:text-ocean-100 hover:bg-ocean-50 dark:hover:bg-ocean-700 transition-colors focus-visible:outline-none focus-visible:bg-ocean-50 dark:focus-visible:bg-ocean-700"
     >
-      {icon}
+      <span aria-hidden="true">{icon}</span>
       {children}
     </Link>
   )

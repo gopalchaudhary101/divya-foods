@@ -17,6 +17,7 @@ import React, { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, X, Clock, TrendingUp, Package } from 'lucide-react'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { productApi, type ProductSuggestion } from '@/services/api/productApi'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { ROUTES } from '@/constants/routes'
@@ -72,8 +73,11 @@ interface GlobalSearchProps {
 export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
   const inputId = useId()
   const navigate = useNavigate()
-  const inputRef = useRef<HTMLInputElement>(null)
-  const listRef  = useRef<HTMLUListElement>(null)
+  const inputRef  = useRef<HTMLInputElement>(null)
+  const listRef   = useRef<HTMLUListElement>(null)
+  const panelRef  = useRef<HTMLDivElement>(null)
+
+  useFocusTrap(panelRef, isOpen)
 
   const [query, setQuery]           = useState('')
   const [activeIdx, setActiveIdx]   = useState(-1)
@@ -201,7 +205,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
       />
 
       {/* Panel */}
-      <div className="relative w-full max-w-xl bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl overflow-hidden">
+      <div ref={panelRef} className="relative w-full max-w-xl bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl overflow-hidden">
 
         {/* Search input */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-ocean-100 dark:border-ocean-800">

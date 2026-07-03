@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, Minus, Plus, ShoppingBag, Trash2, ShoppingCart } from 'lucide-react'
@@ -18,8 +19,11 @@ export function CartDrawer() {
   const isOpen = useAppSelector((s) => s.ui.isCartOpen)
   const { items, totalItems, totalPrice } = useAppSelector((s) => s.cart)
 
+  const drawerRef = useRef<HTMLElement>(null)
   const deliveryCharge = totalPrice >= CONFIG.DELIVERY.FREE_DELIVERY_ABOVE ? 0 : CONFIG.DELIVERY.STANDARD_CHARGE
   const orderTotal = totalPrice + deliveryCharge
+
+  useFocusTrap(drawerRef, isOpen)
 
   // Close on Escape
   useEffect(() => {
@@ -63,6 +67,10 @@ export function CartDrawer() {
           {/* Drawer */}
           <motion.aside
             key="drawer"
+            ref={drawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cart-drawer-title"
             className="fixed top-0 right-0 h-full w-full max-w-sm bg-white dark:bg-ocean-950 shadow-2xl z-50 flex flex-col"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
@@ -72,8 +80,8 @@ export function CartDrawer() {
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-ocean-100 dark:border-ocean-800 shrink-0">
               <div className="flex items-center gap-2">
-                <ShoppingCart size={18} className="text-ocean-700 dark:text-ocean-200" />
-                <span className="font-semibold text-ocean-900 dark:text-white">
+                <ShoppingCart size={18} className="text-ocean-700 dark:text-ocean-200" aria-hidden="true" />
+                <span id="cart-drawer-title" className="font-semibold text-ocean-900 dark:text-white">
                   Your Cart
                 </span>
                 {totalItems > 0 && (
@@ -137,6 +145,7 @@ export function CartDrawer() {
                         <div className="flex items-center justify-between mt-2">
                           <div className="flex items-center border border-ocean-200 dark:border-ocean-700 rounded-lg overflow-hidden">
                             <button
+                              aria-label={`Decrease quantity of ${item.name}`}
                               onClick={() =>
                                 item.quantity > 1
                                   ? dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity - 1 }))
@@ -144,17 +153,18 @@ export function CartDrawer() {
                               }
                               className="px-2 py-1 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
                             >
-                              <Minus size={12} />
+                              <Minus size={12} aria-hidden="true" />
                             </button>
-                            <span className="px-3 text-sm font-semibold">{item.quantity}</span>
+                            <span aria-label={`Quantity: ${item.quantity}`} className="px-3 text-sm font-semibold">{item.quantity}</span>
                             <button
+                              aria-label={`Increase quantity of ${item.name}`}
                               onClick={() =>
                                 dispatch(updateQuantity({ productId: item.productId, quantity: item.quantity + 1 }))
                               }
                               disabled={item.quantity >= item.maxQuantity}
                               className="px-2 py-1 hover:bg-ocean-50 dark:hover:bg-ocean-800 disabled:opacity-40 transition-colors"
                             >
-                              <Plus size={12} />
+                              <Plus size={12} aria-hidden="true" />
                             </button>
                           </div>
 
@@ -165,9 +175,9 @@ export function CartDrawer() {
                             <button
                               onClick={() => dispatch(removeFromCart(item.productId))}
                               className="p-1 text-red-400 hover:text-red-600 transition-colors"
-                              aria-label="Remove item"
+                              aria-label={`Remove ${item.name} from cart`}
                             >
-                              <Trash2 size={14} />
+                              <Trash2 size={14} aria-hidden="true" />
                             </button>
                           </div>
                         </div>

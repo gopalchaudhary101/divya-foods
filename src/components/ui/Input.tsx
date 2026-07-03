@@ -19,6 +19,9 @@ export function Input({
   ...rest
 }: InputProps) {
   const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-')
+  const errorId = error ? `${inputId}-error` : undefined
+  const helperId = !error && helperText ? `${inputId}-helper` : undefined
+  const describedBy = errorId ?? helperId
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -28,17 +31,20 @@ export function Input({
           className="text-sm font-medium text-ocean-900 dark:text-ocean-100"
         >
           {label}
-          {rest.required && <span className="text-red-500 ml-0.5">*</span>}
+          {rest.required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
+          {rest.required && <span className="sr-only">(required)</span>}
         </label>
       )}
 
       <div className="relative flex items-center">
         {leftIcon && (
-          <span className="absolute left-3 text-ocean-400 pointer-events-none">{leftIcon}</span>
+          <span className="absolute left-3 text-ocean-400 pointer-events-none" aria-hidden="true">{leftIcon}</span>
         )}
 
         <input
           id={inputId}
+          aria-invalid={error ? 'true' : undefined}
+          aria-describedby={describedBy}
           className={[
             'w-full rounded-xl border bg-white px-4 py-2.5 text-sm',
             'text-ocean-900 placeholder:text-ocean-300',
@@ -57,13 +63,17 @@ export function Input({
         />
 
         {rightIcon && (
-          <span className="absolute right-3 text-ocean-400">{rightIcon}</span>
+          <span className="absolute right-3 text-ocean-400" aria-hidden="true">{rightIcon}</span>
         )}
       </div>
 
-      {error && <p className="text-xs text-red-500 flex items-center gap-1">{error}</p>}
+      {error && (
+        <p id={errorId} role="alert" className="text-xs text-red-500 flex items-center gap-1">
+          {error}
+        </p>
+      )}
       {!error && helperText && (
-        <p className="text-xs text-ocean-400">{helperText}</p>
+        <p id={helperId} className="text-xs text-ocean-400">{helperText}</p>
       )}
     </div>
   )
