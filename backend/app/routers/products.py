@@ -52,6 +52,7 @@ def list_products(
     min_price: Optional[float] = Query(None, alias="minPrice"),
     max_price: Optional[float] = Query(None, alias="maxPrice"),
     in_stock: Optional[bool] = Query(None, alias="inStock"),
+    min_rating: Optional[float] = Query(None, alias="minRating", ge=1, le=5),
     sort_by: str = Query("newest", alias="sortBy"),
     search: Optional[str] = Query(None),
     db: Database = Depends(get_db),
@@ -65,6 +66,7 @@ def list_products(
         min_price=min_price,
         max_price=max_price,
         in_stock=in_stock,
+        min_rating=min_rating,
         sort_by=sort_by,
         search=search,
     )

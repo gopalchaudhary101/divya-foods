@@ -66,6 +66,7 @@ def get_products(
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
     in_stock: Optional[bool] = None,
+    min_rating: Optional[float] = None,
     sort_by: str = "newest",
     search: Optional[str] = None,
 ) -> dict:
@@ -99,6 +100,9 @@ def get_products(
 
     if in_stock:
         query["in_stock"] = True
+
+    if min_rating is not None:
+        query["rating"] = {"$gte": min_rating}
 
     sort_map = {
         "price_asc":  [("price", 1)],

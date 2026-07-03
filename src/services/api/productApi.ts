@@ -11,6 +11,7 @@ export interface ProductListParams {
   minPrice?: number
   maxPrice?: number
   inStock?: boolean
+  minRating?: number
   sortBy?: 'price_asc' | 'price_desc' | 'rating' | 'newest' | 'popular'
   search?: string
 }

@@ -69,6 +69,7 @@ export default function ProductsPage() {
     minPrice: searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined,
     maxPrice: searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined,
     inStock: searchParams.get('inStock') === 'true' ? true : undefined,
+    minRating: searchParams.get('minRating') ? Number(searchParams.get('minRating')) : undefined,
   }
 
   const { data, isLoading, isFetching } = useProducts(filters)
@@ -113,8 +114,10 @@ export default function ProductsPage() {
     toast.success(`${product.name} added to cart!`)
   }
 
+  const activeMinRating = searchParams.get('minRating') ? Number(searchParams.get('minRating')) : null
+
   const hasActiveFilters = activeCategory || isInStock || searchInput ||
-    searchParams.get('minPrice') || searchParams.get('maxPrice')
+    searchParams.get('minPrice') || searchParams.get('maxPrice') || activeMinRating
 
   const filterSidebar = (
     <aside className="flex flex-col gap-6">
@@ -192,6 +195,30 @@ export default function ProductsPage() {
             onBlur={(e) => setParam('maxPrice', e.target.value || null)}
             className="w-full border border-ocean-200 dark:border-ocean-700 rounded-lg px-3 py-1.5 text-sm dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-ocean-500"
           />
+        </div>
+      </div>
+
+      {/* Rating Filter */}
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-widest text-ocean-400 mb-3">
+          Min Rating
+        </p>
+        <div className="flex flex-col gap-1.5">
+          {[4, 3, 2].map(star => (
+            <button
+              key={star}
+              onClick={() => setParam('minRating', activeMinRating === star ? null : String(star))}
+              className={[
+                'flex items-center gap-2 text-sm px-2 py-1.5 rounded-lg transition-colors text-left',
+                activeMinRating === star
+                  ? 'bg-ocean-100 dark:bg-ocean-700 text-ocean-900 dark:text-white font-medium'
+                  : 'text-ocean-600 dark:text-ocean-300 hover:bg-ocean-50 dark:hover:bg-ocean-800',
+              ].join(' ')}
+            >
+              {'★'.repeat(star)}{'☆'.repeat(5 - star)}
+              <span className="text-xs text-ocean-400">&amp; up</span>
+            </button>
+          ))}
         </div>
       </div>
 
