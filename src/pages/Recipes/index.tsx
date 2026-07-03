@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
+import { PageSEO } from '@/components/shared/PageSEO'
 import { Clock, ChevronDown, ChevronUp, Users, BarChart2, Tag } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { RECIPES, RECIPE_FILTERS, type Recipe } from '@/data/recipes'
@@ -141,13 +141,10 @@ export default function RecipesPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Recipes & Cooking Ideas — Divya Foods</title>
-        <meta
-          name="description"
-          content="Easy seafood recipes using Divya Foods premium imports. Garlic butter salmon, crispy calamari, coconut prawn curry and more."
-        />
-      </Helmet>
+      <PageSEO
+        title="Recipes & Cooking Ideas — Divya Foods"
+        description="Easy seafood recipes using Divya Foods premium imports. Garlic butter salmon, crispy calamari, coconut prawn curry and more."
+      />
 
       {/* ── Page header ───────────────────────────────────────────────── */}
       <div className="bg-gradient-to-br from-ocean-900 to-ocean-700 text-white px-4 pt-12 pb-16">

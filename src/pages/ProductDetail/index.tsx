@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { useParams, Link } from 'react-router-dom'
+import { PageSEO } from '@/components/shared/PageSEO'
 import {
   Heart, ShoppingCart, Minus, Plus, Package,
   Truck, Shield, ChevronRight, Star,
@@ -20,6 +20,36 @@ import { CONFIG } from '@/constants/config'
 import { ROUTES } from '@/constants/routes'
 import toast from 'react-hot-toast'
 import { PincodeChecker } from '@/components/shared/PincodeChecker'
+import type { Product } from '@/types'
+
+function getProductLD(p: Product) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: p.name,
+    image: p.images,
+    description: p.description,
+    sku: p.slug,
+    ...(p.brand && { brand: { '@type': 'Brand', name: p.brand } }),
+    offers: {
+      '@type': 'Offer',
+      price: p.price,
+      priceCurrency: 'INR',
+      availability: p.inStock
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/OutOfStock',
+      url: `https://divya-foods.vercel.app/products/${p.slug}`,
+      seller: { '@type': 'Organization', name: 'Divya Foods' },
+    },
+    ...(p.reviewCount > 0 && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: p.rating,
+        reviewCount: p.reviewCount,
+      },
+    }),
+  }
+}
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -94,10 +124,17 @@ export default function ProductDetailPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{product.name} — Divya Foods</title>
-        <meta name="description" content={product.description?.slice(0, 160)} />
-      </Helmet>
+      <PageSEO
+        title={`${product.name} — Divya Foods`}
+        description={
+          product.description?.slice(0, 160) ??
+          `Buy ${product.name} online. Premium imported seafood delivered across Delhi NCR.`
+        }
+        ogImage={product.images[0] ?? undefined}
+        ogType="product"
+      >
+        <script type="application/ld+json">{JSON.stringify(getProductLD(product))}</script>
+      </PageSEO>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}

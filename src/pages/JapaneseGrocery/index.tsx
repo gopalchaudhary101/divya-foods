@@ -1,6 +1,6 @@
 import React from 'react'
-import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
+import { PageSEO } from '@/components/shared/PageSEO'
 import { motion } from 'framer-motion'
 import { ChevronRight, MessageCircle, BookOpen, Sparkles } from 'lucide-react'
 import { useProducts } from '@/hooks/useProducts'
@@ -348,13 +348,10 @@ export default function JapaneseGroceryPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Japanese Grocery — Authentic Pantry Essentials — Divya Foods</title>
-        <meta
-          name="description"
-          content="Shop authentic Japanese pantry ingredients in Delhi — miso paste, mirin, nori, soy sauce, dashi and more. Imported directly from Japan, delivered across NCR."
-        />
-      </Helmet>
+      <PageSEO
+        title="Japanese Grocery — Authentic Pantry Essentials — Divya Foods"
+        description="Shop authentic Japanese pantry ingredients in Delhi — miso paste, mirin, nori, soy sauce, dashi and more. Imported directly from Japan, delivered across NCR."
+      />
 
       {/* ── Hero ──────────────────────────────────────────────── */}
       <div className="bg-ocean-950 text-white px-4 pt-14 pb-20 relative overflow-hidden">

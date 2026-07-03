@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { useSearchParams } from 'react-router-dom'
+import { PageSEO } from '@/components/shared/PageSEO'
 import { SlidersHorizontal, X, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useProducts, useCategories } from '@/hooks/useProducts'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
@@ -209,13 +209,18 @@ export default function ProductsPage() {
 
   return (
     <>
-      <Helmet>
-        <title>
-          {activeCategory
+      <PageSEO
+        title={
+          activeCategory
             ? `${categories.find((c: { slug: string }) => c.slug === activeCategory)?.name ?? 'Products'} — Divya Foods`
-            : 'All Products — Divya Foods'}
-        </title>
-      </Helmet>
+            : 'All Products — Divya Foods'
+        }
+        description={
+          activeCategory
+            ? `Shop premium imported ${categories.find((c: { slug: string }) => c.slug === activeCategory)?.name?.toLowerCase() ?? 'seafood'} online. Delivered across Delhi NCR.`
+            : 'Browse our full range of premium imported seafood and Japanese grocery — Salmon, Prawns, Tuna, Crab, Lobster, Miso and more. Delivered across Delhi NCR.'
+        }
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}

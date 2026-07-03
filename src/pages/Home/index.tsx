@@ -1,12 +1,51 @@
 import React from 'react'
-import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
+import { PageSEO } from '@/components/shared/PageSEO'
 import { motion } from 'framer-motion'
 import {
   Truck, ShieldCheck, Star, Phone, MessageCircle,
   Clock, ChevronRight, Snowflake, Globe, Award,
 } from 'lucide-react'
 import OceanBackground from '@/components/shared/OceanBackground'
+
+// ─── JSON-LD structured data ──────────────────────────────────────────────────
+
+const ORG_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Divya Foods',
+  url: 'https://divya-foods.vercel.app',
+  logo: 'https://divya-foods.vercel.app/icons/icon-512.png',
+  description: "Delhi NCR's premium imported seafood and Japanese grocery marketplace",
+  contactPoint: [{
+    '@type': 'ContactPoint',
+    telephone: '+91-9999123242',
+    contactType: 'sales',
+    availableLanguage: ['English', 'Hindi'],
+  }],
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'O-52, Saurabh Vihar, Jaitpur, Badarpur Extension',
+    addressLocality: 'New Delhi',
+    postalCode: '110044',
+    addressCountry: 'IN',
+  },
+}
+
+const WEBSITE_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Divya Foods',
+  url: 'https://divya-foods.vercel.app',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://divya-foods.vercel.app/products?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
+}
 import { ProductCard } from '@/components/shared/ProductCard'
 import { CONFIG } from '@/constants/config'
 import { ROUTES } from '@/constants/routes'
@@ -359,10 +398,13 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{CONFIG.APP_NAME} — {CONFIG.TAGLINE}</title>
-        <meta name="description" content={CONFIG.TAGLINE} />
-      </Helmet>
+      <PageSEO
+        title="Divya Foods — Premium Imported Seafood & Japanese Grocery, Delhi NCR"
+        description="Delhi NCR's finest imported seafood — Norwegian Salmon, Tiger Prawns, Bluefin Tuna, Lobster & authentic Japanese pantry ingredients. Same-day delivery across Delhi, Gurgaon, Noida."
+      >
+        <script type="application/ld+json">{JSON.stringify(ORG_LD)}</script>
+        <script type="application/ld+json">{JSON.stringify(WEBSITE_LD)}</script>
+      </PageSEO>
 
       {/* ── Hero ─────────────────────────────────────────── */}
       {/* IMPORTANT: hero code is preserved exactly as originally written */}
