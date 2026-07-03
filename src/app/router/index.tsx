@@ -16,6 +16,7 @@ const RegisterPage = lazy(() => import('@/pages/Auth/Register'))
 const AdminDashboardPage  = lazy(() => import('@/pages/Admin/Dashboard'))
 const AdminProductsPage   = lazy(() => import('@/pages/Admin/Products'))
 const AdminAnalyticsPage  = lazy(() => import('@/pages/Admin/Analytics'))
+const AdminCouponsPage    = lazy(() => import('@/pages/Admin/Coupons'))
 const WishlistPage        = lazy(() => import('@/pages/Wishlist'))
 const RecipesPage         = lazy(() => import('@/pages/Recipes'))
 const JapaneseGroceryPage = lazy(() => import('@/pages/JapaneseGrocery'))
@@ -57,6 +58,7 @@ const router = createBrowserRouter([
   { path: ROUTES.ADMIN.DASHBOARD,  element: wrap(<AdminDashboardPage />) },
   { path: ROUTES.ADMIN.PRODUCTS,   element: wrap(<AdminProductsPage />) },
   { path: ROUTES.ADMIN.ANALYTICS,  element: wrap(<AdminAnalyticsPage />) },
+  { path: ROUTES.ADMIN.COUPONS,    element: wrap(<AdminCouponsPage />) },
   { path: '*', element: wrap(<NotFoundPage />) },
 ])
 

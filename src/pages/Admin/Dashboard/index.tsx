@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Package, ShoppingBag, Users, IndianRupee,
   Clock, ChevronRight, Search, X, ChevronDown, CheckCircle, TrendingUp,
-  AlertTriangle, MapPin, CreditCard, History,
+  AlertTriangle, MapPin, CreditCard, History, Tag,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
@@ -457,6 +457,12 @@ export default function AdminDashboardPage() {
               className="text-xs font-medium text-ocean-600 dark:text-ocean-300 hover:text-ocean-900 dark:hover:text-white flex items-center gap-1.5 px-3 py-1.5 border border-ocean-200 dark:border-ocean-700 rounded-lg hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
             >
               <TrendingUp size={13} /> Analytics
+            </Link>
+            <Link
+              to={ROUTES.ADMIN.COUPONS}
+              className="text-xs font-medium text-ocean-600 dark:text-ocean-300 hover:text-ocean-900 dark:hover:text-white flex items-center gap-1.5 px-3 py-1.5 border border-ocean-200 dark:border-ocean-700 rounded-lg hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
+            >
+              <Tag size={13} /> Coupons
             </Link>
           </div>
         </div>

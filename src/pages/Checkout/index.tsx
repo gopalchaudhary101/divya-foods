@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { MapPin, ShoppingBag, CreditCard, ChevronRight, Tag, Truck, Shield } from 'lucide-react'
+import { MapPin, ShoppingBag, CreditCard, ChevronRight, Tag, Truck, Shield, CheckCircle, X } from 'lucide-react'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { clearCart } from '@/features/cart/cartSlice'
 import { Button } from '@/components/ui/Button'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { orderApi } from '@/services/api/orderApi'
+import { couponApi } from '@/services/api/couponApi'
 import { CONFIG } from '@/constants/config'
 import { ROUTES } from '@/constants/routes'
 
@@ -67,11 +68,14 @@ export default function CheckoutPage() {
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
 
   const [step, setStep]         = useState(0)    // 0=address, 1=review, 2=payment
-  const [coupon, setCoupon]     = useState((location.state as { couponCode?: string })?.couponCode ?? '')
+  const [coupon, setCoupon]           = useState((location.state as { couponCode?: string })?.couponCode ?? '')
   const [couponApplied, setCouponApplied] = useState(false)
-  const [discount, setDiscount] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError]       = useState('')
+  const [couponLoading, setCouponLoading] = useState(false)
+  const [couponMsg, setCouponMsg]     = useState('')
+  const [couponValid, setCouponValid] = useState(false)
+  const [discount, setDiscount]       = useState(0)
+  const [isLoading, setIsLoading]     = useState(false)
+  const [error, setError]             = useState('')
   const [deliverySlot, setDeliverySlot] = useState('')
 
   const deliveryCharge = totalPrice >= CONFIG.DELIVERY.FREE_DELIVERY_ABOVE ? 0 : CONFIG.DELIVERY.STANDARD_CHARGE
@@ -100,6 +104,32 @@ export default function CheckoutPage() {
 
   // ── Step 1: address form submit ───────────────────────────────────────────
   function onAddressSubmit() { setStep(1) }
+
+  // ── Apply coupon ──────────────────────────────────────────────────────────
+  async function handleApplyCoupon() {
+    if (!coupon.trim()) return
+    setCouponLoading(true)
+    setCouponMsg('')
+    setCouponValid(false)
+    setCouponApplied(false)
+    setDiscount(0)
+    try {
+      const result = await couponApi.validate(coupon.trim(), totalPrice)
+      if (result.valid) {
+        setDiscount(result.discountAmount)
+        setCouponApplied(true)
+        setCouponValid(true)
+      } else {
+        setCouponValid(false)
+      }
+      setCouponMsg(result.message)
+    } catch {
+      setCouponMsg('Could not validate coupon. Try again.')
+      setCouponValid(false)
+    } finally {
+      setCouponLoading(false)
+    }
+  }
 
   // ── Pay button ────────────────────────────────────────────────────────────
   async function handlePay() {
@@ -372,19 +402,42 @@ export default function CheckoutPage() {
                       <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ocean-400" />
                       <input
                         value={coupon}
-                        onChange={e => { setCoupon(e.target.value.toUpperCase()); setCouponApplied(false); setDiscount(0) }}
+                        onChange={e => {
+                          setCoupon(e.target.value.toUpperCase())
+                          setCouponApplied(false)
+                          setCouponValid(false)
+                          setCouponMsg('')
+                          setDiscount(0)
+                        }}
+                        onKeyDown={e => e.key === 'Enter' && handleApplyCoupon()}
                         placeholder="COUPON CODE"
-                        className="input-field w-full pl-8 text-sm"
+                        className={`input-field w-full pl-8 pr-7 text-sm ${couponValid ? 'border-mint-400' : couponMsg && !couponValid ? 'border-red-400' : ''}`}
                       />
+                      {couponApplied && (
+                        <button
+                          type="button"
+                          onClick={() => { setCoupon(''); setCouponApplied(false); setCouponValid(false); setCouponMsg(''); setDiscount(0) }}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-ocean-400 hover:text-red-500"
+                        >
+                          <X size={13} />
+                        </button>
+                      )}
                     </div>
                     <Button
                       variant="outline" size="sm"
-                      onClick={() => { if (coupon) { setCouponApplied(true); setDiscount(0) /* applied at backend */ } }}
+                      loading={couponLoading}
+                      disabled={!coupon.trim() || couponApplied}
+                      onClick={handleApplyCoupon}
                     >
-                      Apply
+                      {couponApplied ? 'Applied' : 'Apply'}
                     </Button>
                   </div>
-                  {couponApplied && <p className="text-xs text-mint-600 mt-1">Coupon will be applied at payment</p>}
+                  {couponMsg && (
+                    <p className={`text-xs mt-1.5 flex items-center gap-1 ${couponValid ? 'text-mint-600 dark:text-mint-400' : 'text-red-500'}`}>
+                      {couponValid ? <CheckCircle size={11} /> : null}
+                      {couponMsg}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex gap-3">
