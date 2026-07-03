@@ -61,6 +61,44 @@ export default defineConfig({
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
   },
+  build: {
+    target: 'es2020',
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (!id.includes('node_modules')) return undefined
+          // Large animation lib — isolate for independent caching
+          if (id.includes('framer-motion')) return 'vendor-motion'
+          // recharts + D3 deps — only Admin/Analytics uses these (already lazy)
+          if (id.includes('recharts') || id.includes('/d3-')) return 'vendor-charts'
+          // React DOM + router — most stable, longest cache lifetime
+          if (
+            id.includes('react-dom') ||
+            id.includes('react-router') ||
+            id.includes('@remix-run')
+          ) return 'vendor-react'
+          // State management
+          if (
+            id.includes('@reduxjs') ||
+            id.includes('react-redux') ||
+            id.includes('immer') ||
+            id.includes('/redux/')
+          ) return 'vendor-state'
+          // Data fetching
+          if (id.includes('@tanstack')) return 'vendor-query'
+          // Form validation
+          if (
+            id.includes('react-hook-form') ||
+            id.includes('@hookform') ||
+            id.includes('zod')
+          ) return 'vendor-forms'
+          // Remainder: axios, lucide-react, react-hot-toast, react-helmet-async, etc.
+          return 'vendor'
+        },
+      },
+    },
+  },
   server: {
     port: 5173,
     open: true,

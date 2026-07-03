@@ -30,8 +30,10 @@
     <meta property="og:description" content="Delhi NCR's finest imported seafood. Same-day delivery to Delhi, Gurgaon, Noida & Greater Noida." />
     <meta property="og:image" content="/icons/icon-512.png" />
 
-    <!-- Preconnect to speed up API calls -->
+    <!-- Preconnect: API + image CDN -->
     <link rel="preconnect" href="https://divya-foods-api-production-9380.up.railway.app" />
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <link rel="dns-prefetch" href="https://res.cloudinary.com" />
   </head>
   <body>
     <div id="root"></div>
