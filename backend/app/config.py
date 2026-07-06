@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     )
 
     # App
-    APP_NAME: str = "Divya Foods API"
+    APP_NAME: str = "Divya Luxury Seafoods API"
     DEBUG: bool = False
 
     # Database

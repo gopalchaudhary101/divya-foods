@@ -15,7 +15,7 @@ vi.mock('@/services/api/couponApi', () => ({
   couponApi: { validate: vi.fn() },
 }))
 vi.mock('@/services/api/settingsApi', () => ({
-  settingsApi: { get: vi.fn().mockResolvedValue({ businessName: 'Divya Foods', gstNumber: 'GST123', fssaiNumber: 'FSSAI456' }) },
+  settingsApi: { get: vi.fn().mockResolvedValue({ businessName: 'Divya Luxury Seafoods', gstNumber: 'GST123', fssaiNumber: 'FSSAI456' }) },
 }))
 
 const mockNavigate = vi.fn()

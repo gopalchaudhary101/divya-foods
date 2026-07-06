@@ -1,5 +1,5 @@
 """
-Divya Foods — Database Seeder
+Divya Luxury Seafoods — Database Seeder
 ==============================
 Seeds the MongoDB database with all 7 categories and 145 products.
 
@@ -952,12 +952,12 @@ def seed_products(db, cat_id_map, wipe=False):
             "is_featured": is_featured,
             "is_best_seller": is_best_seller,
             "is_active": True,
-            "meta_title": f"Buy {name} Online — Divya Foods Delhi",
+            "meta_title": f"Buy {name} Online — Divya Luxury Seafoods Delhi",
             "meta_description": f"Order {name} online. Premium quality, fast delivery in Delhi NCR, Gurgaon, Noida. {description[:100]}",
             "attributes": {
                 "origin": origin,
                 "weight": weight,
-                "brand": brand or "Divya Foods",
+                "brand": brand or "Divya Luxury Seafoods",
             },
             "created_at": utcnow(),
             "updated_at": utcnow(),
@@ -969,13 +969,13 @@ def seed_products(db, cat_id_map, wipe=False):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Seed Divya Foods database")
+    parser = argparse.ArgumentParser(description="Seed Divya Luxury Seafoods database")
     parser.add_argument("--wipe", action="store_true", help="Delete existing data before seeding")
     parser.add_argument("--products", action="store_true", help="Seed products only")
     parser.add_argument("--cats", action="store_true", help="Seed categories only")
     args = parser.parse_args()
 
-    print(f"\n[Divya Foods Seeder]")
+    print(f"\n[Divya Luxury Seafoods Seeder]")
     print(f"  MongoDB: {MONGODB_URL}")
     print(f"  Database: {DATABASE_NAME}")
     print(f"  Wipe: {'YES — existing data will be deleted' if args.wipe else 'No (upsert mode)'}\n")

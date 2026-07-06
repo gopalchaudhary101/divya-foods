@@ -197,7 +197,7 @@ export const RECIPES: Recipe[] = [
     difficulty: 'Medium',
     serves: '2',
     tags: ['butter', 'garlic', 'premium'],
-    description: 'Indulgent butter garlic crab with a rich sauce. A Divya Foods signature recipe.',
+    description: 'Indulgent butter garlic crab with a rich sauce. A Divya Luxury Seafoods signature recipe.',
     ingredients: [
       '1 whole crab (500–700g), cleaned and halved',
       '4 tbsp butter',

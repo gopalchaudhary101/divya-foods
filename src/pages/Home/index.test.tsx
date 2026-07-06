@@ -29,7 +29,7 @@ describe('HomePage', () => {
     vi.mocked(productApi.getFeatured).mockResolvedValue([])
     vi.mocked(productApi.getBestSellers).mockResolvedValue([])
     renderWithProviders(<HomePage />)
-    expect(screen.getByRole('heading', { name: 'Divya Foods', level: 1 })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Divya Luxury Seafoods', level: 1 })).toBeInTheDocument()
   })
 
   it('renders the featured products section once products load', async () => {

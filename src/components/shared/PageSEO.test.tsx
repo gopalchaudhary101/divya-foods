@@ -16,8 +16,8 @@ function renderSEO(props: React.ComponentProps<typeof PageSEO>) {
 
 describe('PageSEO', () => {
   it('sets the document title', async () => {
-    renderSEO({ title: 'Norwegian Salmon | Divya Foods', description: 'Fresh salmon' })
-    await waitFor(() => expect(document.title).toBe('Norwegian Salmon | Divya Foods'))
+    renderSEO({ title: 'Norwegian Salmon | Divya Luxury Seafoods', description: 'Fresh salmon' })
+    await waitFor(() => expect(document.title).toBe('Norwegian Salmon | Divya Luxury Seafoods'))
   })
 
   it('sets a canonical link using the current pathname', async () => {

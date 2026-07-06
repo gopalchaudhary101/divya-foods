@@ -38,7 +38,7 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <>
-        <Helmet><title>Your Cart — Divya Foods</title></Helmet>
+        <Helmet><title>Your Cart — Divya Luxury Seafoods</title></Helmet>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
           <ShoppingBag size={64} className="mx-auto text-premium-navy/20 dark:text-ocean-700 mb-6" />
           <h1 className="font-display text-3xl font-semibold text-premium-navy dark:text-white mb-2">
@@ -62,7 +62,7 @@ export default function CartPage() {
 
   return (
     <>
-      <Helmet><title>{`Your Cart (${totalItems} items) — Divya Foods`}</title></Helmet>
+      <Helmet><title>{`Your Cart (${totalItems} items) — Divya Luxury Seafoods`}</title></Helmet>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}

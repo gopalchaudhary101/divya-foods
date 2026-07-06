@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import type { ReactNode } from 'react'
 
 const SITE_URL = 'https://divya-foods.vercel.app'
-const SITE_NAME = 'Divya Foods'
+const SITE_NAME = 'Divya Luxury Seafoods'
 const DEFAULT_OG_IMAGE = `${SITE_URL}/icons/icon-512.png`
 
 interface PageSEOProps {

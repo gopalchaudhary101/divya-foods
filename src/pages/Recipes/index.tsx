@@ -142,15 +142,15 @@ export default function RecipesPage() {
   return (
     <>
       <PageSEO
-        title="Recipes & Cooking Ideas — Divya Foods"
-        description="Easy seafood recipes using Divya Foods premium imports. Garlic butter salmon, crispy calamari, coconut prawn curry and more."
+        title="Recipes & Cooking Ideas — Divya Luxury Seafoods"
+        description="Easy seafood recipes using Divya Luxury Seafoods premium imports. Garlic butter salmon, crispy calamari, coconut prawn curry and more."
       />
 
       {/* ── Page header ───────────────────────────────────────────────── */}
       <div className="bg-gradient-to-br from-premium-navy to-[#060F16] text-white px-4 pt-12 pb-16">
         <div className="max-w-3xl mx-auto text-center">
           <p className="df-eyebrow mb-3 w-full">
-            Cooking with Divya Foods
+            Cooking with Divya Luxury Seafoods
           </p>
           <h1 className="text-3xl sm:text-4xl font-display font-bold mb-3">
             Recipes & Cooking Ideas

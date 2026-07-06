@@ -8,7 +8,7 @@ from pymongo.database import Database
 _SETTINGS_ID = "site_settings"
 
 _DEFAULTS = {
-    "businessName": "Divya Foods",
+    "businessName": "Divya Luxury Seafoods",
     "gstNumber": "GSTIN NOT YET ADDED",
     "fssaiNumber": "FSSAI LICENSE NOT YET ADDED",
 }

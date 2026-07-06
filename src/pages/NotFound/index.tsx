@@ -6,7 +6,7 @@ import { ROUTES } from '@/constants/routes'
 const NotFoundPage: React.FC = () => {
   return (
     <>
-      <Helmet><title>404 — Page Not Found — Divya Foods</title></Helmet>
+      <Helmet><title>404 — Page Not Found — Divya Luxury Seafoods</title></Helmet>
       <div className="min-h-screen flex items-center justify-center bg-premium-cream">
         <div className="text-center px-4">
           <h1 className="text-9xl font-display font-bold text-premium-navy/10">404</h1>

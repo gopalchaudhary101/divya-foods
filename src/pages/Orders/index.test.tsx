@@ -74,7 +74,7 @@ describe('OrdersPage — detail view', () => {
     vi.mocked(orderApi.getById).mockResolvedValue(order)
     renderAtRoute('/orders/o1')
     await screen.findByText('DF-000123')
-    await waitFor(() => expect(document.title).toBe('Order Details — Divya Foods'))
+    await waitFor(() => expect(document.title).toBe('Order Details — Divya Luxury Seafoods'))
   })
 
   it('shows order items, address, and totals', async () => {

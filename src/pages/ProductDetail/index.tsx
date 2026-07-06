@@ -48,7 +48,7 @@ function getProductLD(p: Product) {
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
       url: `https://divya-foods.vercel.app/products/${p.slug}`,
-      seller: { '@type': 'Organization', name: 'Divya Foods' },
+      seller: { '@type': 'Organization', name: 'Divya Luxury Seafoods' },
     },
     ...(p.reviewCount > 0 && {
       aggregateRating: {
@@ -160,7 +160,7 @@ export default function ProductDetailPage() {
   return (
     <>
       <PageSEO
-        title={`${product.name} — Divya Foods`}
+        title={`${product.name} — Divya Luxury Seafoods`}
         description={
           product.description?.slice(0, 160) ??
           `Buy ${product.name} online. Premium imported seafood delivered across Delhi NCR.`

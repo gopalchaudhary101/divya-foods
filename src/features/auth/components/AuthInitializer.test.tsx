@@ -39,7 +39,7 @@ describe('AuthInitializer', () => {
 
     const store = renderWithStore()
 
-    expect(screen.getByText(/Loading Divya Foods/i)).toBeInTheDocument()
+    expect(screen.getByText(/Loading Divya Luxury Seafoods/i)).toBeInTheDocument()
 
     await waitFor(() => expect(screen.getByText('App Content')).toBeInTheDocument())
     expect(store.getState().auth.isAuthenticated).toBe(true)

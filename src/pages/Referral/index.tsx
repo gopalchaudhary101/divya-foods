@@ -57,7 +57,7 @@ export default function ReferralPage() {
   if (!isAuthenticated) {
     return (
       <>
-        <Helmet><title>Refer & Earn — Divya Foods</title></Helmet>
+        <Helmet><title>Refer & Earn — Divya Luxury Seafoods</title></Helmet>
         <div className="max-w-lg mx-auto px-4 py-24 text-center">
           <Gift size={56} className="mx-auto text-premium-navy/20 mb-5" />
           <h1 className="font-display text-3xl font-semibold text-premium-navy dark:text-white mb-2">Refer & Earn</h1>
@@ -75,7 +75,7 @@ export default function ReferralPage() {
 
   return (
     <>
-      <Helmet><title>Refer & Earn — Divya Foods</title></Helmet>
+      <Helmet><title>Refer & Earn — Divya Luxury Seafoods</title></Helmet>
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
         <h1 className="font-display text-3xl font-semibold text-premium-navy dark:text-white mb-2">Refer & Earn</h1>
         <p className="text-premium-navy/40 mb-8">Share your code. Your friend gets ₹100 off. You get notified every time someone joins.</p>
@@ -120,7 +120,7 @@ export default function ReferralPage() {
           <p className="df-eyebrow mb-3">Share via</p>
           <div className="flex flex-wrap gap-3">
             <a
-              href={`https://wa.me/?text=${encodeURIComponent(`Hey! Use my Divya Foods referral code *${data?.code}* and get ₹100 off your first order of premium seafood 🦐🐟 — ${shareUrl}`)}`}
+              href={`https://wa.me/?text=${encodeURIComponent(`Hey! Use my Divya Luxury Seafoods referral code *${data?.code}* and get ₹100 off your first order of premium seafood 🦐🐟 — ${shareUrl}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2 bg-[#25D366] text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"

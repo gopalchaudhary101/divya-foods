@@ -36,7 +36,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <Helmet><title>Login — Divya Foods</title></Helmet>
+      <Helmet><title>Login — Divya Luxury Seafoods</title></Helmet>
 
       <div className="min-h-screen flex bg-premium-cream dark:bg-[#03182E]">
 
@@ -46,7 +46,7 @@ export default function LoginPage() {
             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
               <Fish size={22} className="text-premium-gold" />
             </div>
-            <span className="font-display text-2xl font-bold text-white">Divya Foods</span>
+            <span className="font-display text-2xl font-bold text-white">Divya Luxury Seafoods</span>
           </Link>
 
           <div>
@@ -68,7 +68,7 @@ export default function LoginPage() {
           </div>
 
           <p className="text-premium-muted text-xs">
-            © {new Date().getFullYear()} Divya Foods · O-52, Saurabh Vihar, New Delhi
+            © {new Date().getFullYear()} Divya Luxury Seafoods · O-52, Saurabh Vihar, New Delhi
           </p>
         </div>
 
@@ -81,7 +81,7 @@ export default function LoginPage() {
               <div className="w-8 h-8 bg-premium-navy rounded-xl flex items-center justify-center">
                 <Fish size={18} className="text-premium-gold" />
               </div>
-              <span className="font-display text-xl font-bold text-premium-navy dark:text-white">Divya Foods</span>
+              <span className="font-display text-xl font-bold text-premium-navy dark:text-white">Divya Luxury Seafoods</span>
             </Link>
 
             <h1 className="font-display text-3xl font-bold text-premium-navy dark:text-white">

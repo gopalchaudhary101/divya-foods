@@ -9,8 +9,8 @@ import axiosInstance from '@/services/api/axiosInstance'
 const mock = new MockAdapter(axiosInstance)
 
 const content = {
-  seoTitle: 'Norwegian Salmon | Buy Online at Divya Foods',
-  seoDescription: 'Shop Norwegian Salmon online at Divya Foods. Fast delivery across Delhi NCR.',
+  seoTitle: 'Norwegian Salmon | Buy Online at Divya Luxury Seafoods',
+  seoDescription: 'Shop Norwegian Salmon online at Divya Luxury Seafoods. Fast delivery across Delhi NCR.',
   caption: 'Fresh Norwegian Salmon now available!',
   hashtags: ['#DivyaFoods', '#PremiumSeafood'],
   productUrl: 'https://divya-foods.vercel.app/products/norwegian-salmon',

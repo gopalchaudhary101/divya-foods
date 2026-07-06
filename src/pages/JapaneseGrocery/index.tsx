@@ -350,7 +350,7 @@ export default function JapaneseGroceryPage() {
   return (
     <>
       <PageSEO
-        title="Japanese Grocery — Authentic Pantry Essentials — Divya Foods"
+        title="Japanese Grocery — Authentic Pantry Essentials — Divya Luxury Seafoods"
         description="Shop authentic Japanese pantry ingredients in Delhi — miso paste, mirin, nori, soy sauce, dashi and more. Imported directly from Japan, delivered across NCR."
       >
         <script type="application/ld+json">
@@ -471,7 +471,7 @@ export default function JapaneseGroceryPage() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <a
-              href={`https://wa.me/${CONFIG.CONTACT.WHATSAPP}?text=Hi Divya Foods! I'm looking for a specific Japanese ingredient.`}
+              href={`https://wa.me/${CONFIG.CONTACT.WHATSAPP}?text=Hi Divya Luxury Seafoods! I'm looking for a specific Japanese ingredient.`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-7 py-3 bg-premium-gold hover:bg-premium-gold-light text-premium-navy font-semibold rounded-full text-sm transition-colors flex items-center gap-2"

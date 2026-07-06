@@ -1,5 +1,5 @@
 """
-Divya Foods — Promote User to Developer
+Divya Luxury Seafoods — Promote User to Developer
 =========================================
 One-time CLI to promote an existing user (by email) to the "developer" role.
 

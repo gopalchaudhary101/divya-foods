@@ -111,10 +111,10 @@ table.items td{{padding:9px 10px;border-bottom:1px solid #E6F1FB}}
 a{{color:#0C447C}}
 </style></head>
 <body><div class="wrap">
-<div class="hd"><h1>Divya Foods</h1><p>Premium Imported Seafood &amp; Gourmet Foods</p></div>
+<div class="hd"><h1>Divya Luxury Seafoods</h1><p>Premium Imported Seafood &amp; Gourmet Foods</p></div>
 <div class="bd">{content}</div>
 <div class="ft">
-  Divya Foods &middot; O-52, Saurabh Vihar, Jaitpur, Badarpur Extension, New Delhi&nbsp;&ndash;&nbsp;110044<br>
+  Divya Luxury Seafoods &middot; O-52, Saurabh Vihar, Jaitpur, Badarpur Extension, New Delhi&nbsp;&ndash;&nbsp;110044<br>
   +91&nbsp;9999123242 &middot; +91&nbsp;7303436108 &middot; salesdivyafoods@gmail.com &middot;
   <a href="https://www.divyafoods.com">www.divyafoods.com</a>
 </div>
@@ -180,7 +180,7 @@ def order_confirmation(order: dict, customer_email: str) -> None:
   &#128230; Delivery in <strong>2&ndash;4 business days</strong> across Delhi NCR, Gurgaon &amp; Noida.<br>
   &#128172; Questions? Call <strong>+91&nbsp;9999123242</strong> or reply to this email.
 </div>""")
-    send_async(customer_email, f"Order Confirmed — {order['orderNumber']} | Divya Foods", html)
+    send_async(customer_email, f"Order Confirmed — {order['orderNumber']} | Divya Luxury Seafoods", html)
 
 
 def order_shipped(order: dict, customer_email: str, note: str = "") -> None:
@@ -198,7 +198,7 @@ def order_shipped(order: dict, customer_email: str, note: str = "") -> None:
   &#128230; Expected delivery within <strong>1&ndash;2 business days</strong>.<br>
   &#128222; For delivery queries call <strong>+91&nbsp;9999123242</strong>.
 </div>""")
-    send_async(customer_email, f"Shipped — {order['orderNumber']} | Divya Foods", html)
+    send_async(customer_email, f"Shipped — {order['orderNumber']} | Divya Luxury Seafoods", html)
 
 
 def order_delivered(order: dict, customer_email: str) -> None:
@@ -209,11 +209,11 @@ def order_delivered(order: dict, customer_email: str) -> None:
 <p><strong>Order Number:</strong> {order["orderNumber"]} &nbsp;
    <span class="badge badge-green">Delivered</span></p>
 <div class="info-box">
-  &#128591; Thank you for shopping with Divya Foods!<br>
+  &#128591; Thank you for shopping with Divya Luxury Seafoods!<br>
   &#11088; We hope you enjoy your premium imported products.<br>
   &#128172; Feedback? We&rsquo;d love to hear from you &mdash; simply reply to this email.
 </div>""")
-    send_async(customer_email, f"Delivered — {order['orderNumber']} | Divya Foods", html)
+    send_async(customer_email, f"Delivered — {order['orderNumber']} | Divya Luxury Seafoods", html)
 
 
 def order_cancelled(order: dict, customer_email: str, reason: str = "") -> None:
@@ -236,7 +236,7 @@ def order_cancelled(order: dict, customer_email: str, reason: str = "") -> None:
   &#128172; Questions? Call <strong>+91&nbsp;9999123242</strong> or reply to this email.<br>
   &#128722; <a href="https://www.divyafoods.com">Continue shopping</a> for premium imported foods.
 </div>""")
-    send_async(customer_email, f"Order Cancelled — {order['orderNumber']} | Divya Foods", html)
+    send_async(customer_email, f"Order Cancelled — {order['orderNumber']} | Divya Luxury Seafoods", html)
 
 
 def order_processing(order: dict, customer_email: str) -> None:
@@ -252,7 +252,7 @@ def order_processing(order: dict, customer_email: str) -> None:
   &#128666; Your order will be dispatched soon — you'll get a shipping email with tracking details.<br>
   &#128222; Questions? Call <strong>+91&nbsp;9999123242</strong> or reply to this email.
 </div>""")
-    send_async(customer_email, f"Packing Your Order — {order['orderNumber']} | Divya Foods", html)
+    send_async(customer_email, f"Packing Your Order — {order['orderNumber']} | Divya Luxury Seafoods", html)
 
 
 # ─── Auth emails ──────────────────────────────────────────────────────────────
@@ -262,7 +262,7 @@ SITE_URL = "https://divya-foods.vercel.app"
 
 def welcome(name: str, customer_email: str) -> None:
     html = _wrap(f"""
-<h2>Welcome to Divya Foods! &#127881;</h2>
+<h2>Welcome to Divya Luxury Seafoods! &#127881;</h2>
 <p style="color:#6B7280;margin:0 0 18px">Hi {name}, your account has been created successfully.</p>
 <div class="info-box">
   &#127827; Browse our premium selection of <strong>imported frozen seafood</strong> from Norway, Japan, and beyond.<br>
@@ -278,14 +278,14 @@ def welcome(name: str, customer_email: str) -> None:
 <p style="font-size:12px;color:#9CA3AF;text-align:center">
   Questions? Call <strong>+91&nbsp;9999123242</strong> or reply to this email.
 </p>""")
-    send_async(customer_email, "Welcome to Divya Foods!", html)
+    send_async(customer_email, "Welcome to Divya Luxury Seafoods!", html)
 
 
 def password_reset(customer_email: str, reset_token: str) -> None:
     reset_url = f"{SITE_URL}/auth/reset-password?token={reset_token}"
     html = _wrap(f"""
 <h2>Reset Your Password &#128274;</h2>
-<p style="color:#6B7280;margin:0 0 18px">We received a request to reset the password for your Divya Foods account.</p>
+<p style="color:#6B7280;margin:0 0 18px">We received a request to reset the password for your Divya Luxury Seafoods account.</p>
 <p style="text-align:center;margin:28px 0">
   <a href="{reset_url}"
      style="background:#042C53;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
@@ -300,4 +300,4 @@ def password_reset(customer_email: str, reset_token: str) -> None:
   If the button above doesn't work, copy and paste this link into your browser:<br>
   <a href="{reset_url}" style="color:#0C447C;word-break:break-all">{reset_url}</a>
 </p>""")
-    send_async(customer_email, "Reset Your Password — Divya Foods", html)
+    send_async(customer_email, "Reset Your Password — Divya Luxury Seafoods", html)

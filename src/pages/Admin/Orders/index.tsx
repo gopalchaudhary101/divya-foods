@@ -89,7 +89,7 @@ export default function AdminOrdersPage() {
 
   return (
     <>
-      <Helmet><title>Orders — Admin | Divya Foods</title></Helmet>
+      <Helmet><title>Orders — Admin | Divya Luxury Seafoods</title></Helmet>
 
       <div className="min-h-screen bg-ocean-50 dark:bg-[#03182E]">
         {/* Top bar */}

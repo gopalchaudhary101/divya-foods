@@ -448,7 +448,7 @@ export default function OrdersPage() {
   const { id } = useParams<{ id?: string }>()
   return (
     <>
-      <Helmet><title>{`${id ? 'Order Details' : 'My Orders'} — Divya Foods`}</title></Helmet>
+      <Helmet><title>{`${id ? 'Order Details' : 'My Orders'} — Divya Luxury Seafoods`}</title></Helmet>
       {id ? <OrderDetail orderId={id} /> : <OrdersList />}
     </>
   )

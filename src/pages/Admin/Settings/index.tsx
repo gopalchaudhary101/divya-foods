@@ -36,7 +36,7 @@ export default function AdminSettingsPage() {
 
   return (
     <>
-      <Helmet><title>Settings — Admin | Divya Foods</title></Helmet>
+      <Helmet><title>Settings — Admin | Divya Luxury Seafoods</title></Helmet>
 
       <div className="min-h-screen bg-ocean-50 dark:bg-[#03182E]">
         <div className="bg-white dark:bg-ocean-950 border-b border-ocean-100 dark:border-ocean-800 px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">

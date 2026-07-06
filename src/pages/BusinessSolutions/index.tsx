@@ -73,7 +73,7 @@ export default function BusinessSolutionsPage() {
   return (
     <>
       <PageSEO
-        title="Business Solutions for Restaurants, Hotels & Retailers — Divya Foods"
+        title="Business Solutions for Restaurants, Hotels & Retailers — Divya Luxury Seafoods"
         description="Cold-chain delivery, live inventory tracking, purchase order management, and wholesale ordering — built for restaurants, hotels, and retailers sourcing premium seafood at scale."
       />
 

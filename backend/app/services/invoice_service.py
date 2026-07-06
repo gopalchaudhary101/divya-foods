@@ -66,7 +66,7 @@ def generate_invoice_pdf(order: dict, settings_data: dict) -> bytes:
     # ── Header: company + invoice meta ────────────────────────────────────────
     header_table = Table([
         [
-            Paragraph(f"<b>{settings_data.get('businessName', 'Divya Foods')}</b>", title_style),
+            Paragraph(f"<b>{settings_data.get('businessName', 'Divya Luxury Seafoods')}</b>", title_style),
             Paragraph(
                 f"<b>TAX INVOICE</b><br/>Invoice No: <b>{order['orderNumber']}</b><br/>"
                 f"Date: {order['createdAt'][:10]}<br/>"
@@ -150,7 +150,7 @@ def generate_invoice_pdf(order: dict, settings_data: dict) -> bytes:
         story.append(Spacer(1, 10))
 
     # ── QR + barcode footer ────────────────────────────────────────────────────
-    qr_payload = f"Invoice {order['orderNumber']} | Total Rs.{order['total']:.2f} | {settings_data.get('businessName', 'Divya Foods')}"
+    qr_payload = f"Invoice {order['orderNumber']} | Total Rs.{order['total']:.2f} | {settings_data.get('businessName', 'Divya Luxury Seafoods')}"
     footer_table = Table([[
         _qr_drawing(qr_payload),
         _barcode(order["orderNumber"].replace(" ", "")),

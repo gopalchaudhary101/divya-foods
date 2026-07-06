@@ -1,4 +1,4 @@
-# Divya Foods — Image Download Report
+# Divya Luxury Seafoods — Image Download Report
 
 **Generated:** 2026-07-01 00:02:47
 

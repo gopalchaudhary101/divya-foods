@@ -15,7 +15,7 @@ import { AnimatedCounter } from '@/components/shared/AnimatedCounter'
 const ORG_LD = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'Divya Foods',
+  name: 'Divya Luxury Seafoods',
   url: 'https://divya-foods.vercel.app',
   logo: 'https://divya-foods.vercel.app/icons/icon-512.png',
   description: "Delhi NCR's premium imported seafood and Japanese grocery marketplace",
@@ -37,7 +37,7 @@ const ORG_LD = {
 const WEBSITE_LD = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'Divya Foods',
+  name: 'Divya Luxury Seafoods',
   url: 'https://divya-foods.vercel.app',
   potentialAction: {
     '@type': 'SearchAction',
@@ -221,7 +221,7 @@ function WhyChooseUs() {
       className="py-14 px-4 bg-premium-charcoal text-white"
     >
       <div className="max-w-6xl mx-auto">
-        <p className="df-eyebrow text-center mb-2 w-full">Why Divya Foods</p>
+        <p className="df-eyebrow text-center mb-2 w-full">Why Divya Luxury Seafoods</p>
         <h2 className="text-xl sm:text-2xl font-display font-bold text-center mb-8">Premium Seafood, Delivered Right</h2>
 
         <div className="grid sm:grid-cols-3 gap-6">
@@ -488,7 +488,7 @@ const HomePage: React.FC = () => {
   return (
     <>
       <PageSEO
-        title="Divya Foods — Premium Imported Seafood & Japanese Grocery, Delhi NCR"
+        title="Divya Luxury Seafoods — Premium Imported Seafood & Japanese Grocery, Delhi NCR"
         description="Delhi NCR's finest imported seafood — Norwegian Salmon, Tiger Prawns, Bluefin Tuna, Lobster & authentic Japanese pantry ingredients. Same-day delivery across Delhi, Gurgaon, Noida."
       >
         <script type="application/ld+json">{JSON.stringify(ORG_LD)}</script>
@@ -503,7 +503,7 @@ const HomePage: React.FC = () => {
             Premium Imported Marketplace — New Delhi
           </p>
           <h1 className="text-5xl md:text-7xl font-display font-bold text-center leading-tight">
-            Divya Foods
+            Divya Luxury Seafoods
           </h1>
           <p className="mt-5 font-display italic text-2xl md:text-4xl text-premium-gold text-center max-w-3xl leading-snug">
             Luxury Imported Foods, Delivered Fresh

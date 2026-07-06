@@ -22,7 +22,7 @@ export default function AboutPage() {
     <>
       <PageSEO
         title={`About Us — ${CONFIG.APP_NAME}`}
-        description="Learn about Divya Foods — our story, contact details, and legal/business information (GST & FSSAI license)."
+        description="Learn about Divya Luxury Seafoods — our story, contact details, and legal/business information (GST & FSSAI license)."
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">

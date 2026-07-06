@@ -222,7 +222,7 @@ export default function CheckoutPage() {
         amount:    Math.round(initiated.amount * 100),
         currency:  initiated.currency,
         order_id:  initiated.razorpayOrderId,
-        name:      'Divya Foods',
+        name:      'Divya Luxury Seafoods',
         description: `Order ${initiated.orderNumber}`,
         image:     '/logo.png',
         prefill: {
@@ -300,7 +300,7 @@ export default function CheckoutPage() {
   if (guestConfirmation) {
     return (
       <>
-        <Helmet><title>Order Confirmed — Divya Foods</title></Helmet>
+        <Helmet><title>Order Confirmed — Divya Luxury Seafoods</title></Helmet>
         <div className="max-w-lg mx-auto px-4 py-20 text-center">
           <CheckCircle size={56} className="mx-auto text-premium-teal mb-5" />
           <h1 className="font-display text-2xl font-semibold text-premium-navy dark:text-white mb-2">Order Confirmed!</h1>
@@ -327,7 +327,7 @@ export default function CheckoutPage() {
   if (!isAuthenticated && checkoutAs === null) {
     return (
       <>
-        <Helmet><title>Checkout — Divya Foods</title></Helmet>
+        <Helmet><title>Checkout — Divya Luxury Seafoods</title></Helmet>
         <div className="max-w-md mx-auto px-4 py-16">
           <h1 className="font-display text-2xl font-semibold text-premium-navy dark:text-white mb-2 text-center">
             How would you like to check out?
@@ -364,7 +364,7 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <Helmet><title>Checkout — Divya Foods</title></Helmet>
+      <Helmet><title>Checkout — Divya Luxury Seafoods</title></Helmet>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         <h1 className="font-display text-2xl font-semibold text-premium-navy dark:text-white mb-6 text-center">
