@@ -46,8 +46,8 @@ git push -u origin main
 |-----|-------|
 | `MONGODB_URL` | Your Atlas connection string: `mongodb+srv://user:pass@cluster.mongodb.net/?retryWrites=true&w=majority` |
 | `ALLOWED_ORIGINS` | `["https://YOUR-APP.vercel.app","https://www.divyafoods.com"]` — fill in after Step 3 |
-| `RAZORPAY_KEY_ID` | `RAZORPAY_KEY_ID_REDACTED` (test) or live key when ready |
-| `RAZORPAY_KEY_SECRET` | `RAZORPAY_KEY_SECRET_REDACTED` (test) or live secret when ready |
+| `RAZORPAY_KEY_ID` | From Razorpay Dashboard → Settings → API Keys (use a **test mode** key while developing) |
+| `RAZORPAY_KEY_SECRET` | From Razorpay Dashboard → Settings → API Keys (test mode secret) |
 | `SMTP_PASSWORD` | Gmail App Password (see note below) |
 | `CLOUDINARY_CLOUD_NAME` | From your Cloudinary dashboard |
 | `CLOUDINARY_API_KEY` | From your Cloudinary dashboard |
@@ -76,7 +76,7 @@ git push -u origin main
 | Key | Value |
 |-----|-------|
 | `VITE_API_BASE_URL` | `https://divya-foods-api.onrender.com` |
-| `VITE_RAZORPAY_KEY_ID` | `RAZORPAY_KEY_ID_REDACTED` (test) or live key when ready |
+| `VITE_RAZORPAY_KEY_ID` | Same test-mode Key ID used for `RAZORPAY_KEY_ID` above |
 
 5. Click **Deploy**
 6. Note your frontend URL: `https://divya-foods.vercel.app`
