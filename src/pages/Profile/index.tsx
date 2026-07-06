@@ -27,7 +27,7 @@ import { ROUTES } from '@/constants/routes'
 function Avatar({ name, size = 'lg' }: { name: string; size?: 'sm' | 'lg' }) {
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
   return (
-    <div className={`rounded-full bg-gradient-to-br from-ocean-600 to-ocean-400 flex items-center justify-center text-white font-bold select-none
+    <div className={`rounded-full bg-gradient-to-br from-premium-navy to-[#1B3A4B] flex items-center justify-center text-premium-gold font-bold select-none
       ${size === 'lg' ? 'w-20 h-20 text-2xl' : 'w-9 h-9 text-sm'}`}>
       {initials}
     </div>
@@ -38,8 +38,8 @@ function Avatar({ name, size = 'lg' }: { name: string; size?: 'sm' | 'lg' }) {
 
 const STATUS_COLOR: Record<string, string> = {
   pending:    'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20',
-  confirmed:  'text-mint-600 bg-mint-50 dark:bg-mint-900/20',
-  processing: 'text-ocean-600 bg-ocean-50 dark:bg-ocean-900/20',
+  confirmed:  'text-premium-teal bg-premium-teal/10',
+  processing: 'text-premium-navy bg-premium-navy/10',
   shipped:    'text-blue-600 bg-blue-50 dark:bg-blue-900/20',
   delivered:  'text-green-600 bg-green-50 dark:bg-green-900/20',
   cancelled:  'text-red-500 bg-red-50 dark:bg-red-900/20',
@@ -49,10 +49,10 @@ const STATUS_COLOR: Record<string, string> = {
 
 function Card({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="bg-white dark:bg-ocean-900 border border-ocean-100 dark:border-ocean-800 rounded-2xl overflow-hidden">
-      <div className="px-5 py-4 border-b border-ocean-50 dark:border-ocean-800 flex items-center gap-2.5">
-        <span className="text-ocean-500">{icon}</span>
-        <h2 className="text-sm font-semibold text-ocean-800 dark:text-ocean-200 uppercase tracking-wider">{title}</h2>
+    <div className="bg-white dark:bg-ocean-900 border border-premium-navy/10 dark:border-ocean-800 rounded-2xl overflow-hidden">
+      <div className="px-5 py-4 border-b border-premium-navy/5 dark:border-ocean-800 flex items-center gap-2.5">
+        <span className="text-premium-teal">{icon}</span>
+        <h2 className="df-eyebrow">{title}</h2>
       </div>
       <div className="p-5">{children}</div>
     </div>
@@ -87,75 +87,76 @@ function AddressModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white dark:bg-ocean-900 rounded-2xl w-full max-w-lg max-h-[90dvh] overflow-y-auto shadow-2xl">
-        <div className="px-5 py-4 border-b border-ocean-100 dark:border-ocean-800 flex items-center justify-between">
-          <h3 className="font-semibold text-ocean-900 dark:text-white">
+        <div className="px-5 py-4 border-b border-premium-navy/10 dark:border-ocean-800 flex items-center justify-between">
+          <h3 className="font-semibold text-premium-navy dark:text-white">
             {initial.fullName ? 'Edit Address' : 'Add New Address'}
           </h3>
-          <button onClick={onClose} className="text-ocean-400 hover:text-ocean-700 text-xl leading-none">&times;</button>
+          <button onClick={onClose} className="text-premium-navy/40 hover:text-premium-gold text-xl leading-none">&times;</button>
         </div>
 
         <div className="p-5 space-y-3.5">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-ocean-600 dark:text-ocean-400 mb-1">Label</label>
+              <label className="block text-xs font-medium text-premium-navy/60 dark:text-ocean-400 mb-1">Label</label>
               <select value={form.label} onChange={set('label')}
-                className="w-full text-sm bg-ocean-50 dark:bg-ocean-800 border border-ocean-200 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-ocean-900 dark:text-ocean-100 outline-none focus:ring-2 focus:ring-ocean-400">
+                className="w-full text-sm bg-premium-navy/5 dark:bg-ocean-800 border border-premium-navy/15 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-premium-navy dark:text-ocean-100 outline-none focus:ring-2 focus:ring-premium-gold">
                 {['Home', 'Work', 'Other'].map(l => <option key={l}>{l}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-ocean-600 dark:text-ocean-400 mb-1">Full Name *</label>
+              <label className="block text-xs font-medium text-premium-navy/60 dark:text-ocean-400 mb-1">Full Name *</label>
               <input value={form.fullName} onChange={set('fullName')} placeholder="Recipient name"
-                className="w-full text-sm bg-ocean-50 dark:bg-ocean-800 border border-ocean-200 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-ocean-900 dark:text-ocean-100 placeholder-ocean-400 outline-none focus:ring-2 focus:ring-ocean-400" />
+                className="w-full text-sm bg-premium-navy/5 dark:bg-ocean-800 border border-premium-navy/15 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-premium-navy dark:text-ocean-100 placeholder-premium-navy/30 outline-none focus:ring-2 focus:ring-premium-gold" />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-ocean-600 dark:text-ocean-400 mb-1">Phone *</label>
+            <label className="block text-xs font-medium text-premium-navy/60 dark:text-ocean-400 mb-1">Phone *</label>
             <input value={form.phone} onChange={set('phone')} placeholder="+91 9999999999"
-              className="w-full text-sm bg-ocean-50 dark:bg-ocean-800 border border-ocean-200 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-ocean-900 dark:text-ocean-100 placeholder-ocean-400 outline-none focus:ring-2 focus:ring-ocean-400" />
+              className="w-full text-sm bg-premium-navy/5 dark:bg-ocean-800 border border-premium-navy/15 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-premium-navy dark:text-ocean-100 placeholder-premium-navy/30 outline-none focus:ring-2 focus:ring-premium-gold" />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-ocean-600 dark:text-ocean-400 mb-1">Address Line 1 *</label>
+            <label className="block text-xs font-medium text-premium-navy/60 dark:text-ocean-400 mb-1">Address Line 1 *</label>
             <input value={form.addressLine1} onChange={set('addressLine1')} placeholder="House no., street, area"
-              className="w-full text-sm bg-ocean-50 dark:bg-ocean-800 border border-ocean-200 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-ocean-900 dark:text-ocean-100 placeholder-ocean-400 outline-none focus:ring-2 focus:ring-ocean-400" />
+              className="w-full text-sm bg-premium-navy/5 dark:bg-ocean-800 border border-premium-navy/15 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-premium-navy dark:text-ocean-100 placeholder-premium-navy/30 outline-none focus:ring-2 focus:ring-premium-gold" />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-ocean-600 dark:text-ocean-400 mb-1">Address Line 2</label>
+            <label className="block text-xs font-medium text-premium-navy/60 dark:text-ocean-400 mb-1">Address Line 2</label>
             <input value={form.addressLine2} onChange={set('addressLine2')} placeholder="Landmark (optional)"
-              className="w-full text-sm bg-ocean-50 dark:bg-ocean-800 border border-ocean-200 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-ocean-900 dark:text-ocean-100 placeholder-ocean-400 outline-none focus:ring-2 focus:ring-ocean-400" />
+              className="w-full text-sm bg-premium-navy/5 dark:bg-ocean-800 border border-premium-navy/15 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-premium-navy dark:text-ocean-100 placeholder-premium-navy/30 outline-none focus:ring-2 focus:ring-premium-gold" />
           </div>
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-ocean-600 dark:text-ocean-400 mb-1">City *</label>
+              <label className="block text-xs font-medium text-premium-navy/60 dark:text-ocean-400 mb-1">City *</label>
               <input value={form.city} onChange={set('city')} placeholder="City"
-                className="w-full text-sm bg-ocean-50 dark:bg-ocean-800 border border-ocean-200 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-ocean-900 dark:text-ocean-100 placeholder-ocean-400 outline-none focus:ring-2 focus:ring-ocean-400" />
+                className="w-full text-sm bg-premium-navy/5 dark:bg-ocean-800 border border-premium-navy/15 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-premium-navy dark:text-ocean-100 placeholder-premium-navy/30 outline-none focus:ring-2 focus:ring-premium-gold" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-ocean-600 dark:text-ocean-400 mb-1">State *</label>
+              <label className="block text-xs font-medium text-premium-navy/60 dark:text-ocean-400 mb-1">State *</label>
               <input value={form.state} onChange={set('state')} placeholder="State"
-                className="w-full text-sm bg-ocean-50 dark:bg-ocean-800 border border-ocean-200 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-ocean-900 dark:text-ocean-100 placeholder-ocean-400 outline-none focus:ring-2 focus:ring-ocean-400" />
+                className="w-full text-sm bg-premium-navy/5 dark:bg-ocean-800 border border-premium-navy/15 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-premium-navy dark:text-ocean-100 placeholder-premium-navy/30 outline-none focus:ring-2 focus:ring-premium-gold" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-ocean-600 dark:text-ocean-400 mb-1">Pincode *</label>
+              <label className="block text-xs font-medium text-premium-navy/60 dark:text-ocean-400 mb-1">Pincode *</label>
               <input value={form.pincode} onChange={set('pincode')} placeholder="110001" maxLength={6}
-                className="w-full text-sm bg-ocean-50 dark:bg-ocean-800 border border-ocean-200 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-ocean-900 dark:text-ocean-100 placeholder-ocean-400 outline-none focus:ring-2 focus:ring-ocean-400" />
+                className="w-full text-sm bg-premium-navy/5 dark:bg-ocean-800 border border-premium-navy/15 dark:border-ocean-700 rounded-lg px-3 py-2.5 text-premium-navy dark:text-ocean-100 placeholder-premium-navy/30 outline-none focus:ring-2 focus:ring-premium-gold" />
             </div>
           </div>
 
           <label className="flex items-center gap-2.5 cursor-pointer">
             <input type="checkbox" checked={form.isDefault} onChange={set('isDefault')}
-              className="w-4 h-4 accent-ocean-600 rounded" />
-            <span className="text-sm text-ocean-700 dark:text-ocean-300">Set as default delivery address</span>
+              className="w-4 h-4 accent-premium-gold rounded" />
+            <span className="text-sm text-premium-navy/70 dark:text-ocean-300">Set as default delivery address</span>
           </label>
         </div>
 
         <div className="px-5 pb-5 flex gap-3">
-          <Button variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
+          <Button variant="premiumOutline" onClick={onClose} className="flex-1">Cancel</Button>
           <Button
+            variant="premium"
             onClick={() => onSave(form)}
             loading={isSaving}
             disabled={!form.fullName || !form.phone || !form.addressLine1 || !form.city || !form.pincode}
@@ -181,6 +182,7 @@ export default function ProfilePage() {
   const [editingProfile, setEditingProfile] = useState(false)
   const [profileName, setProfileName] = useState(user?.name ?? '')
   const [profilePhone, setProfilePhone] = useState(user?.phone ?? '')
+  const [profileDob, setProfileDob] = useState(user?.date_of_birth ?? '')
 
   // ── Password state
   const [showPasswordForm, setShowPasswordForm] = useState(false)
@@ -211,7 +213,7 @@ export default function ProfilePage() {
 
   // ── Mutations
   const updateProfileMut = useMutation({
-    mutationFn: (payload: { name?: string; phone?: string }) => userApi.updateProfile(payload),
+    mutationFn: (payload: { name?: string; phone?: string; date_of_birth?: string }) => userApi.updateProfile(payload),
     onSuccess: (updated) => {
       dispatch(setCredentials({ user: updated, token: localStorage.getItem('access_token')! }))
       toast.success('Profile updated')
@@ -254,8 +256,8 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-ocean-600 dark:text-ocean-300 mb-4">Please log in to view your profile</p>
-          <Button onClick={() => navigate(ROUTES.AUTH.LOGIN)}>Log In</Button>
+          <p className="text-premium-navy/70 dark:text-ocean-300 mb-4">Please log in to view your profile</p>
+          <Button variant="premium" onClick={() => navigate(ROUTES.AUTH.LOGIN)}>Log In</Button>
         </div>
       </div>
     )
@@ -295,22 +297,22 @@ export default function ProfilePage() {
     <>
       <Helmet><title>My Profile — Divya Foods</title></Helmet>
 
-      <div className="min-h-screen bg-ocean-50 dark:bg-ocean-950 pb-16">
+      <div className="min-h-screen bg-premium-cream dark:bg-ocean-950 pb-16">
         {/* ── Hero header ────────────────────────────────────────────── */}
-        <div className="bg-gradient-to-br from-ocean-800 to-ocean-600 px-4 pt-10 pb-16 text-white">
+        <div className="bg-gradient-to-br from-premium-navy to-[#060F16] px-4 pt-10 pb-16 text-white">
           <div className="max-w-2xl mx-auto flex items-center gap-5">
             <Avatar name={user.name} />
             <div className="flex-1 min-w-0">
               <h1 className="text-xl font-display font-bold truncate">{user.name}</h1>
-              <p className="text-ocean-200 text-sm mt-0.5 truncate">{user.email}</p>
+              <p className="text-premium-muted text-sm mt-0.5 truncate">{user.email}</p>
               {memberSince && (
-                <p className="text-ocean-300 text-xs mt-1 flex items-center gap-1">
+                <p className="text-premium-muted text-xs mt-1 flex items-center gap-1">
                   <Star size={11} /> Member since {memberSince}
                 </p>
               )}
             </div>
             {user.role === 'admin' && (
-              <Link to="/admin" className="px-3 py-1.5 bg-gold-500 text-ocean-900 text-xs font-semibold rounded-full">
+              <Link to="/admin" className="px-3 py-1.5 bg-premium-gold text-premium-navy text-xs font-semibold rounded-full">
                 Admin
               </Link>
             )}
@@ -325,23 +327,31 @@ export default function ProfilePage() {
             {!editingProfile ? (
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <User size={15} className="text-ocean-400 shrink-0" />
-                  <span className="text-sm text-ocean-800 dark:text-ocean-200">{user.name}</span>
+                  <User size={15} className="text-premium-teal shrink-0" />
+                  <span className="text-sm text-premium-navy dark:text-ocean-200">{user.name}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Mail size={15} className="text-ocean-400 shrink-0" />
-                  <span className="text-sm text-ocean-800 dark:text-ocean-200">{user.email}</span>
+                  <Mail size={15} className="text-premium-teal shrink-0" />
+                  <span className="text-sm text-premium-navy dark:text-ocean-200">{user.email}</span>
                 </div>
                 {user.phone && (
                   <div className="flex items-center gap-3">
-                    <Phone size={15} className="text-ocean-400 shrink-0" />
-                    <span className="text-sm text-ocean-800 dark:text-ocean-200">{user.phone}</span>
+                    <Phone size={15} className="text-premium-teal shrink-0" />
+                    <span className="text-sm text-premium-navy dark:text-ocean-200">{user.phone}</span>
+                  </div>
+                )}
+                {user.date_of_birth && (
+                  <div className="flex items-center gap-3">
+                    <Star size={15} className="text-premium-teal shrink-0" />
+                    <span className="text-sm text-premium-navy dark:text-ocean-200">
+                      {new Date(user.date_of_birth).toLocaleDateString('en-IN', { month: 'long', day: 'numeric' })}
+                    </span>
                   </div>
                 )}
                 <Button
-                  variant="outline"
+                  variant="premiumOutline"
                   size="sm"
-                  onClick={() => { setProfileName(user.name); setProfilePhone(user.phone ?? ''); setEditingProfile(true) }}
+                  onClick={() => { setProfileName(user.name); setProfilePhone(user.phone ?? ''); setProfileDob(user.date_of_birth ?? ''); setEditingProfile(true) }}
                   className="mt-1 flex items-center gap-2"
                 >
                   <Pencil size={13} /> Edit Profile
@@ -360,16 +370,24 @@ export default function ProfilePage() {
                   onChange={e => setProfilePhone(e.target.value)}
                   placeholder="+91 9999999999"
                 />
+                <Input
+                  label="Date of Birth"
+                  type="date"
+                  value={profileDob}
+                  onChange={e => setProfileDob(e.target.value)}
+                />
+                <p className="text-xs text-premium-navy/40 -mt-1">We'll send you bonus loyalty points on your birthday.</p>
                 <div className="flex gap-2 pt-1">
                   <Button
+                    variant="premium"
                     size="sm"
-                    onClick={() => updateProfileMut.mutate({ name: profileName, phone: profilePhone })}
+                    onClick={() => updateProfileMut.mutate({ name: profileName, phone: profilePhone, date_of_birth: profileDob || undefined })}
                     loading={updateProfileMut.isPending}
                     disabled={!profileName.trim()}
                   >
                     Save Changes
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => setEditingProfile(false)}>
+                  <Button size="sm" variant="premiumOutline" onClick={() => setEditingProfile(false)}>
                     Cancel
                   </Button>
                 </div>
@@ -380,40 +398,40 @@ export default function ProfilePage() {
           {/* ── Delivery Addresses ───────────────────────────────────── */}
           <Card title="Delivery Addresses" icon={<MapPin size={16} />}>
             {addresses.length === 0 ? (
-              <p className="text-sm text-ocean-400 mb-3">No saved addresses yet</p>
+              <p className="text-sm text-premium-navy/40 mb-3">No saved addresses yet</p>
             ) : (
               <div className="space-y-3 mb-3">
                 {addresses.map((addr) => (
                   <div key={addr.id}
-                    className="border border-ocean-100 dark:border-ocean-700 rounded-xl p-3.5 flex items-start justify-between gap-3">
+                    className="border border-premium-navy/10 dark:border-ocean-700 rounded-xl p-3.5 flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-semibold bg-ocean-100 dark:bg-ocean-800 text-ocean-700 dark:text-ocean-300 px-2 py-0.5 rounded-full">
+                        <span className="text-xs font-semibold bg-premium-navy/10 dark:bg-ocean-800 text-premium-navy dark:text-ocean-300 px-2 py-0.5 rounded-full">
                           {addr.label}
                         </span>
                         {addr.isDefault && (
-                          <span className="text-xs text-mint-600 dark:text-mint-400 flex items-center gap-1">
+                          <span className="text-xs text-premium-teal flex items-center gap-1">
                             <CheckCircle size={11} /> Default
                           </span>
                         )}
                       </div>
-                      <p className="text-sm font-medium text-ocean-800 dark:text-ocean-200">{addr.fullName}</p>
-                      <p className="text-xs text-ocean-500 dark:text-ocean-400 leading-relaxed mt-0.5">
+                      <p className="text-sm font-medium text-premium-navy dark:text-ocean-200">{addr.fullName}</p>
+                      <p className="text-xs text-premium-navy/50 dark:text-ocean-400 leading-relaxed mt-0.5">
                         {addr.addressLine1}{addr.addressLine2 ? `, ${addr.addressLine2}` : ''}, {addr.city}, {addr.state} — {addr.pincode}
                       </p>
-                      <p className="text-xs text-ocean-500 dark:text-ocean-400">{addr.phone}</p>
+                      <p className="text-xs text-premium-navy/50 dark:text-ocean-400">{addr.phone}</p>
                     </div>
                     <div className="flex gap-1 shrink-0">
                       <button
                         onClick={() => openEditAddress(addr)}
-                        className="p-2 text-ocean-400 hover:text-ocean-700 dark:hover:text-ocean-200 transition-colors"
+                        className="p-2 text-premium-navy/40 hover:text-premium-gold dark:hover:text-ocean-200 transition-colors"
                         aria-label="Edit"
                       >
                         <Pencil size={14} />
                       </button>
                       <button
                         onClick={() => { if (confirm('Delete this address?')) deleteAddrMut.mutate(addr.id!) }}
-                        className="p-2 text-ocean-400 hover:text-red-500 transition-colors"
+                        className="p-2 text-premium-navy/40 hover:text-red-500 transition-colors"
                         aria-label="Delete"
                       >
                         <Trash2 size={14} />
@@ -424,7 +442,7 @@ export default function ProfilePage() {
               </div>
             )}
             <Button
-              variant="outline"
+              variant="premiumOutline"
               size="sm"
               onClick={() => setAddrModal({ open: true, data: BLANK_ADDR })}
               className="flex items-center gap-2"
@@ -436,7 +454,7 @@ export default function ProfilePage() {
           {/* ── Recent Orders ────────────────────────────────────────── */}
           <Card title="Recent Orders" icon={<Package size={16} />}>
             {recentOrders.length === 0 ? (
-              <p className="text-sm text-ocean-400">No orders yet</p>
+              <p className="text-sm text-premium-navy/40">No orders yet</p>
             ) : (
               <div className="space-y-3">
                 {recentOrders.map((order) => {
@@ -445,18 +463,18 @@ export default function ProfilePage() {
                     <Link
                       key={order.id}
                       to={`${ROUTES.ORDERS}/${order.id}`}
-                      className="flex items-center gap-3 py-2 hover:bg-ocean-50 dark:hover:bg-ocean-800/50 -mx-2 px-2 rounded-xl transition-colors"
+                      className="flex items-center gap-3 py-2 hover:bg-premium-navy/5 dark:hover:bg-ocean-800/50 -mx-2 px-2 rounded-xl transition-colors"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-ocean-800 dark:text-ocean-200 truncate">
+                        <p className="text-sm font-medium text-premium-navy dark:text-ocean-200 truncate">
                           Order #{order.orderNumber ?? order.id.slice(-6).toUpperCase()}
                         </p>
-                        <p className="text-xs text-ocean-400 mt-0.5">{formatDate(order.createdAt)} · {formatCurrency(order.total)}</p>
+                        <p className="text-xs text-premium-navy/40 mt-0.5">{formatDate(order.createdAt)} · {formatCurrency(order.total)}</p>
                       </div>
                       <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${statusColor}`}>
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </span>
-                      <ChevronRight size={14} className="text-ocean-300 shrink-0" />
+                      <ChevronRight size={14} className="text-premium-navy/20 shrink-0" />
                     </Link>
                   )
                 })}
@@ -464,7 +482,7 @@ export default function ProfilePage() {
             )}
             <Link
               to={ROUTES.ORDERS}
-              className="mt-3 flex items-center gap-1.5 text-xs font-medium text-ocean-600 dark:text-ocean-400 hover:text-ocean-900 dark:hover:text-white transition-colors"
+              className="mt-3 flex items-center gap-1.5 text-xs font-medium text-premium-teal hover:text-premium-gold transition-colors"
             >
               View all orders <ChevronRight size={13} />
             </Link>
@@ -474,7 +492,7 @@ export default function ProfilePage() {
           <Card title="Security" icon={<Shield size={16} />}>
             {!showPasswordForm ? (
               <Button
-                variant="outline"
+                variant="premiumOutline"
                 size="sm"
                 onClick={() => setShowPasswordForm(true)}
                 className="flex items-center gap-2"
@@ -493,7 +511,7 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     onClick={() => setShowCurrent(v => !v)}
-                    className="absolute right-3 top-8 text-ocean-400 hover:text-ocean-600"
+                    className="absolute right-3 top-8 text-premium-navy/40 hover:text-premium-gold"
                   >
                     {showCurrent ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
@@ -510,7 +528,7 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     onClick={() => setShowNew(v => !v)}
-                    className="absolute right-3 top-8 text-ocean-400 hover:text-ocean-600"
+                    className="absolute right-3 top-8 text-premium-navy/40 hover:text-premium-gold"
                   >
                     {showNew ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
@@ -528,6 +546,7 @@ export default function ProfilePage() {
 
                 <div className="flex gap-2 pt-1">
                   <Button
+                    variant="premium"
                     size="sm"
                     onClick={() => changePwdMut.mutate({ currentPassword: currentPwd, newPassword: newPwd })}
                     loading={changePwdMut.isPending}
@@ -535,7 +554,7 @@ export default function ProfilePage() {
                   >
                     Update Password
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => { setShowPasswordForm(false); setCurrentPwd(''); setNewPwd(''); setConfirmPwd('') }}>
+                  <Button size="sm" variant="premiumOutline" onClick={() => { setShowPasswordForm(false); setCurrentPwd(''); setNewPwd(''); setConfirmPwd('') }}>
                     Cancel
                   </Button>
                 </div>

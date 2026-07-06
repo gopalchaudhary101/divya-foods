@@ -29,7 +29,7 @@ export function useAuth() {
         dispatch(setCredentials({ user: response.user, token: response.access_token }))
         localStorage.setItem('refresh_token', response.refresh_token)
         toast.success(`Welcome back, ${response.user.name}!`)
-        navigate(ROUTES.HOME)
+        navigate(response.user.role === 'driver' ? ROUTES.DRIVER : ROUTES.HOME)
       } catch (err) {
         toast.error(getErrorMessage(err))
         throw err // re-throw so the form's isSubmitting state clears
@@ -67,7 +67,8 @@ export function useAuth() {
     toast.success('Logged out successfully')
   }, [dispatch, navigate])
 
-  const isAdmin = user?.role === 'admin'
+  const isAdmin  = user?.role === 'admin'
+  const isDriver = user?.role === 'driver'
 
   return {
     user,
@@ -75,6 +76,7 @@ export function useAuth() {
     isAuthenticated,
     isLoading,
     isAdmin,
+    isDriver,
     login,
     register,
     logout,

@@ -4,7 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Package, ShoppingBag, Users, IndianRupee,
   Clock, ChevronRight, Search, X, ChevronDown, CheckCircle, TrendingUp,
-  AlertTriangle, MapPin, CreditCard, History, Tag,
+  AlertTriangle, MapPin, CreditCard, History, Tag, Settings as SettingsIcon, Truck, Boxes,
+  Download, Mail, Building2, Gift,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
@@ -14,7 +15,11 @@ import { formatCurrency } from '@/utils/formatCurrency'
 import { formatDate } from '@/utils/formatDate'
 import axiosInstance from '@/services/api/axiosInstance'
 import type { ApiResponse } from '@/types'
-import type { Order, OrderItem } from '@/services/api/orderApi'
+import type { Order, OrderItem, DeliveryInfo } from '@/services/api/orderApi'
+import { DELIVERY_STATUSES } from '@/services/api/orderApi'
+import { adminSettingsApi } from '@/services/api/settingsApi'
+import { uploadApi } from '@/services/api/uploadApi'
+import { adminDriverApi } from '@/services/api/driverApi'
 import { ROUTES } from '@/constants/routes'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -141,6 +146,251 @@ function LowStockBanner({ products }: { products: LowStockProduct[] }) {
   )
 }
 
+// ─── Delivery tab ─────────────────────────────────────────────────────────────
+
+const DELIVERY_STATUS_LABELS: Record<string, string> = {
+  packed: 'Packed', ready_for_pickup: 'Ready for Pickup', picked_up: 'Picked Up',
+  in_transit: 'In Transit', near_delivery: 'Near Delivery', delivered: 'Delivered',
+  failed: 'Failed Delivery', cancelled: 'Cancelled',
+}
+
+function DeliveryTab({
+  order,
+  delivery,
+  onSaved,
+}: {
+  order: Order
+  delivery: DeliveryInfo | null
+  onSaved: (d: DeliveryInfo) => void
+}) {
+  const { data: settings } = useQuery({
+    queryKey: ['admin-settings'],
+    queryFn: adminSettingsApi.get,
+    staleTime: 60 * 60 * 1000,
+  })
+  const providers = settings?.deliveryProviders ?? ['Porter', 'Dunzo', 'In-house', 'Other']
+
+  const { data: drivers = [] } = useQuery({
+    queryKey: ['admin', 'drivers'],
+    queryFn: adminDriverApi.list,
+  })
+
+  const [form, setForm] = useState({
+    driverId:            delivery?.driverId ?? '',
+    provider:            delivery?.provider ?? '',
+    trackingId:          delivery?.trackingId ?? '',
+    bookingId:           delivery?.bookingId ?? '',
+    partnerName:         delivery?.partnerName ?? '',
+    driverName:          delivery?.driverName ?? '',
+    driverPhone:         delivery?.driverPhone ?? '',
+    vehicleNumber:       delivery?.vehicleNumber ?? '',
+    vehicleType:         delivery?.vehicleType ?? '',
+    deliveryCharge:      delivery?.deliveryCharge != null ? String(delivery.deliveryCharge) : '',
+    notes:               delivery?.notes ?? '',
+    estimatedDeliveryAt: delivery?.estimatedDeliveryAt ? delivery.estimatedDeliveryAt.slice(0, 16) : '',
+  })
+  const [statusToSet, setStatusToSet]   = useState('')
+  const [uploadingPod, setUploadingPod] = useState(false)
+
+  const mutation = useMutation({
+    mutationFn: async (payload: Record<string, unknown>) => {
+      const { data } = await axiosInstance.put<ApiResponse<Order>>(`/admin/orders/${order.id}/delivery`, payload)
+      return data.data
+    },
+    onSuccess: (data) => {
+      toast.success('Delivery updated')
+      if (data.delivery) onSaved(data.delivery)
+      setStatusToSet('')
+    },
+    onError: (err: unknown) => {
+      const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      toast.error(msg ?? 'Failed to update delivery')
+    },
+  })
+
+  function saveDetails() {
+    mutation.mutate({
+      provider:            form.provider || undefined,
+      trackingId:          form.trackingId || undefined,
+      bookingId:           form.bookingId || undefined,
+      partnerName:         form.partnerName || undefined,
+      driverId:            form.driverId || undefined,
+      // Ignored server-side once driverId is set — the account's own name/phone wins.
+      driverName:          form.driverName || undefined,
+      driverPhone:         form.driverPhone || undefined,
+      vehicleNumber:       form.vehicleNumber || undefined,
+      vehicleType:         form.vehicleType || undefined,
+      deliveryCharge:      form.deliveryCharge ? parseFloat(form.deliveryCharge) : undefined,
+      notes:               form.notes || undefined,
+      estimatedDeliveryAt: form.estimatedDeliveryAt ? new Date(form.estimatedDeliveryAt).toISOString() : undefined,
+    })
+  }
+
+  function saveStatus() {
+    if (!statusToSet) return
+    mutation.mutate({ deliveryStatus: statusToSet })
+  }
+
+  async function handlePodUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingPod(true)
+    try {
+      const { url } = await uploadApi.image(file)
+      mutation.mutate({ proofOfDeliveryUrl: url })
+    } catch {
+      toast.error('Failed to upload proof of delivery')
+    } finally {
+      setUploadingPod(false)
+      e.target.value = ''
+    }
+  }
+
+  return (
+    <div className="space-y-5">
+      {delivery && (
+        <div className="p-3 bg-ocean-50 dark:bg-ocean-800 rounded-xl text-sm">
+          <p className="font-semibold text-ocean-900 dark:text-white">
+            {DELIVERY_STATUS_LABELS[delivery.deliveryStatus] ?? delivery.deliveryStatus}
+          </p>
+          {delivery.trackingId && (
+            <p className="text-xs text-ocean-500 mt-0.5">
+              Tracking: {delivery.trackingId} {delivery.provider && `via ${delivery.provider}`}
+            </p>
+          )}
+          {delivery.proofOfDeliveryUrl && (
+            <img
+              src={delivery.proofOfDeliveryUrl}
+              alt="Proof of delivery"
+              className="mt-2 w-24 h-24 object-cover rounded-lg"
+            />
+          )}
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="form-label">Provider</label>
+          <select
+            value={form.provider}
+            onChange={e => setForm(f => ({ ...f, provider: e.target.value }))}
+            className="input-field w-full text-sm"
+          >
+            <option value="">Select…</option>
+            {providers.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="form-label">Tracking ID</label>
+          <input value={form.trackingId} onChange={e => setForm(f => ({ ...f, trackingId: e.target.value }))} className="input-field w-full text-sm" />
+        </div>
+        <div>
+          <label className="form-label">Booking ID</label>
+          <input value={form.bookingId} onChange={e => setForm(f => ({ ...f, bookingId: e.target.value }))} className="input-field w-full text-sm" />
+        </div>
+        <div>
+          <label className="form-label">Delivery Charge (₹)</label>
+          <input type="number" min="0" value={form.deliveryCharge} onChange={e => setForm(f => ({ ...f, deliveryCharge: e.target.value }))} className="input-field w-full text-sm" />
+        </div>
+        <div>
+          <label className="form-label">Partner / Company Name</label>
+          <input value={form.partnerName} onChange={e => setForm(f => ({ ...f, partnerName: e.target.value }))} className="input-field w-full text-sm" />
+        </div>
+        <div className="col-span-2">
+          <label className="form-label">Driver Account</label>
+          <select
+            value={form.driverId}
+            onChange={e => setForm(f => ({ ...f, driverId: e.target.value }))}
+            className="input-field w-full text-sm"
+          >
+            <option value="">Manual entry (no account)</option>
+            {drivers.filter(d => d.isActive).map(d => (
+              <option key={d.id} value={d.id}>{d.name} — {d.phone || d.email}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="form-label">Driver Name</label>
+          <input
+            value={form.driverId ? (drivers.find(d => d.id === form.driverId)?.name ?? form.driverName) : form.driverName}
+            onChange={e => setForm(f => ({ ...f, driverName: e.target.value }))}
+            disabled={!!form.driverId}
+            className="input-field w-full text-sm disabled:opacity-60"
+          />
+        </div>
+        <div>
+          <label className="form-label">Driver Phone</label>
+          <input
+            value={form.driverId ? (drivers.find(d => d.id === form.driverId)?.phone ?? form.driverPhone) : form.driverPhone}
+            onChange={e => setForm(f => ({ ...f, driverPhone: e.target.value }))}
+            disabled={!!form.driverId}
+            className="input-field w-full text-sm disabled:opacity-60"
+          />
+        </div>
+        <div>
+          <label className="form-label">Vehicle Number</label>
+          <input value={form.vehicleNumber} onChange={e => setForm(f => ({ ...f, vehicleNumber: e.target.value }))} className="input-field w-full text-sm" />
+        </div>
+        <div>
+          <label className="form-label">Vehicle Type</label>
+          <input value={form.vehicleType} onChange={e => setForm(f => ({ ...f, vehicleType: e.target.value }))} placeholder="Bike, Van…" className="input-field w-full text-sm" />
+        </div>
+        <div>
+          <label className="form-label">Est. Delivery</label>
+          <input type="datetime-local" value={form.estimatedDeliveryAt} onChange={e => setForm(f => ({ ...f, estimatedDeliveryAt: e.target.value }))} className="input-field w-full text-sm" />
+        </div>
+      </div>
+
+      <div>
+        <label className="form-label">Delivery Notes</label>
+        <textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={2} className="input-field w-full text-sm resize-none" />
+      </div>
+
+      <Button size="sm" variant="primary" loading={mutation.isPending} onClick={saveDetails}>
+        {delivery ? 'Save Delivery Details' : 'Create Delivery'}
+      </Button>
+
+      <div className="pt-3 border-t border-ocean-100 dark:border-ocean-800 space-y-3">
+        <label className="form-label">Update Delivery Status</label>
+        <div className="flex flex-wrap gap-2">
+          {DELIVERY_STATUSES.map(s => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setStatusToSet(s)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                statusToSet === s
+                  ? 'bg-ocean-700 text-white border-ocean-700'
+                  : 'border-ocean-200 dark:border-ocean-700 text-ocean-600 dark:text-ocean-300 hover:bg-ocean-100 dark:hover:bg-ocean-800'
+              }`}
+            >
+              {DELIVERY_STATUS_LABELS[s] ?? s}
+            </button>
+          ))}
+        </div>
+        {statusToSet && (
+          <Button size="sm" variant="primary" loading={mutation.isPending} onClick={saveStatus}>
+            Set status → {DELIVERY_STATUS_LABELS[statusToSet] ?? statusToSet}
+          </Button>
+        )}
+      </div>
+
+      {delivery?.deliveryStatus === 'delivered' && (
+        <div className="pt-3 border-t border-ocean-100 dark:border-ocean-800">
+          <label className="form-label mb-2 block">Proof of Delivery</label>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handlePodUpload}
+            disabled={uploadingPod}
+            className="text-xs"
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Order detail modal ───────────────────────────────────────────────────────
 
 function OrderDetailModal({
@@ -154,7 +404,8 @@ function OrderDetailModal({
 }) {
   const [newStatus, setNewStatus] = useState('')
   const [note, setNote]           = useState('')
-  const [tab, setTab]             = useState<'items' | 'address' | 'timeline'>('items')
+  const [tab, setTab]             = useState<'items' | 'address' | 'delivery' | 'timeline'>('items')
+  const [delivery, setDelivery]   = useState<DeliveryInfo | null>(order.delivery)
   const nextOpts = NEXT_STATUSES[order.status] ?? []
 
   const mutation = useMutation({
@@ -177,6 +428,29 @@ function OrderDetailModal({
   })
 
   const addr = order.deliveryAddress as unknown as Record<string, string>
+
+  async function handleDownloadInvoice() {
+    try {
+      const { data } = await axiosInstance.get(`/admin/orders/${order.id}/invoice`, { responseType: 'blob' })
+      const url = URL.createObjectURL(data as Blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `invoice-${order.orderNumber}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      toast.error('Failed to download invoice')
+    }
+  }
+
+  async function handleEmailInvoice() {
+    try {
+      const { data } = await axiosInstance.post<{ success: boolean; message: string }>(`/admin/orders/${order.id}/invoice/email`)
+      toast.success(data.message)
+    } catch {
+      toast.error('Failed to email invoice')
+    }
+  }
 
   return (
     <div
@@ -201,18 +475,34 @@ function OrderDetailModal({
               <span className="text-xs text-ocean-400">{formatDate(order.createdAt)}</span>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            aria-label="Close order detail"
-            className="p-1.5 hover:bg-ocean-50 dark:hover:bg-ocean-800 rounded-lg transition-colors"
-          >
-            <X size={16} />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={handleDownloadInvoice}
+              title="Download Invoice"
+              className="p-1.5 hover:bg-ocean-50 dark:hover:bg-ocean-800 rounded-lg transition-colors text-ocean-400 hover:text-ocean-700"
+            >
+              <Download size={16} />
+            </button>
+            <button
+              onClick={handleEmailInvoice}
+              title="Email Invoice"
+              className="p-1.5 hover:bg-ocean-50 dark:hover:bg-ocean-800 rounded-lg transition-colors text-ocean-400 hover:text-ocean-700"
+            >
+              <Mail size={16} />
+            </button>
+            <button
+              onClick={onClose}
+              aria-label="Close order detail"
+              className="p-1.5 hover:bg-ocean-50 dark:hover:bg-ocean-800 rounded-lg transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}
         <div className="flex gap-1 px-5 pt-3 shrink-0">
-          {(['items', 'address', 'timeline'] as const).map(t => (
+          {(['items', 'address', 'delivery', 'timeline'] as const).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -224,6 +514,7 @@ function OrderDetailModal({
             >
               {t === 'items' && <span className="flex items-center gap-1"><ShoppingBag size={11} /> Items ({order.items.length})</span>}
               {t === 'address' && <span className="flex items-center gap-1"><MapPin size={11} /> Address</span>}
+              {t === 'delivery' && <span className="flex items-center gap-1"><Truck size={11} /> Delivery</span>}
               {t === 'timeline' && <span className="flex items-center gap-1"><History size={11} /> Timeline</span>}
             </button>
           ))}
@@ -299,24 +590,37 @@ function OrderDetailModal({
             </div>
           )}
 
+          {tab === 'delivery' && (
+            <DeliveryTab order={order} delivery={delivery} onSaved={setDelivery} />
+          )}
+
           {tab === 'timeline' && (
             <div className="space-y-3">
               {order.trackingTimeline.length === 0 ? (
                 <p className="text-sm text-ocean-400 italic">No tracking events yet.</p>
               ) : (
-                [...order.trackingTimeline].reverse().map((event, i) => (
-                  <div key={i} className="flex gap-3">
-                    <div className="flex flex-col items-center">
-                      <div className="w-2 h-2 rounded-full bg-ocean-400 mt-1.5 shrink-0" />
-                      {i < order.trackingTimeline.length - 1 && <div className="w-px flex-1 bg-ocean-100 dark:bg-ocean-800 mt-1" />}
+                [...order.trackingTimeline].reverse().map((event, i) => {
+                  const isDelivery = event.status.startsWith('delivery_')
+                  const label = isDelivery
+                    ? (DELIVERY_STATUS_LABELS[event.status.replace('delivery_', '')] ?? event.status)
+                    : event.status
+                  return (
+                    <div key={i} className="flex gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${isDelivery ? 'bg-mint-500' : 'bg-ocean-400'}`} />
+                        {i < order.trackingTimeline.length - 1 && <div className="w-px flex-1 bg-ocean-100 dark:bg-ocean-800 mt-1" />}
+                      </div>
+                      <div className="pb-3 min-w-0">
+                        <p className="text-sm font-semibold text-ocean-900 dark:text-white capitalize">
+                          {isDelivery && <Truck size={11} className="inline mr-1 -mt-0.5" />}
+                          {label}
+                        </p>
+                        <p className="text-xs text-ocean-400">{formatDate(event.timestamp)}</p>
+                        {event.note && <p className="text-xs text-ocean-500 mt-0.5 italic">{event.note}</p>}
+                      </div>
                     </div>
-                    <div className="pb-3 min-w-0">
-                      <p className="text-sm font-semibold text-ocean-900 dark:text-white capitalize">{event.status}</p>
-                      <p className="text-xs text-ocean-400">{formatDate(event.timestamp)}</p>
-                      {event.note && <p className="text-xs text-ocean-500 mt-0.5 italic">{event.note}</p>}
-                    </div>
-                  </div>
-                ))
+                  )
+                })
               )}
             </div>
           )}
@@ -463,6 +767,42 @@ export default function AdminDashboardPage() {
               className="text-xs font-medium text-ocean-600 dark:text-ocean-300 hover:text-ocean-900 dark:hover:text-white flex items-center gap-1.5 px-3 py-1.5 border border-ocean-200 dark:border-ocean-700 rounded-lg hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
             >
               <Tag size={13} /> Coupons
+            </Link>
+            <Link
+              to={ROUTES.ADMIN.INVENTORY}
+              className="text-xs font-medium text-ocean-600 dark:text-ocean-300 hover:text-ocean-900 dark:hover:text-white flex items-center gap-1.5 px-3 py-1.5 border border-ocean-200 dark:border-ocean-700 rounded-lg hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
+            >
+              <Boxes size={13} /> Inventory
+            </Link>
+            <Link
+              to={ROUTES.ADMIN.BULK_ORDERS}
+              className="text-xs font-medium text-ocean-600 dark:text-ocean-300 hover:text-ocean-900 dark:hover:text-white flex items-center gap-1.5 px-3 py-1.5 border border-ocean-200 dark:border-ocean-700 rounded-lg hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
+            >
+              <Building2 size={13} /> Bulk Orders
+            </Link>
+            <Link
+              to={ROUTES.ADMIN.USERS}
+              className="text-xs font-medium text-ocean-600 dark:text-ocean-300 hover:text-ocean-900 dark:hover:text-white flex items-center gap-1.5 px-3 py-1.5 border border-ocean-200 dark:border-ocean-700 rounded-lg hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
+            >
+              <Users size={13} /> Users & Roles
+            </Link>
+            <Link
+              to={ROUTES.ADMIN.DRIVERS}
+              className="text-xs font-medium text-ocean-600 dark:text-ocean-300 hover:text-ocean-900 dark:hover:text-white flex items-center gap-1.5 px-3 py-1.5 border border-ocean-200 dark:border-ocean-700 rounded-lg hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
+            >
+              <Truck size={13} /> Drivers
+            </Link>
+            <Link
+              to={ROUTES.ADMIN.GIFT_CARDS}
+              className="text-xs font-medium text-ocean-600 dark:text-ocean-300 hover:text-ocean-900 dark:hover:text-white flex items-center gap-1.5 px-3 py-1.5 border border-ocean-200 dark:border-ocean-700 rounded-lg hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
+            >
+              <Gift size={13} /> Gift Cards
+            </Link>
+            <Link
+              to={ROUTES.ADMIN.SETTINGS}
+              className="text-xs font-medium text-ocean-600 dark:text-ocean-300 hover:text-ocean-900 dark:hover:text-white flex items-center gap-1.5 px-3 py-1.5 border border-ocean-200 dark:border-ocean-700 rounded-lg hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
+            >
+              <SettingsIcon size={13} /> Settings
             </Link>
           </div>
         </div>

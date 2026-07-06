@@ -51,6 +51,7 @@ def _user_to_response(user_doc: dict) -> UserResponse:
         role=user_doc["role"],
         avatar=user_doc.get("avatar"),
         is_email_verified=user_doc.get("is_email_verified", False),
+        date_of_birth=user_doc.get("date_of_birth"),
         created_at=user_doc["created_at"],
     )
 

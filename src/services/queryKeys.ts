@@ -85,6 +85,7 @@ export const queryKeys = {
   // ─── Loyalty ──────────────────────────────────────────────────────────────
   loyalty: {
     balance: () => ['loyalty', 'balance'] as const,
+    membership: () => ['loyalty', 'membership'] as const,
   },
 
   // ─── Flash Sales ──────────────────────────────────────────────────────────

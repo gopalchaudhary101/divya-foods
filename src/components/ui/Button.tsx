@@ -1,7 +1,7 @@
 import React from 'react'
 import { Loader2 } from 'lucide-react'
 
-type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
+type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'premium' | 'premiumOutline'
 type Size = 'sm' | 'md' | 'lg' | 'icon'
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -22,6 +22,11 @@ const variantClasses: Record<Variant, string> = {
   ghost:
     'text-ocean-700 hover:bg-ocean-50 active:bg-ocean-100 dark:text-ocean-100 dark:hover:bg-ocean-900',
   danger: 'bg-red-600 hover:bg-red-700 active:bg-red-800 text-white shadow-sm disabled:bg-red-300',
+  // Premium redesign variants — additive, used by storefront pages only (admin keeps the variants above).
+  premium:
+    'bg-premium-gold hover:bg-premium-gold-light active:bg-premium-gold-light text-premium-navy shadow-sm disabled:bg-premium-navy/10 disabled:text-premium-muted',
+  premiumOutline:
+    'border border-premium-navy/20 text-premium-navy hover:bg-premium-navy/5 active:bg-premium-navy/10 dark:border-white/20 dark:text-white dark:hover:bg-white/10',
 }
 
 const sizeClasses: Record<Size, string> = {

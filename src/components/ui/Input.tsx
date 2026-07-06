@@ -28,7 +28,7 @@ export function Input({
       {label && (
         <label
           htmlFor={inputId}
-          className="text-sm font-medium text-ocean-900 dark:text-ocean-100"
+          className="text-sm font-medium text-premium-navy dark:text-ocean-100"
         >
           {label}
           {rest.required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
@@ -38,7 +38,7 @@ export function Input({
 
       <div className="relative flex items-center">
         {leftIcon && (
-          <span className="absolute left-3 text-ocean-400 pointer-events-none" aria-hidden="true">{leftIcon}</span>
+          <span className="absolute left-3 text-premium-navy/40 pointer-events-none" aria-hidden="true">{leftIcon}</span>
         )}
 
         <input
@@ -47,12 +47,12 @@ export function Input({
           aria-describedby={describedBy}
           className={[
             'w-full rounded-xl border bg-white px-4 py-2.5 text-sm',
-            'text-ocean-900 placeholder:text-ocean-300',
+            'text-premium-navy placeholder:text-premium-navy/30',
             'transition-all duration-200',
-            'focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:border-transparent',
-            'disabled:cursor-not-allowed disabled:bg-ocean-50 disabled:text-ocean-400',
+            'focus:outline-none focus:ring-2 focus:ring-premium-gold focus:border-transparent',
+            'disabled:cursor-not-allowed disabled:bg-premium-navy/5 disabled:text-premium-navy/30',
             'dark:bg-ocean-900 dark:text-ocean-50 dark:border-ocean-700 dark:placeholder:text-ocean-500',
-            error ? 'border-red-400 focus:ring-red-400' : 'border-ocean-200',
+            error ? 'border-red-400 focus:ring-red-400' : 'border-premium-navy/15',
             leftIcon ? 'pl-10' : '',
             rightIcon ? 'pr-10' : '',
             className,
@@ -63,7 +63,7 @@ export function Input({
         />
 
         {rightIcon && (
-          <span className="absolute right-3 text-ocean-400" aria-hidden="true">{rightIcon}</span>
+          <span className="absolute right-3 text-premium-navy/40">{rightIcon}</span>
         )}
       </div>
 
@@ -73,7 +73,7 @@ export function Input({
         </p>
       )}
       {!error && helperText && (
-        <p id={helperId} className="text-xs text-ocean-400">{helperText}</p>
+        <p id={helperId} className="text-xs text-premium-navy/40">{helperText}</p>
       )}
     </div>
   )

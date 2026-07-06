@@ -51,9 +51,9 @@ export function DeliveryStatusStepper({ status }: DeliveryStatusStepperProps) {
                 <div
                   className={[
                     'w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 shrink-0',
-                    done    ? 'bg-mint-500 text-white shadow-sm'           : '',
-                    active  ? 'bg-ocean-700 text-white shadow-md ring-4 ring-ocean-200 dark:ring-ocean-700' : '',
-                    pending ? 'bg-ocean-100 dark:bg-ocean-800 text-ocean-300 dark:text-ocean-600' : '',
+                    done    ? 'bg-premium-teal text-white shadow-sm'           : '',
+                    active  ? 'bg-premium-gold text-premium-navy shadow-md ring-4 ring-premium-gold/20' : '',
+                    pending ? 'bg-premium-navy/10 dark:bg-ocean-800 text-premium-navy/30 dark:text-ocean-600' : '',
                   ].join(' ')}
                 >
                   <Icon size={16} />
@@ -61,9 +61,9 @@ export function DeliveryStatusStepper({ status }: DeliveryStatusStepperProps) {
                 <span
                   className={[
                     'text-[10px] sm:text-xs font-medium text-center leading-tight px-0.5',
-                    done    ? 'text-mint-600 dark:text-mint-400' : '',
-                    active  ? 'text-ocean-900 dark:text-white font-semibold' : '',
-                    pending ? 'text-ocean-300 dark:text-ocean-600' : '',
+                    done    ? 'text-premium-teal' : '',
+                    active  ? 'text-premium-navy dark:text-white font-semibold' : '',
+                    pending ? 'text-premium-navy/30 dark:text-ocean-600' : '',
                   ].join(' ')}
                 >
                   {step.label}
@@ -73,7 +73,7 @@ export function DeliveryStatusStepper({ status }: DeliveryStatusStepperProps) {
               {/* Connector line between steps */}
               {idx < STEPS.length - 1 && (
                 <div className="flex-1 h-0.5 mt-4 mx-1 shrink-0 max-w-[40px] transition-colors duration-300"
-                  style={{ background: idx < currentIdx ? '#5DCAA5' : '#CBD5E1' }}
+                  style={{ background: idx < currentIdx ? '#2E8B8B' : '#CBD5E1' }}
                 />
               )}
             </React.Fragment>

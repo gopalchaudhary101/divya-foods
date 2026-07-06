@@ -41,7 +41,7 @@ def create_access_token(user_id: str, email: str, role: str) -> str:
     Payload:
       sub   → user's MongoDB _id (string)  — "subject" (standard JWT claim)
       email → used for logging / debugging
-      role  → "customer" | "admin"
+      role  → "customer" | "admin" | "developer"
       exp   → expiry timestamp
 
     The token is signed with JWT_SECRET_KEY using HS256.

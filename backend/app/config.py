@@ -31,6 +31,10 @@ class Settings(BaseSettings):
         "https://divya-foods.vercel.app",
     ]
 
+    # Public site URL — used to build absolute links in the sitemap (products/categories
+    # are only known to this API; the frontend is a separate static SPA deployment)
+    FRONTEND_URL: str = "https://divya-foods.vercel.app"
+
     # Cloudinary — image CDN
     CLOUDINARY_CLOUD_NAME: str = ""
     CLOUDINARY_API_KEY: str = ""

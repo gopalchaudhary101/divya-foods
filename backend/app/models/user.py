@@ -39,6 +39,7 @@ class UserUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=2, max_length=100)
     phone: Optional[str] = Field(None, pattern=r"^\+?[0-9]{10,15}$")
     avatar: Optional[str] = None
+    date_of_birth: Optional[str] = None   # "YYYY-MM-DD" — only month/day are used, for birthday rewards
 
 
 class ForgotPasswordRequest(BaseModel):
@@ -58,13 +59,16 @@ class UserInDB(MongoBaseModel):
     email: str
     phone: Optional[str] = None
     password_hash: str                      # bcrypt hash — never expose this
-    role: str = "customer"                  # "customer" | "admin"
+    role: str = "customer"                  # "customer" | "admin" | "developer"
     avatar: Optional[str] = None            # Cloudinary URL
     is_active: bool = True
     is_email_verified: bool = False
     refresh_token: Optional[str] = None     # hashed refresh token for rotation
     reset_token: Optional[str] = None       # one-time password reset token
     reset_token_expires: Optional[datetime] = None
+    date_of_birth: Optional[str] = None     # "YYYY-MM-DD" — used only for birthday loyalty bonuses
+    bonus_points: int = 0                   # one-off loyalty point grants (e.g. birthday bonus)
+    last_birthday_reward_year: Optional[int] = None
     created_at: datetime = Field(default_factory=utcnow)
     updated_at: datetime = Field(default_factory=utcnow)
 
@@ -79,6 +83,7 @@ class UserResponse(MongoBaseModel):
     role: str
     avatar: Optional[str] = None
     is_email_verified: bool
+    date_of_birth: Optional[str] = None
     created_at: datetime
 
 

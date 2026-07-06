@@ -35,12 +35,12 @@ export function AppProviders({ children }: AppProvidersProps) {
             toastOptions={{
               duration: 4000,
               style: {
-                background: '#042C53',
-                color: '#E6F1FB',
+                background: '#0B1D2A',
+                color: '#F5F1E8',
                 fontFamily: 'Inter, sans-serif',
                 borderRadius: '8px',
               },
-              success: { iconTheme: { primary: '#5DCAA5', secondary: '#042C53' } },
+              success: { iconTheme: { primary: '#2E8B8B', secondary: '#0B1D2A' } },
               error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
             }}
           />

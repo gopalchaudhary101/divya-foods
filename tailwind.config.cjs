@@ -36,7 +36,17 @@ module.exports = {
           50: '#E0F7F0'
         },
         cream: '#FAEEDA',
-        ink: '#042C53'
+        ink: '#042C53',
+        // Premium redesign palette — additive, does not replace ocean/gold/mint/cream above.
+        premium: {
+          navy: '#0B1D2A',
+          charcoal: '#13242F',
+          gold: '#C9A227',
+          'gold-light': '#E0BC55',
+          teal: '#2E8B8B',
+          cream: '#F5F1E8',
+          muted: '#9DB2BF'
+        }
       },
       fontFamily: {
         display: ['"Playfair Display"', 'Georgia', 'serif'],

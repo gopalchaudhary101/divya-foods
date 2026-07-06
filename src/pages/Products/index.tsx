@@ -24,13 +24,13 @@ const SORT_OPTIONS = [
 
 function ProductCardSkeleton() {
   return (
-    <div className="rounded-2xl overflow-hidden bg-white dark:bg-ocean-900 border border-ocean-100 dark:border-ocean-800 animate-pulse">
-      <div className="aspect-square bg-ocean-100 dark:bg-ocean-800" />
+    <div className="rounded-2xl overflow-hidden bg-premium-charcoal border border-white/5 animate-pulse">
+      <div className="aspect-square bg-premium-navy" />
       <div className="p-4 flex flex-col gap-3">
-        <div className="h-4 bg-ocean-100 dark:bg-ocean-800 rounded w-3/4" />
-        <div className="h-3 bg-ocean-100 dark:bg-ocean-800 rounded w-1/2" />
-        <div className="h-3 bg-ocean-100 dark:bg-ocean-800 rounded w-1/3" />
-        <div className="h-9 bg-ocean-100 dark:bg-ocean-800 rounded-xl mt-1" />
+        <div className="h-4 bg-premium-navy rounded w-3/4" />
+        <div className="h-3 bg-premium-navy rounded w-1/2" />
+        <div className="h-3 bg-premium-navy rounded w-1/3" />
+        <div className="h-9 bg-premium-navy rounded-xl mt-1" />
       </div>
     </div>
   )
@@ -123,7 +123,7 @@ export default function ProductsPage() {
     <aside className="flex flex-col gap-6">
       {/* Categories */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-ocean-400 mb-3">
+        <p className="df-eyebrow mb-3">
           Category
         </p>
         <div className="flex flex-col gap-1">
@@ -131,8 +131,8 @@ export default function ProductsPage() {
             onClick={() => setParam('category', null)}
             className={`text-left px-3 py-1.5 rounded-lg text-sm transition-colors ${
               !activeCategory
-                ? 'bg-ocean-700 text-white font-medium'
-                : 'text-ocean-700 dark:text-ocean-200 hover:bg-ocean-50 dark:hover:bg-ocean-800'
+                ? 'bg-premium-navy text-white font-medium'
+                : 'text-premium-navy/70 dark:text-ocean-200 hover:bg-premium-navy/10 dark:hover:bg-ocean-800'
             }`}
           >
             All Products {!activeCategory && total > 0 && (
@@ -145,8 +145,8 @@ export default function ProductsPage() {
               onClick={() => setParam('category', cat.slug)}
               className={`text-left px-3 py-1.5 rounded-lg text-sm transition-colors ${
                 activeCategory === cat.slug
-                  ? 'bg-ocean-700 text-white font-medium'
-                  : 'text-ocean-700 dark:text-ocean-200 hover:bg-ocean-50 dark:hover:bg-ocean-800'
+                  ? 'bg-premium-navy text-white font-medium'
+                  : 'text-premium-navy/70 dark:text-ocean-200 hover:bg-premium-navy/10 dark:hover:bg-ocean-800'
               }`}
             >
               {cat.name}
@@ -158,7 +158,7 @@ export default function ProductsPage() {
 
       {/* In Stock */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-ocean-400 mb-3">
+        <p className="df-eyebrow mb-3">
           Availability
         </p>
         <label className="flex items-center gap-2.5 cursor-pointer group">
@@ -166,9 +166,9 @@ export default function ProductsPage() {
             type="checkbox"
             checked={isInStock}
             onChange={(e) => setParam('inStock', e.target.checked ? 'true' : null)}
-            className="w-4 h-4 accent-ocean-700 rounded"
+            className="w-4 h-4 accent-premium-gold rounded"
           />
-          <span className="text-sm text-ocean-700 dark:text-ocean-200 group-hover:text-ocean-900">
+          <span className="text-sm text-premium-navy/70 dark:text-ocean-200 group-hover:text-premium-navy">
             In stock only
           </span>
         </label>
@@ -176,7 +176,7 @@ export default function ProductsPage() {
 
       {/* Price Range */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-ocean-400 mb-3">
+        <p className="df-eyebrow mb-3">
           Price Range (₹)
         </p>
         <div className="flex items-center gap-2">
@@ -185,22 +185,22 @@ export default function ProductsPage() {
             placeholder="Min"
             defaultValue={searchParams.get('minPrice') || ''}
             onBlur={(e) => setParam('minPrice', e.target.value || null)}
-            className="w-full border border-ocean-200 dark:border-ocean-700 rounded-lg px-3 py-1.5 text-sm dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-ocean-500"
+            className="w-full border border-premium-navy/15 dark:border-ocean-700 rounded-lg px-3 py-1.5 text-sm dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-premium-gold"
           />
-          <span className="text-ocean-300 shrink-0">–</span>
+          <span className="text-premium-navy/40 shrink-0">–</span>
           <input
             type="number"
             placeholder="Max"
             defaultValue={searchParams.get('maxPrice') || ''}
             onBlur={(e) => setParam('maxPrice', e.target.value || null)}
-            className="w-full border border-ocean-200 dark:border-ocean-700 rounded-lg px-3 py-1.5 text-sm dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-ocean-500"
+            className="w-full border border-premium-navy/15 dark:border-ocean-700 rounded-lg px-3 py-1.5 text-sm dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-premium-gold"
           />
         </div>
       </div>
 
       {/* Rating Filter */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-ocean-400 mb-3">
+        <p className="df-eyebrow mb-3">
           Min Rating
         </p>
         <div className="flex flex-col gap-1.5">
@@ -211,12 +211,12 @@ export default function ProductsPage() {
               className={[
                 'flex items-center gap-2 text-sm px-2 py-1.5 rounded-lg transition-colors text-left',
                 activeMinRating === star
-                  ? 'bg-ocean-100 dark:bg-ocean-700 text-ocean-900 dark:text-white font-medium'
-                  : 'text-ocean-600 dark:text-ocean-300 hover:bg-ocean-50 dark:hover:bg-ocean-800',
+                  ? 'bg-premium-gold/15 text-premium-navy dark:text-white font-medium'
+                  : 'text-premium-navy/60 dark:text-ocean-300 hover:bg-premium-navy/10 dark:hover:bg-ocean-800',
               ].join(' ')}
             >
-              {'★'.repeat(star)}{'☆'.repeat(5 - star)}
-              <span className="text-xs text-ocean-400">&amp; up</span>
+              <span className="text-premium-gold">{'★'.repeat(star)}</span>{'☆'.repeat(5 - star)}
+              <span className="text-xs text-premium-navy/40">&amp; up</span>
             </button>
           ))}
         </div>
@@ -253,13 +253,13 @@ export default function ProductsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-display text-3xl font-semibold text-ocean-900 dark:text-white">
+            <h1 className="font-display text-3xl font-semibold text-premium-navy dark:text-white">
               {activeCategory
                 ? categories.find((c: { slug: string }) => c.slug === activeCategory)?.name ?? 'Products'
                 : 'All Products'}
             </h1>
             {!isLoading && (
-              <p className="mt-1 text-sm text-ocean-400">
+              <p className="mt-1 text-sm text-premium-navy/50">
                 {total} {total === 1 ? 'product' : 'products'} found
               </p>
             )}
@@ -268,13 +268,13 @@ export default function ProductsPage() {
           <div className="flex items-center gap-3">
             {/* Search bar */}
             <div className="relative">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-ocean-400 pointer-events-none" />
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-premium-navy/40 pointer-events-none" />
               <input
                 type="search"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Search products…"
-                className="pl-9 pr-4 py-2 text-sm border border-ocean-200 dark:border-ocean-700 rounded-xl dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-ocean-500 w-44 sm:w-56"
+                className="pl-9 pr-4 py-2 text-sm border border-premium-navy/15 dark:border-ocean-700 rounded-xl dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-premium-gold w-44 sm:w-56"
               />
             </div>
 
@@ -282,7 +282,7 @@ export default function ProductsPage() {
             <select
               value={activeSort}
               onChange={(e) => setParam('sort', e.target.value)}
-              className="text-sm border border-ocean-200 dark:border-ocean-700 rounded-xl px-3 py-2 dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-ocean-500"
+              className="text-sm border border-premium-navy/15 dark:border-ocean-700 rounded-xl px-3 py-2 dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-premium-gold"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -315,7 +315,7 @@ export default function ProductsPage() {
             {activeCategory && (
               <button
                 onClick={() => setParam('category', null)}
-                className="flex items-center gap-1.5 px-3 py-1 bg-ocean-100 dark:bg-ocean-800 text-ocean-700 dark:text-ocean-200 rounded-full text-xs font-medium hover:bg-ocean-200 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1 bg-premium-navy/10 dark:bg-ocean-800 text-premium-navy dark:text-ocean-200 rounded-full text-xs font-medium hover:bg-premium-navy/20 transition-colors"
               >
                 {categories.find((c: { slug: string }) => c.slug === activeCategory)?.name ?? activeCategory}
                 <X size={11} />
@@ -324,7 +324,7 @@ export default function ProductsPage() {
             {isInStock && (
               <button
                 onClick={() => setParam('inStock', null)}
-                className="flex items-center gap-1.5 px-3 py-1 bg-ocean-100 dark:bg-ocean-800 text-ocean-700 dark:text-ocean-200 rounded-full text-xs font-medium hover:bg-ocean-200 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1 bg-premium-navy/10 dark:bg-ocean-800 text-premium-navy dark:text-ocean-200 rounded-full text-xs font-medium hover:bg-premium-navy/20 transition-colors"
               >
                 In Stock <X size={11} />
               </button>
@@ -332,7 +332,7 @@ export default function ProductsPage() {
             {searchInput && (
               <button
                 onClick={() => setSearchInput('')}
-                className="flex items-center gap-1.5 px-3 py-1 bg-ocean-100 dark:bg-ocean-800 text-ocean-700 dark:text-ocean-200 rounded-full text-xs font-medium hover:bg-ocean-200 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1 bg-premium-navy/10 dark:bg-ocean-800 text-premium-navy dark:text-ocean-200 rounded-full text-xs font-medium hover:bg-premium-navy/20 transition-colors"
               >
                 "{searchInput}" <X size={11} />
               </button>
@@ -342,7 +342,7 @@ export default function ProductsPage() {
 
         {/* Mobile filter panel */}
         {filterOpen && (
-          <div className="lg:hidden bg-ocean-50 dark:bg-ocean-900 rounded-2xl p-6 mb-6 border border-ocean-100 dark:border-ocean-800">
+          <div className="lg:hidden bg-premium-navy/5 dark:bg-ocean-900 rounded-2xl p-6 mb-6 border border-premium-navy/10 dark:border-ocean-800">
             {filterSidebar}
           </div>
         )}
@@ -357,7 +357,7 @@ export default function ProductsPage() {
           {/* Products grid */}
           <div className="flex-1 min-w-0">
             {isFetching && !isLoading && (
-              <div className="flex items-center gap-2 text-sm text-ocean-400 mb-4">
+              <div className="flex items-center gap-2 text-sm text-premium-navy/50 dark:text-ocean-400 mb-4">
                 <Spinner size="sm" />
                 Updating…
               </div>
@@ -372,10 +372,10 @@ export default function ProductsPage() {
             ) : products.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
                 <p className="text-4xl">🐟</p>
-                <p className="text-ocean-500 dark:text-ocean-300 text-lg font-medium">
+                <p className="text-premium-navy/70 dark:text-ocean-300 text-lg font-medium">
                   No products found
                 </p>
-                <p className="text-sm text-ocean-400">Try adjusting your filters or search term.</p>
+                <p className="text-sm text-premium-navy/40">Try adjusting your filters or search term.</p>
                 <Button variant="outline" size="sm" onClick={clearAllFilters}>
                   Clear filters
                 </Button>
@@ -398,7 +398,7 @@ export default function ProductsPage() {
                 <button
                   onClick={() => setParam('page', String(page - 1))}
                   disabled={page === 1}
-                  className="p-2 rounded-lg border border-ocean-200 dark:border-ocean-700 text-ocean-700 dark:text-ocean-200 disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
+                  className="p-2 rounded-lg border border-premium-navy/15 dark:border-ocean-700 text-premium-navy/70 dark:text-ocean-200 disabled:opacity-40 hover:bg-premium-navy/10 dark:hover:bg-ocean-800 transition-colors"
                 >
                   <ChevronLeft size={16} />
                 </button>
@@ -412,8 +412,8 @@ export default function ProductsPage() {
                       className={[
                         'w-9 h-9 rounded-lg text-sm font-medium transition-colors',
                         pg === page
-                          ? 'bg-ocean-700 text-white'
-                          : 'border border-ocean-200 dark:border-ocean-700 text-ocean-700 dark:text-ocean-200 hover:bg-ocean-50 dark:hover:bg-ocean-800',
+                          ? 'bg-premium-navy text-white'
+                          : 'border border-premium-navy/15 dark:border-ocean-700 text-premium-navy/70 dark:text-ocean-200 hover:bg-premium-navy/10 dark:hover:bg-ocean-800',
                       ].join(' ')}
                     >
                       {pg}
@@ -424,7 +424,7 @@ export default function ProductsPage() {
                 <button
                   onClick={() => setParam('page', String(page + 1))}
                   disabled={page === totalPages}
-                  className="p-2 rounded-lg border border-ocean-200 dark:border-ocean-700 text-ocean-700 dark:text-ocean-200 disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
+                  className="p-2 rounded-lg border border-premium-navy/15 dark:border-ocean-700 text-premium-navy/70 dark:text-ocean-200 disabled:opacity-40 hover:bg-premium-navy/10 dark:hover:bg-ocean-800 transition-colors"
                 >
                   <ChevronRight size={16} />
                 </button>

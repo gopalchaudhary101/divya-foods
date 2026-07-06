@@ -55,9 +55,9 @@ export function BundleCard({ bundle }: BundleCardProps) {
   }
 
   return (
-    <div className="bg-white dark:bg-ocean-900 border border-ocean-100 dark:border-ocean-800 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow">
+    <div className="bg-white dark:bg-ocean-900 border border-premium-navy/10 dark:border-ocean-800 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow">
       {/* Header image / gradient */}
-      <div className="relative h-40 bg-ocean-gradient flex items-center justify-center">
+      <div className="relative h-40 bg-gradient-to-br from-premium-navy to-[#1B3A4B] flex items-center justify-center">
         {bundle.image ? (
           <img src={bundle.image} alt={bundle.name} className="w-full h-full object-cover" />
         ) : (
@@ -86,9 +86,9 @@ export function BundleCard({ bundle }: BundleCardProps) {
       </div>
 
       <div className="p-4">
-        <h3 className="font-display font-semibold text-ocean-900 dark:text-white text-base mb-1">{bundle.name}</h3>
+        <h3 className="font-display font-semibold text-premium-navy dark:text-white text-base mb-1">{bundle.name}</h3>
         {bundle.description && (
-          <p className="text-xs text-ocean-400 mb-3 line-clamp-2">{bundle.description}</p>
+          <p className="text-xs text-premium-navy/40 mb-3 line-clamp-2">{bundle.description}</p>
         )}
 
         {/* Items list */}
@@ -97,27 +97,27 @@ export function BundleCard({ bundle }: BundleCardProps) {
             <li key={item.productId} className="flex items-center justify-between text-xs">
               <Link
                 to={`/products/${item.slug}`}
-                className="text-ocean-600 dark:text-ocean-300 hover:text-ocean-900 dark:hover:text-white truncate transition-colors"
+                className="text-premium-navy/70 dark:text-ocean-300 hover:text-premium-gold dark:hover:text-white truncate transition-colors"
               >
                 {item.quantity > 1 && <span className="font-semibold mr-1">{item.quantity}×</span>}
                 {item.name}
               </Link>
-              <span className="text-ocean-400 ml-2 shrink-0">{formatCurrency(item.price)}</span>
+              <span className="text-premium-navy/40 ml-2 shrink-0">{formatCurrency(item.price)}</span>
             </li>
           ))}
         </ul>
 
         {/* Pricing + CTA */}
-        <div className="flex items-center justify-between pt-3 border-t border-ocean-100 dark:border-ocean-800">
+        <div className="flex items-center justify-between pt-3 border-t border-premium-navy/10 dark:border-ocean-800">
           <div>
-            <span className="text-xl font-bold text-ocean-900 dark:text-white">{formatCurrency(bundle.bundlePrice)}</span>
+            <span className="text-xl font-semibold text-premium-gold">{formatCurrency(bundle.bundlePrice)}</span>
             {savings > 0 && (
-              <span className="ml-2 text-xs text-ocean-400 line-through">{formatCurrency(originalTotal)}</span>
+              <span className="ml-2 text-xs text-premium-navy/40 line-through">{formatCurrency(originalTotal)}</span>
             )}
           </div>
           <button
             onClick={handleAddAll}
-            className="flex items-center gap-1.5 bg-ocean-700 hover:bg-ocean-900 text-white px-3 py-2 rounded-xl text-sm font-medium transition-colors"
+            className="flex items-center gap-1.5 bg-premium-gold hover:bg-premium-gold-light text-premium-navy px-3 py-2 rounded-xl text-sm font-medium transition-colors"
           >
             <ShoppingCart size={14} /> Add Bundle
           </button>

@@ -4,7 +4,8 @@ FastAPI dependency functions — injected into route handlers via Depends().
 Hierarchy:
   get_db            → raw MongoDB database handle (any route that touches DB)
   get_current_user  → authenticated user (protected routes)
-  require_admin     → admin-only routes (builds on get_current_user)
+  require_admin     → admin or developer routes (builds on get_current_user)
+  require_developer → developer-only routes (builds on get_current_user)
   get_optional_user → routes that work for both guests and logged-in users
 """
 
@@ -65,17 +66,50 @@ def get_current_user(
 
 def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
     """
-    Extend get_current_user — additionally requires role == 'admin'.
+    Extend get_current_user — additionally requires role 'admin' or 'developer'.
 
-    Used on all /admin/* routes:
+    'developer' is a superset role (full access, including everything admin
+    can do), so it passes this check too. Used on all /admin/* routes:
       @router.get("/admin/orders")
       def admin_list_orders(user: dict = Depends(require_admin)):
           ...
     """
-    if current_user.get("role") != "admin":
+    if current_user.get("role") not in {"admin", "developer"}:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required.",
+        )
+    return current_user
+
+
+def require_developer(current_user: dict = Depends(get_current_user)) -> dict:
+    """
+    Extend get_current_user — strictly requires role == 'developer'.
+
+    Reserved for future developer-exclusive/system-level endpoints. Not
+    currently attached to any route — every capability requested so far
+    (products, categories, images, orders, enquiries) is covered by
+    require_admin, which developers also satisfy.
+    """
+    if current_user.get("role") != "developer":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Developer access required.",
+        )
+    return current_user
+
+
+def require_driver(current_user: dict = Depends(get_current_user)) -> dict:
+    """
+    Extend get_current_user — requires role 'driver' (or 'admin'/'developer',
+    so staff can preview the driver dashboard while testing/support). Used on
+    all /driver/* routes — driver accounts are created by an admin (there is
+    no self-signup for this role) and only ever see orders assigned to them.
+    """
+    if current_user.get("role") not in {"driver", "admin", "developer"}:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Driver access required.",
         )
     return current_user
 

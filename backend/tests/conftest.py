@@ -19,6 +19,7 @@ from passlib.context import CryptContext
 from pymongo import MongoClient
 
 from app.dependencies import get_db
+from app.limiter import limiter
 from app.main import app
 
 TEST_MONGO_URL = "mongodb://localhost:27017"
@@ -57,12 +58,18 @@ def client(db):
 
 # ─── Per-test cleanup ─────────────────────────────────────────────────────────
 
-COLLECTIONS = ["users", "products", "categories", "orders", "carts", "coupons"]
+COLLECTIONS = [
+    "users", "products", "categories", "orders", "carts", "coupons", "banners",
+    "reviews", "addresses", "notifications", "push_subscriptions", "bundles",
+    "qa", "subscriptions", "settings", "image_hashes", "stock_movements", "purchases",
+    "bulk_order_requests", "gift_cards",
+]
 
 @pytest.fixture(autouse=True)
 def clean(db):
     for col in COLLECTIONS:
         db[col].delete_many({})
+    limiter.reset()
     yield
 
 
@@ -138,11 +145,12 @@ def insert_product(db, category_id, name="Test Salmon", price=999.0, in_stock=Tr
 
 _order_counter = 0
 
-def insert_order(db, user_id, product_id, status="pending", payment_status="pending"):
+def insert_order(db, user_id, product_id, status="pending", payment_status="pending",
+                  created_at=None, total=999.0, quantity=1):
     """Insert a minimal order document directly for testing downstream flows."""
     global _order_counter
     _order_counter += 1
-    now = _now()
+    now = created_at or _now()
     result = db.orders.insert_one({
         "order_number":      f"DF-TEST-{_order_counter:06d}",
         "user_id":           user_id,
@@ -162,13 +170,13 @@ def insert_order(db, user_id, product_id, status="pending", payment_status="pend
             "product_id": product_id,
             "name":       "Test Salmon",
             "price":      999.0,
-            "quantity":   1,
+            "quantity":   quantity,
             "image":      "/assets/test.webp",
         }],
         "subtotal":          999.0,
         "delivery_charge":   0.0,
         "discount":          0.0,
-        "total":             999.0,
+        "total":             total,
         "coupon_code":       None,
         "notes":             "",
         "tracking_timeline": [{"status": status, "timestamp": now, "note": "Order placed"}],

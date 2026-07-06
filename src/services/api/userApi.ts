@@ -7,6 +7,7 @@ export interface UpdateProfileRequest {
   name?: string
   phone?: string
   avatar?: string
+  date_of_birth?: string
 }
 
 export interface CreateAddressRequest {

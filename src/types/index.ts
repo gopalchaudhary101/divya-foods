@@ -4,8 +4,9 @@ export interface User {
   name: string
   email: string
   phone?: string
-  role: 'customer' | 'admin'
+  role: 'customer' | 'admin' | 'driver'
   avatar?: string
+  date_of_birth?: string | null
   createdAt: string
 }
 
@@ -165,6 +166,21 @@ export interface Banner {
   order: number
 }
 
+// ─── Site Settings ────────────────────────────────────────────────────────────
+export interface SiteSettings {
+  businessName: string
+  gstNumber: string
+  fssaiNumber: string
+  // Image-upload limits — admin-only, not present on the public /settings response
+  maxUploadSizeMB?: number
+  maxImageDimension?: number
+  compressionQuality?: 'auto:eco' | 'auto:good' | 'auto:best'
+  allowedFormats?: string[]
+  enableWebP?: boolean
+  enableAVIF?: boolean
+  thumbnailSizes?: number[]
+}
+
 // ─── Q&A ──────────────────────────────────────────────────────────────────────
 export interface QA {
   id: string
@@ -198,14 +214,31 @@ export interface Subscription {
 // ─── Loyalty ──────────────────────────────────────────────────────────────────
 export interface LoyaltyBalance {
   earned: number
+  bonusPoints: number
   redeemed: number
   available: number
   discountPerPoint: number
   minRedeem: number
+  birthdayBonusGranted: boolean
+  birthdayBonusPoints: number
   recentOrders: {
     orderNumber: string
     total: number
     points: number
     date: string
   }[]
+}
+
+// ─── Membership ───────────────────────────────────────────────────────────────
+export type MembershipTier = 'Silver' | 'Gold' | 'Platinum'
+
+export interface MembershipInfo {
+  tier: MembershipTier
+  lifetimeSpend: number
+  nextTier: MembershipTier | null
+  amountToNextTier: number | null
+  perks: {
+    freeDelivery: boolean
+    freeDeliveryAbove: number | null
+  }
 }

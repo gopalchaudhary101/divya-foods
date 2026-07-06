@@ -34,8 +34,8 @@ export function useToggleWishlist() {
   const localWishlist = useAppSelector((s) => s.wishlist.productIds)
 
   const apiMutation = useMutation({
-    mutationFn: async (productId: string) => {
-      if (localWishlist.includes(productId)) {
+    mutationFn: async ({ productId, action }: { productId: string; action: 'add' | 'remove' }) => {
+      if (action === 'remove') {
         await wishlistApi.removeFromWishlist(productId)
       } else {
         await wishlistApi.addToWishlist(productId)
@@ -46,12 +46,17 @@ export function useToggleWishlist() {
   })
 
   return (productId: string) => {
+    // Decide add vs. remove from state as it is *before* the dispatch below —
+    // the mutation runs asynchronously, and by then a stale/updated closure
+    // over localWishlist would see the post-dispatch value instead.
+    const action = localWishlist.includes(productId) ? 'remove' : 'add'
+
     // Always update Redux store for instant UI feedback
     dispatch(toggleWishlist(productId))
 
     // Authenticated: also sync to server
     if (isAuthenticated) {
-      apiMutation.mutate(productId)
+      apiMutation.mutate({ productId, action })
     }
   }
 }

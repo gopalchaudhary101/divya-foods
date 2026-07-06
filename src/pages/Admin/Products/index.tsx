@@ -6,6 +6,7 @@ import {
   Plus, Search, Edit2, Trash2, X, ChevronDown,
   Package, Star, TrendingUp, Image as ImageIcon,
   CheckCircle, XCircle, LayoutDashboard,
+  CheckSquare, Square, Download, UploadCloud, Images, Megaphone,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
@@ -15,6 +16,8 @@ import { formatCurrency } from '@/utils/formatCurrency'
 import axiosInstance from '@/services/api/axiosInstance'
 import type { ApiResponse } from '@/types'
 import { ROUTES } from '@/constants/routes'
+import { BulkImportModal, BulkImageModal } from './BulkModals'
+import { MarketingModal } from './MarketingModal'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -108,6 +111,44 @@ function DeleteModal({
         </div>
         <p className="text-sm text-ocean-600 dark:text-ocean-300 mb-6">
           Are you sure you want to delete <strong className="text-ocean-900 dark:text-white">{product.name}</strong>?
+          This cannot be undone.
+        </p>
+        <div className="flex gap-3">
+          <Button variant="outline" size="sm" className="flex-1" onClick={onClose}>Cancel</Button>
+          <Button variant="danger" size="sm" className="flex-1" loading={loading} onClick={onConfirm}>Delete</Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Bulk delete confirm modal ────────────────────────────────────────────────
+
+function BulkDeleteModal({
+  count,
+  onClose,
+  onConfirm,
+  loading,
+}: {
+  count: number
+  onClose: () => void
+  onConfirm: () => void
+  loading: boolean
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div
+        className="bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl p-6 w-full max-w-sm"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-red-50 rounded-xl">
+            <Trash2 size={18} className="text-red-500" />
+          </div>
+          <h3 className="font-display font-semibold text-ocean-900 dark:text-white">Delete Products</h3>
+        </div>
+        <p className="text-sm text-ocean-600 dark:text-ocean-300 mb-6">
+          Are you sure you want to delete <strong className="text-ocean-900 dark:text-white">{count} product{count !== 1 ? 's' : ''}</strong>?
           This cannot be undone.
         </p>
         <div className="flex gap-3">
@@ -435,14 +476,27 @@ function ProductRow({
   product,
   onEdit,
   onDelete,
+  onMarketing,
+  selected,
+  onToggleSelect,
 }: {
   product: AdminProduct
   onEdit: (p: AdminProduct) => void
   onDelete: (p: AdminProduct) => void
+  onMarketing: (p: AdminProduct) => void
+  selected: boolean
+  onToggleSelect: (id: string) => void
 }) {
   const thumb = product.images[0]
   return (
-    <tr className="border-b border-ocean-50 dark:border-ocean-800 hover:bg-ocean-50/50 dark:hover:bg-ocean-800/30 transition-colors">
+    <tr className={`border-b border-ocean-50 dark:border-ocean-800 hover:bg-ocean-50/50 dark:hover:bg-ocean-800/30 transition-colors ${selected ? 'bg-ocean-50/70 dark:bg-ocean-800/30' : ''}`}>
+      {/* Select */}
+      <td className="px-4 py-3">
+        <button onClick={() => onToggleSelect(product.id)} className={selected ? 'text-ocean-700' : 'text-ocean-300'}>
+          {selected ? <CheckSquare size={16} /> : <Square size={16} />}
+        </button>
+      </td>
+
       {/* Image + Name */}
       <td className="px-4 py-3">
         <div className="flex items-center gap-3 min-w-0">
@@ -498,6 +552,13 @@ function ProductRow({
           >
             <Trash2 size={14} />
           </button>
+          <button
+            onClick={() => onMarketing(product)}
+            className="p-1.5 text-ocean-400 hover:text-ocean-700 hover:bg-ocean-50 dark:hover:bg-ocean-800 rounded-lg transition-colors"
+            title="Marketing"
+          >
+            <Megaphone size={14} />
+          </button>
         </div>
       </td>
     </tr>
@@ -515,6 +576,15 @@ export default function AdminProductsPage() {
   const [editProduct, setEdit]  = useState<AdminProduct | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [toDelete, setToDelete] = useState<AdminProduct | null>(null)
+  const [marketingTarget, setMarketingTarget] = useState<AdminProduct | null>(null)
+
+  // Bulk actions
+  const [selected, setSelected]       = useState<Set<string>>(new Set())
+  const [bulkAction, setBulkAction]   = useState('inStock')
+  const [bulkCategory, setBulkCategory] = useState('')
+  const [confirmBulkDelete, setConfirmBulkDelete] = useState(false)
+  const [showImport, setShowImport]   = useState(false)
+  const [showBulkImages, setShowBulkImages] = useState(false)
 
   // Fetch categories for filter + form
   const { data: catsData } = useQuery({
@@ -558,6 +628,72 @@ export default function AdminProductsPage() {
   const openAdd  = useCallback(() => { setEdit(null); setShowForm(true) }, [])
   const openEdit = useCallback((p: AdminProduct) => { setEdit(p); setShowForm(true) }, [])
 
+  // Bulk update (toggle fields / change category)
+  const bulkUpdateMutation = useMutation({
+    mutationFn: async (updates: Record<string, unknown>) => {
+      await axiosInstance.put('/admin/products/bulk-update', { productIds: Array.from(selected), ...updates })
+    },
+    onSuccess: () => {
+      toast.success(`${selected.size} product${selected.size !== 1 ? 's' : ''} updated`)
+      queryClient.invalidateQueries({ queryKey: ['admin', 'products'] })
+      setSelected(new Set())
+    },
+    onError: () => toast.error('Bulk update failed'),
+  })
+
+  // Bulk delete
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async () => {
+      await axiosInstance.post('/admin/products/bulk-delete', { productIds: Array.from(selected) })
+    },
+    onSuccess: () => {
+      toast.success(`${selected.size} product${selected.size !== 1 ? 's' : ''} deleted`)
+      queryClient.invalidateQueries({ queryKey: ['admin', 'products'] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'stats'] })
+      setSelected(new Set())
+      setConfirmBulkDelete(false)
+    },
+    onError: () => toast.error('Bulk delete failed'),
+  })
+
+  function toggleSelect(id: string) {
+    setSelected(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  function toggleAll() {
+    if (selected.size === products.length && products.length > 0) {
+      setSelected(new Set())
+    } else {
+      setSelected(new Set(products.map(p => p.id)))
+    }
+  }
+
+  function exportCSV() {
+    window.open(`${axiosInstance.defaults.baseURL}/admin/products/export`, '_blank')
+  }
+
+  function applyBulkAction() {
+    switch (bulkAction) {
+      case 'inStock':      return bulkUpdateMutation.mutate({ inStock: true })
+      case 'outOfStock':   return bulkUpdateMutation.mutate({ inStock: false })
+      case 'feature':      return bulkUpdateMutation.mutate({ isFeatured: true })
+      case 'unfeature':    return bulkUpdateMutation.mutate({ isFeatured: false })
+      case 'bestSeller':   return bulkUpdateMutation.mutate({ isBestSeller: true })
+      case 'notBestSeller':return bulkUpdateMutation.mutate({ isBestSeller: false })
+      case 'category':
+        if (!bulkCategory) { toast.error('Choose a category first'); return }
+        return bulkUpdateMutation.mutate({ categoryId: bulkCategory })
+      case 'delete':
+        return setConfirmBulkDelete(true)
+    }
+  }
+
+  const allSelected = products.length > 0 && selected.size === products.length
+
   return (
     <>
       <Helmet><title>Products — Admin | Divya Foods</title></Helmet>
@@ -576,9 +712,64 @@ export default function AdminProductsPage() {
           {productsData && (
             <span className="text-sm text-ocean-400">({productsData.total} total)</span>
           )}
+          <div className="ml-auto flex items-center gap-2">
+            <Button variant="outline" size="sm" leftIcon={<UploadCloud size={14} />} onClick={() => setShowImport(true)}>
+              Import CSV
+            </Button>
+            <Button variant="outline" size="sm" leftIcon={<Images size={14} />} onClick={() => setShowBulkImages(true)}>
+              Bulk Images
+            </Button>
+            <Button variant="outline" size="sm" leftIcon={<Download size={14} />} onClick={exportCSV}>
+              Export CSV
+            </Button>
+          </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+
+          {/* Bulk action bar */}
+          {selected.size > 0 && (
+            <div className="bg-ocean-700 text-white rounded-xl px-4 py-3 flex items-center gap-3 flex-wrap">
+              <span className="text-sm font-medium">{selected.size} selected</span>
+              <select
+                value={bulkAction}
+                onChange={e => setBulkAction(e.target.value)}
+                className="bg-ocean-600 border border-ocean-500 rounded-lg px-2 py-1 text-sm focus:outline-none"
+              >
+                <option value="inStock">Mark In Stock</option>
+                <option value="outOfStock">Mark Out of Stock</option>
+                <option value="feature">Mark Featured</option>
+                <option value="unfeature">Unmark Featured</option>
+                <option value="bestSeller">Mark Best Seller</option>
+                <option value="notBestSeller">Unmark Best Seller</option>
+                <option value="category">Move to category…</option>
+                <option value="delete">Delete</option>
+              </select>
+              {bulkAction === 'category' && (
+                <select
+                  value={bulkCategory}
+                  onChange={e => setBulkCategory(e.target.value)}
+                  className="bg-ocean-600 border border-ocean-500 rounded-lg px-2 py-1 text-sm focus:outline-none"
+                >
+                  <option value="">Choose category…</option>
+                  {categories.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              )}
+              <Button
+                size="sm"
+                className="bg-white text-ocean-800 hover:bg-ocean-100"
+                loading={bulkUpdateMutation.isPending}
+                onClick={applyBulkAction}
+              >
+                Apply
+              </Button>
+              <button onClick={() => setSelected(new Set())} className="ml-auto text-ocean-200 hover:text-white text-sm">
+                Clear selection
+              </button>
+            </div>
+          )}
 
           {/* Table card */}
           <div className="bg-white dark:bg-ocean-900 border border-ocean-100 dark:border-ocean-800 rounded-2xl overflow-hidden">
@@ -639,6 +830,11 @@ export default function AdminProductsPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="text-left text-xs font-semibold text-ocean-400 uppercase tracking-widest border-b border-ocean-100 dark:border-ocean-800">
+                      <th className="px-4 py-3 w-10">
+                        <button onClick={toggleAll} className={allSelected ? 'text-ocean-700' : 'text-ocean-300'}>
+                          {allSelected ? <CheckSquare size={16} /> : <Square size={16} />}
+                        </button>
+                      </th>
                       <th className="px-4 py-3">Product</th>
                       <th className="px-4 py-3">Category</th>
                       <th className="px-4 py-3">Price</th>
@@ -651,7 +847,15 @@ export default function AdminProductsPage() {
                   </thead>
                   <tbody>
                     {products.map(p => (
-                      <ProductRow key={p.id} product={p} onEdit={openEdit} onDelete={setToDelete} />
+                      <ProductRow
+                        key={p.id}
+                        product={p}
+                        onEdit={openEdit}
+                        onDelete={setToDelete}
+                        onMarketing={setMarketingTarget}
+                        selected={selected.has(p.id)}
+                        onToggleSelect={toggleSelect}
+                      />
                     ))}
                   </tbody>
                 </table>
@@ -713,6 +917,38 @@ export default function AdminProductsPage() {
           onClose={() => setToDelete(null)}
           onConfirm={() => deleteMutation.mutate(toDelete.id)}
           loading={deleteMutation.isPending}
+        />
+      )}
+
+      {/* Bulk delete confirm */}
+      {confirmBulkDelete && (
+        <BulkDeleteModal
+          count={selected.size}
+          onClose={() => setConfirmBulkDelete(false)}
+          onConfirm={() => bulkDeleteMutation.mutate()}
+          loading={bulkDeleteMutation.isPending}
+        />
+      )}
+
+      {/* Bulk import */}
+      {showImport && (
+        <BulkImportModal
+          categoryNames={categories.map(c => c.name)}
+          onClose={() => setShowImport(false)}
+        />
+      )}
+
+      {/* Bulk image upload + assign */}
+      {showBulkImages && (
+        <BulkImageModal onClose={() => setShowBulkImages(false)} />
+      )}
+
+      {/* Digital marketing */}
+      {marketingTarget && (
+        <MarketingModal
+          productId={marketingTarget.id}
+          productName={marketingTarget.name}
+          onClose={() => setMarketingTarget(null)}
         />
       )}
     </>

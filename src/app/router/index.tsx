@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { ROUTES } from '@/constants/routes'
 import RootLayout from '@/components/layout/RootLayout'
+import { RequireRole } from '@/components/shared/RequireRole'
 
 // Lazy loading — each page is a separate JS chunk loaded on demand
 const HomePage = lazy(() => import('@/pages/Home'))
@@ -22,12 +23,23 @@ const ReferralPage        = lazy(() => import('@/pages/Referral'))
 const BundlesPage         = lazy(() => import('@/pages/Bundles'))
 const RecipesPage         = lazy(() => import('@/pages/Recipes'))
 const JapaneseGroceryPage = lazy(() => import('@/pages/JapaneseGrocery'))
+const AboutPage             = lazy(() => import('@/pages/About'))
+const AdminSettingsPage     = lazy(() => import('@/pages/Admin/Settings'))
 const NotFoundPage        = lazy(() => import('@/pages/NotFound'))
 const AdminOrdersPage     = lazy(() => import('@/pages/Admin/Orders'))
 const AdminBundlesPage    = lazy(() => import('@/pages/Admin/Bundles'))
+const AdminInventoryPage  = lazy(() => import('@/pages/Admin/Inventory'))
 const LoyaltyPage         = lazy(() => import('@/pages/Loyalty'))
 const FlashSalesPage      = lazy(() => import('@/pages/FlashSales'))
 const SubscriptionsPage   = lazy(() => import('@/pages/Subscriptions'))
+const TrackOrderPage      = lazy(() => import('@/pages/TrackOrder'))
+const BusinessSolutionsPage = lazy(() => import('@/pages/BusinessSolutions'))
+const BulkOrderPage       = lazy(() => import('@/pages/BulkOrder'))
+const AdminBulkOrdersPage = lazy(() => import('@/pages/Admin/BulkOrders'))
+const AdminGiftCardsPage  = lazy(() => import('@/pages/Admin/GiftCards'))
+const AdminDriversPage    = lazy(() => import('@/pages/Admin/Drivers'))
+const AdminUsersPage      = lazy(() => import('@/pages/Admin/Users'))
+const DriverDashboardPage = lazy(() => import('@/pages/Driver'))
 
 const PageLoader: React.FC = () => (
   <div className="min-h-screen flex items-center justify-center bg-ocean-50">
@@ -63,6 +75,10 @@ const router = createBrowserRouter([
       { path: ROUTES.SUBSCRIPTIONS, element: wrap(<SubscriptionsPage />) },
       { path: ROUTES.RECIPES, element: wrap(<RecipesPage />) },
       { path: ROUTES.JAPANESE_GROCERY, element: wrap(<JapaneseGroceryPage />) },
+      { path: ROUTES.ABOUT, element: wrap(<AboutPage />) },
+      { path: ROUTES.TRACK_ORDER, element: wrap(<TrackOrderPage />) },
+      { path: ROUTES.BUSINESS_SOLUTIONS, element: wrap(<BusinessSolutionsPage />) },
+      { path: ROUTES.BULK_ORDER, element: wrap(<BulkOrderPage />) },
     ],
   },
   { path: ROUTES.AUTH.LOGIN, element: wrap(<LoginPage />) },
@@ -73,6 +89,16 @@ const router = createBrowserRouter([
   { path: ROUTES.ADMIN.COUPONS,    element: wrap(<AdminCouponsPage />) },
   { path: ROUTES.ADMIN.ORDERS,    element: wrap(<AdminOrdersPage />) },
   { path: ROUTES.ADMIN.BUNDLES,   element: wrap(<AdminBundlesPage />) },
+  { path: ROUTES.ADMIN.SETTINGS,  element: wrap(<AdminSettingsPage />) },
+  { path: ROUTES.ADMIN.INVENTORY, element: wrap(<AdminInventoryPage />) },
+  { path: ROUTES.ADMIN.BULK_ORDERS, element: wrap(<AdminBulkOrdersPage />) },
+  { path: ROUTES.ADMIN.GIFT_CARDS, element: wrap(<AdminGiftCardsPage />) },
+  { path: ROUTES.ADMIN.DRIVERS, element: wrap(<AdminDriversPage />) },
+  { path: ROUTES.ADMIN.USERS, element: wrap(<AdminUsersPage />) },
+  {
+    path: ROUTES.DRIVER,
+    element: wrap(<RequireRole roles={['driver', 'admin']}><DriverDashboardPage /></RequireRole>),
+  },
   { path: '*', element: wrap(<NotFoundPage />) },
 ])
 

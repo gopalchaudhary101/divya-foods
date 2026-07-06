@@ -5,8 +5,10 @@ import { motion } from 'framer-motion'
 import {
   Truck, ShieldCheck, Star, Phone, MessageCircle,
   Clock, ChevronRight, Snowflake, Globe, Award,
+  Anchor, PackageCheck, Quote,
 } from 'lucide-react'
-import OceanBackground from '@/components/shared/OceanBackground'
+import PremiumHeroBackground from '@/components/shared/PremiumHeroBackground'
+import { AnimatedCounter } from '@/components/shared/AnimatedCounter'
 
 // ─── JSON-LD structured data ──────────────────────────────────────────────────
 
@@ -70,14 +72,14 @@ const PERKS = [
 
 function BenefitsStrip() {
   return (
-    <div className="bg-ocean-900 text-white">
+    <div className="bg-premium-navy text-white">
       <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
         {PERKS.map(p => (
           <div key={p.title} className="flex items-start gap-3">
-            <div className="text-gold-400 mt-0.5 shrink-0">{p.icon}</div>
+            <div className="text-premium-gold mt-0.5 shrink-0">{p.icon}</div>
             <div>
               <p className="text-sm font-semibold leading-tight">{p.title}</p>
-              <p className="text-xs text-ocean-300 mt-0.5">{p.sub}</p>
+              <p className="text-xs text-premium-muted mt-0.5">{p.sub}</p>
             </div>
           </div>
         ))}
@@ -103,14 +105,17 @@ function CategoryGrid() {
   return (
     <motion.section
       variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-      className="py-10 px-4 bg-white dark:bg-ocean-950"
+      className="py-14 px-4 bg-premium-cream dark:bg-ocean-950"
     >
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-baseline justify-between mb-6">
-          <h2 className="text-xl sm:text-2xl font-display font-bold text-ocean-900 dark:text-white">
-            Shop by Category
-          </h2>
-          <Link to={ROUTES.PRODUCTS} className="text-xs text-ocean-500 hover:text-ocean-700 dark:hover:text-ocean-300 flex items-center gap-1">
+        <div className="flex items-baseline justify-between mb-8">
+          <div>
+            <p className="df-eyebrow mb-1">Explore</p>
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-premium-navy dark:text-white">
+              Shop by Category
+            </h2>
+          </div>
+          <Link to={ROUTES.PRODUCTS} className="text-xs text-premium-teal hover:text-premium-gold dark:hover:text-ocean-300 flex items-center gap-1">
             All products <ChevronRight size={14} />
           </Link>
         </div>
@@ -120,12 +125,12 @@ function CategoryGrid() {
             <Link
               key={cat.q}
               to={`${ROUTES.PRODUCTS}?search=${cat.q}`}
-              className="flex flex-col items-center gap-2 p-3 rounded-2xl bg-ocean-50 dark:bg-ocean-900 hover:bg-ocean-100 dark:hover:bg-ocean-800 transition-colors group"
+              className="df-glow-hover flex flex-col items-center gap-2 p-4 rounded-2xl bg-premium-navy border border-transparent group"
             >
-              <span className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform duration-200">
+              <span className="text-2xl sm:text-4xl group-hover:scale-110 transition-transform duration-300">
                 {cat.emoji}
               </span>
-              <span className="text-[10px] sm:text-xs font-medium text-ocean-700 dark:text-ocean-300 text-center leading-tight">
+              <span className="text-[10px] sm:text-xs font-medium text-premium-cream/90 text-center leading-tight">
                 {cat.name}
               </span>
             </Link>
@@ -140,12 +145,12 @@ function CategoryGrid() {
 
 function ProductSkeleton() {
   return (
-    <div className="rounded-2xl bg-white dark:bg-ocean-900 border border-ocean-100 dark:border-ocean-800 overflow-hidden animate-pulse">
-      <div className="aspect-square bg-ocean-100 dark:bg-ocean-800" />
+    <div className="rounded-2xl bg-premium-charcoal border border-white/5 overflow-hidden animate-pulse">
+      <div className="aspect-square bg-premium-navy" />
       <div className="p-4 space-y-2">
-        <div className="h-3 bg-ocean-100 dark:bg-ocean-800 rounded w-3/4" />
-        <div className="h-3 bg-ocean-100 dark:bg-ocean-800 rounded w-1/2" />
-        <div className="h-8 bg-ocean-100 dark:bg-ocean-800 rounded-lg mt-3" />
+        <div className="h-3 bg-premium-navy rounded w-3/4" />
+        <div className="h-3 bg-premium-navy rounded w-1/2" />
+        <div className="h-8 bg-premium-navy rounded-lg mt-3" />
       </div>
     </div>
   )
@@ -165,15 +170,15 @@ function ProductSection({ title, subtitle, products, isLoading, bg = 'white' }: 
   return (
     <motion.section
       variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-      className={`py-10 px-4 ${bg === 'tinted' ? 'bg-ocean-50 dark:bg-ocean-900/50' : 'bg-white dark:bg-ocean-950'}`}
+      className={`py-14 px-4 ${bg === 'tinted' ? 'bg-premium-charcoal' : 'bg-premium-navy'}`}
     >
       <div className="max-w-6xl mx-auto">
         <div className="flex items-baseline justify-between mb-6">
           <div>
-            <h2 className="text-xl sm:text-2xl font-display font-bold text-ocean-900 dark:text-white">{title}</h2>
-            {subtitle && <p className="text-ocean-500 text-sm mt-0.5">{subtitle}</p>}
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-white">{title}</h2>
+            {subtitle && <p className="text-premium-muted text-sm mt-0.5">{subtitle}</p>}
           </div>
-          <Link to={ROUTES.PRODUCTS} className="text-xs text-ocean-500 hover:text-ocean-700 dark:hover:text-ocean-300 flex items-center gap-1">
+          <Link to={ROUTES.PRODUCTS} className="text-xs text-premium-teal hover:text-premium-gold flex items-center gap-1">
             View all <ChevronRight size={14} />
           </Link>
         </div>
@@ -213,10 +218,10 @@ function WhyChooseUs() {
   return (
     <motion.section
       variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-      className="py-12 px-4 bg-ocean-900 text-white"
+      className="py-14 px-4 bg-premium-charcoal text-white"
     >
       <div className="max-w-6xl mx-auto">
-        <p className="text-gold-400 text-xs font-bold uppercase tracking-widest text-center mb-2">Why Divya Foods</p>
+        <p className="df-eyebrow text-center mb-2 w-full">Why Divya Foods</p>
         <h2 className="text-xl sm:text-2xl font-display font-bold text-center mb-8">Premium Seafood, Delivered Right</h2>
 
         <div className="grid sm:grid-cols-3 gap-6">
@@ -224,7 +229,7 @@ function WhyChooseUs() {
             <div key={w.title} className="text-center">
               <span className="text-4xl">{w.icon}</span>
               <h3 className="font-semibold text-base mt-3 mb-2">{w.title}</h3>
-              <p className="text-ocean-300 text-sm leading-relaxed">{w.text}</p>
+              <p className="text-premium-muted text-sm leading-relaxed">{w.text}</p>
             </div>
           ))}
         </div>
@@ -241,17 +246,17 @@ function RecipesTeaser() {
   return (
     <motion.section
       variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-      className="py-12 px-4 bg-white dark:bg-ocean-950"
+      className="py-14 px-4 bg-premium-cream dark:bg-ocean-950"
     >
       <div className="max-w-6xl mx-auto">
         <div className="flex items-baseline justify-between mb-6">
           <div>
-            <p className="text-gold-500 text-xs font-bold uppercase tracking-widest mb-1">Cooking Ideas</p>
-            <h2 className="text-xl sm:text-2xl font-display font-bold text-ocean-900 dark:text-white">
+            <p className="df-eyebrow mb-1">Cooking Ideas</p>
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-premium-navy dark:text-white">
               Recipes to Inspire You
             </h2>
           </div>
-          <Link to={ROUTES.RECIPES} className="text-xs text-ocean-500 hover:text-ocean-700 dark:hover:text-ocean-300 flex items-center gap-1">
+          <Link to={ROUTES.RECIPES} className="text-xs text-premium-teal hover:text-premium-gold dark:hover:text-ocean-300 flex items-center gap-1">
             All recipes <ChevronRight size={14} />
           </Link>
         </div>
@@ -261,16 +266,16 @@ function RecipesTeaser() {
             <Link
               key={r.id}
               to={ROUTES.RECIPES}
-              className="group bg-ocean-50 dark:bg-ocean-900 rounded-2xl p-5 border border-ocean-100 dark:border-ocean-800 hover:border-ocean-300 dark:hover:border-ocean-600 transition-all hover:shadow-md"
+              className="df-glow-hover group bg-premium-navy rounded-2xl p-5 border border-transparent"
             >
               <div className="text-4xl mb-3">{r.emoji}</div>
-              <h3 className="font-semibold text-ocean-900 dark:text-white text-sm mb-1">{r.name}</h3>
-              <p className="text-xs text-ocean-500 dark:text-ocean-400 line-clamp-2 mb-3">{r.description}</p>
-              <div className="flex items-center gap-3 text-xs text-ocean-400">
+              <h3 className="font-semibold text-white text-sm mb-1">{r.name}</h3>
+              <p className="text-xs text-premium-muted line-clamp-2 mb-3">{r.description}</p>
+              <div className="flex items-center gap-3 text-xs text-premium-muted">
                 <span className="flex items-center gap-1"><Clock size={11} />{r.time}</span>
                 <span className="capitalize">{r.difficulty}</span>
               </div>
-              <div className="mt-3 text-xs font-medium text-ocean-600 dark:text-ocean-400 group-hover:text-ocean-900 dark:group-hover:text-white transition-colors flex items-center gap-1">
+              <div className="mt-3 text-xs font-medium text-premium-gold group-hover:text-premium-gold-light transition-colors flex items-center gap-1">
                 See recipe <ChevronRight size={12} />
               </div>
             </Link>
@@ -295,27 +300,67 @@ function DeliveryBanner() {
   return (
     <motion.section
       variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-      className="py-10 px-4 bg-ocean-50 dark:bg-ocean-900/50 border-y border-ocean-100 dark:border-ocean-800"
+      className="py-10 px-4 bg-premium-cream dark:bg-ocean-900/50 border-y border-premium-navy/10 dark:border-ocean-800"
     >
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center gap-6">
           <div className="sm:w-48 shrink-0">
             <div className="flex items-center gap-2 mb-1">
-              <Truck size={18} className="text-ocean-600 dark:text-ocean-400" />
-              <h2 className="font-display font-bold text-ocean-900 dark:text-white text-base">We Deliver To</h2>
+              <Truck size={18} className="text-premium-teal" />
+              <h2 className="font-display font-bold text-premium-navy dark:text-white text-base">We Deliver To</h2>
             </div>
-            <p className="text-xs text-ocean-500">Free delivery on orders above {CONFIG.DELIVERY.FREE_DELIVERY_ABOVE ? `₹${CONFIG.DELIVERY.FREE_DELIVERY_ABOVE}` : '₹999'}</p>
+            <p className="text-xs text-premium-navy/60 dark:text-ocean-400">Free delivery on orders above {CONFIG.DELIVERY.FREE_DELIVERY_ABOVE ? `₹${CONFIG.DELIVERY.FREE_DELIVERY_ABOVE}` : '₹999'}</p>
           </div>
 
           <div className="flex-1 grid grid-cols-2 sm:grid-cols-5 gap-3">
             {AREAS.map(a => (
-              <div key={a.city} className="bg-white dark:bg-ocean-900 rounded-xl p-3 border border-ocean-100 dark:border-ocean-800 text-center">
+              <div key={a.city} className="bg-premium-navy rounded-xl p-3 border border-white/5 text-center">
                 <span className="text-xl">{a.flag}</span>
-                <p className="text-xs font-semibold text-ocean-800 dark:text-ocean-200 mt-1">{a.city}</p>
-                <p className="text-[10px] text-ocean-400 mt-0.5 leading-tight">{a.timing}</p>
+                <p className="text-xs font-semibold text-premium-cream/90 mt-1">{a.city}</p>
+                <p className="text-[10px] text-premium-muted mt-0.5 leading-tight">{a.timing}</p>
               </div>
             ))}
           </div>
+        </div>
+      </div>
+    </motion.section>
+  )
+}
+
+// ─── How it works ─────────────────────────────────────────────────────────────
+
+const HOW_IT_WORKS = [
+  { icon: <Anchor size={26} strokeWidth={1.25} />,       title: 'Source',     text: 'Sourced direct from Norwegian, Japanese & South East Asian suppliers.' },
+  { icon: <Snowflake size={26} strokeWidth={1.25} />,    title: 'Cold-Chain', text: 'Frozen at peak freshness and held in cold-chain storage end-to-end.' },
+  { icon: <PackageCheck size={26} strokeWidth={1.25} />, title: 'Deliver',    text: 'Packed in insulated boxes and delivered same-day across Delhi NCR.' },
+]
+
+function HowItWorks() {
+  return (
+    <motion.section
+      variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
+      className="py-14 px-4 bg-premium-cream dark:bg-ocean-950"
+    >
+      <div className="max-w-6xl mx-auto">
+        <p className="df-eyebrow text-center mb-2 w-full">How It Works</p>
+        <h2 className="text-xl sm:text-2xl font-display font-bold text-center text-premium-navy dark:text-white mb-10">
+          From Source to Your Doorstep
+        </h2>
+
+        <div className="grid sm:grid-cols-3 gap-8 relative">
+          {HOW_IT_WORKS.map((step, i) => (
+            <div key={step.title} className="flex flex-col items-center text-center relative">
+              <div className="w-16 h-16 rounded-full border border-premium-gold/40 flex items-center justify-center text-premium-gold mb-4">
+                {step.icon}
+              </div>
+              <h3 className="font-display font-semibold text-lg text-premium-navy dark:text-white mb-1.5">
+                {i + 1}. {step.title}
+              </h3>
+              <p className="text-sm text-premium-navy/60 dark:text-ocean-400 max-w-xs leading-relaxed">
+                {step.text}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </motion.section>
@@ -335,17 +380,61 @@ function StatsStrip() {
   return (
     <motion.div
       variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-      className="bg-white dark:bg-ocean-950 border-t border-ocean-100 dark:border-ocean-800 py-8 px-4"
+      className="bg-premium-navy py-12 px-4"
     >
       <div className="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
         {STATS.map(s => (
           <div key={s.label}>
-            <p className="text-2xl sm:text-3xl font-display font-bold text-ocean-800 dark:text-white">{s.value}</p>
-            <p className="text-xs text-ocean-500 mt-1">{s.label}</p>
+            <p className="text-3xl sm:text-4xl font-display font-bold text-premium-gold">
+              <AnimatedCounter value={s.value} />
+            </p>
+            <p className="text-xs text-premium-muted mt-1">{s.label}</p>
           </div>
         ))}
       </div>
     </motion.div>
+  )
+}
+
+// ─── Testimonials ─────────────────────────────────────────────────────────────
+// Placeholder copy — swap in real customer quotes when available.
+
+const TESTIMONIALS = [
+  { quote: 'The salmon arrives colder and fresher than anything I’ve found at a premium supermarket. Delivery is always on time.', name: 'Ritu S.', city: 'Gurgaon' },
+  { quote: 'Ordered tiger prawns for a dinner party — restaurant quality, and it showed up same-day exactly as promised.', name: 'Arjun M.', city: 'New Delhi' },
+  { quote: 'Their Japanese grocery selection is unmatched in NCR. I no longer have to import my own pantry staples.', name: 'Kavita N.', city: 'Noida' },
+]
+
+function Testimonials() {
+  return (
+    <motion.section
+      variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
+      className="py-16 px-4 bg-premium-charcoal"
+    >
+      <div className="max-w-6xl mx-auto">
+        <p className="df-eyebrow text-center mb-2 w-full">Testimonials</p>
+        <h2 className="text-xl sm:text-2xl font-display font-bold text-center text-white mb-10">
+          What Our Customers Say
+        </h2>
+
+        <div className="grid sm:grid-cols-3 gap-8">
+          {TESTIMONIALS.map(t => (
+            <figure key={t.name} className="flex flex-col items-center text-center">
+              <Quote size={22} className="text-premium-gold mb-3" />
+              <blockquote className="font-display text-lg italic text-premium-cream/90 leading-relaxed mb-4">
+                “{t.quote}”
+              </blockquote>
+              <div className="flex gap-0.5 text-premium-gold mb-2" aria-hidden="true">
+                {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+              </div>
+              <figcaption className="text-xs text-premium-muted">
+                {t.name} · {t.city}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </motion.section>
   )
 }
 
@@ -355,18 +444,18 @@ function ContactCTA() {
   return (
     <motion.section
       variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-      className="py-12 px-4 bg-gradient-to-br from-ocean-900 to-ocean-700 text-white text-center"
+      className="py-14 px-4 bg-gradient-to-br from-premium-navy to-[#060F16] text-white text-center"
     >
       <div className="max-w-xl mx-auto">
-        <Star size={28} className="text-gold-400 mx-auto mb-3" />
+        <Star size={28} className="text-premium-gold mx-auto mb-3" fill="currentColor" />
         <h2 className="text-xl sm:text-2xl font-display font-bold mb-2">Ready to Order?</h2>
-        <p className="text-ocean-200 text-sm mb-6">
+        <p className="text-premium-muted text-sm mb-6">
           Questions? Our team is available Mon–Sat 9 AM–7 PM, Sunday 10 AM–5 PM.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link
             to={ROUTES.PRODUCTS}
-            className="px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-ocean-900 font-semibold rounded-full text-sm transition-colors"
+            className="px-6 py-2.5 bg-premium-gold hover:bg-premium-gold-light text-premium-navy font-semibold rounded-full text-sm transition-colors"
           >
             Shop Now
           </Link>
@@ -380,7 +469,7 @@ function ContactCTA() {
           </a>
           <a
             href={`tel:${CONFIG.CONTACT.PHONE_1}`}
-            className="px-6 py-2.5 border border-white/30 hover:bg-white/10 text-white font-semibold rounded-full text-sm transition-colors flex items-center gap-2"
+            className="px-6 py-2.5 border border-premium-gold/40 hover:bg-white/10 text-white font-semibold rounded-full text-sm transition-colors flex items-center gap-2"
           >
             <Phone size={15} /> {CONFIG.CONTACT.PHONE_1}
           </a>
@@ -407,23 +496,25 @@ const HomePage: React.FC = () => {
       </PageSEO>
 
       {/* ── Hero ─────────────────────────────────────────── */}
-      {/* IMPORTANT: hero code is preserved exactly as originally written */}
       <div className="min-h-screen relative">
-        <OceanBackground />
+        <PremiumHeroBackground />
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-white px-4">
-          <p className="text-gold-400 text-sm font-semibold tracking-widest uppercase mb-4">
-            New Delhi's Premium Import Store
+          <p className="df-eyebrow mb-5">
+            Premium Imported Marketplace — New Delhi
           </p>
           <h1 className="text-5xl md:text-7xl font-display font-bold text-center leading-tight">
             Divya Foods
           </h1>
-          <p className="mt-4 text-xl text-ocean-100 text-center max-w-2xl">
+          <p className="mt-5 font-display italic text-2xl md:text-4xl text-premium-gold text-center max-w-3xl leading-snug">
+            Luxury Imported Foods, Delivered Fresh
+          </p>
+          <p className="mt-4 text-lg text-premium-cream/80 text-center max-w-2xl">
             {CONFIG.TAGLINE}
           </p>
           <div className="mt-10 flex flex-wrap gap-4 justify-center">
             <Link
               to={ROUTES.PRODUCTS}
-              className="px-8 py-3 bg-gold-500 text-ocean-900 font-semibold rounded-full hover:bg-gold-400 transition-colors"
+              className="px-8 py-3 bg-premium-gold text-premium-navy font-semibold rounded-full hover:bg-premium-gold-light transition-colors"
             >
               Shop Now
             </Link>
@@ -434,7 +525,7 @@ const HomePage: React.FC = () => {
               Explore Categories
             </Link>
           </div>
-          <div className="mt-20 text-center text-ocean-300 text-sm">
+          <div className="mt-20 text-center text-premium-muted text-sm">
             <p>Delivering across {CONFIG.DELIVERY.AREAS.join(' · ')}</p>
           </div>
         </div>
@@ -452,6 +543,7 @@ const HomePage: React.FC = () => {
       />
 
       <WhyChooseUs />
+      <HowItWorks />
 
       <ProductSection
         title="Best Sellers"
@@ -464,6 +556,7 @@ const HomePage: React.FC = () => {
       <RecipesTeaser />
       <DeliveryBanner />
       <StatsStrip />
+      <Testimonials />
       <ContactCTA />
     </>
   )

@@ -55,27 +55,27 @@ export function InstallPrompt() {
           transition={{ type: 'spring', stiffness: 280, damping: 28 }}
           className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80 z-50"
         >
-          <div className="bg-ocean-900 border border-ocean-700 rounded-2xl p-4 shadow-2xl">
+          <div className="bg-premium-charcoal border border-white/10 rounded-2xl p-4 shadow-2xl">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-ocean-700 rounded-xl flex items-center justify-center shrink-0">
-                <Download size={18} className="text-gold-400" />
+              <div className="w-10 h-10 bg-premium-navy rounded-xl flex items-center justify-center shrink-0">
+                <Download size={18} className="text-premium-gold" />
               </div>
 
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-white">Add to Home Screen</p>
-                <p className="text-xs text-ocean-300 mt-0.5 leading-relaxed">
+                <p className="text-xs text-premium-muted mt-0.5 leading-relaxed">
                   Install Divya Foods for faster access and offline browsing
                 </p>
                 <div className="flex gap-2 mt-3">
                   <button
                     onClick={handleInstall}
-                    className="px-4 py-1.5 bg-gold-500 hover:bg-gold-400 text-ocean-900 text-xs font-semibold rounded-lg transition-colors"
+                    className="px-4 py-1.5 bg-premium-gold hover:bg-premium-gold-light text-premium-navy text-xs font-semibold rounded-lg transition-colors"
                   >
                     Install
                   </button>
                   <button
                     onClick={handleDismiss}
-                    className="px-3 py-1.5 text-ocean-400 hover:text-ocean-200 text-xs transition-colors"
+                    className="px-3 py-1.5 text-premium-muted hover:text-premium-cream/90 text-xs transition-colors"
                   >
                     Not now
                   </button>
@@ -84,7 +84,7 @@ export function InstallPrompt() {
 
               <button
                 onClick={handleDismiss}
-                className="p-1 text-ocean-500 hover:text-white transition-colors shrink-0"
+                className="p-1 text-premium-muted hover:text-white transition-colors shrink-0"
                 aria-label="Dismiss install prompt"
               >
                 <X size={14} />

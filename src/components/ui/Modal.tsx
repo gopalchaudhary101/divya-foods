@@ -40,7 +40,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-ocean-950/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-premium-navy/70 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -64,17 +64,17 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
           >
             {/* Header */}
             {title && (
-              <div className="flex items-center justify-between px-6 py-4 border-b border-ocean-100 dark:border-ocean-800">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-premium-navy/10 dark:border-ocean-800">
                 <h2
                   id="modal-title"
-                  className="font-display text-lg font-semibold text-ocean-900 dark:text-white"
+                  className="font-display text-lg font-semibold text-premium-navy dark:text-white"
                 >
                   {title}
                 </h2>
                 <button
                   onClick={onClose}
                   aria-label="Close dialog"
-                  className="p-1.5 rounded-lg text-ocean-400 hover:text-ocean-700 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
+                  className="p-1.5 rounded-lg text-premium-navy/40 hover:text-premium-gold hover:bg-premium-navy/5 dark:hover:bg-ocean-800 transition-colors"
                 >
                   <X size={18} />
                 </button>

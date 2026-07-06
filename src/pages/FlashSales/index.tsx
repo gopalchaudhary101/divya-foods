@@ -35,8 +35,8 @@ export default function FlashSalesPage() {
             <Zap size={14} fill="white" />
             Limited Time Deals
           </div>
-          <h1 className="text-3xl font-bold text-ocean-900 dark:text-ocean-100">Flash Sales</h1>
-          <p className="text-ocean-500 mt-1">Prices drop — grab them before the timer runs out!</p>
+          <h1 className="text-3xl font-bold text-premium-navy dark:text-ocean-100">Flash Sales</h1>
+          <p className="text-premium-navy/50 mt-1">Prices drop — grab them before the timer runs out!</p>
         </div>
 
         {/* Grid */}
@@ -47,7 +47,7 @@ export default function FlashSalesPage() {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="text-center py-20 text-ocean-400">
+          <div className="text-center py-20 text-premium-navy/40">
             <Zap size={48} className="mx-auto mb-4 opacity-30" />
             <p className="text-lg font-medium">No flash sales right now</p>
             <p className="text-sm mt-1">Check back soon — deals drop without warning!</p>
@@ -80,17 +80,17 @@ export default function FlashSalesPage() {
 
                   {/* Info */}
                   <div className="p-3 space-y-2">
-                    <p className="text-sm font-medium text-ocean-900 dark:text-ocean-100 line-clamp-2">{item.name}</p>
-                    {item.brand && <p className="text-xs text-ocean-400">{item.brand}</p>}
+                    <p className="text-sm font-medium text-premium-navy dark:text-ocean-100 line-clamp-2">{item.name}</p>
+                    {item.brand && <p className="text-xs text-premium-navy/40">{item.brand}</p>}
 
                     <div className="flex items-baseline gap-2">
                       <span className="text-lg font-bold text-red-600">₹{item.salePrice?.toLocaleString()}</span>
-                      <span className="text-xs text-ocean-400 line-through">₹{item.price.toLocaleString()}</span>
+                      <span className="text-xs text-premium-navy/40 line-through">₹{item.price.toLocaleString()}</span>
                     </div>
 
                     {item.saleEndsAt && (
                       <div className="flex items-center gap-1">
-                        <span className="text-xs text-ocean-400">Ends in:</span>
+                        <span className="text-xs text-premium-navy/40">Ends in:</span>
                         <CountdownTimer endsAt={item.saleEndsAt} onExpire={() => refetch()} />
                       </div>
                     )}

@@ -26,7 +26,10 @@ import ProductQA from '@/components/shared/ProductQA'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '@/services/api/axiosInstance'
 import { queryKeys } from '@/services/queryKeys'
+import { getBreadcrumbLD } from '@/utils/structuredData'
 import type { Product } from '@/types'
+
+const SITE_URL = 'https://divya-foods.vercel.app'
 
 function getProductLD(p: Product) {
   return {
@@ -124,12 +127,12 @@ export default function ProductDetailPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 animate-pulse">
-          <div className="aspect-square bg-ocean-100 dark:bg-ocean-800 rounded-2xl" />
+          <div className="aspect-square bg-premium-charcoal rounded-2xl" />
           <div className="flex flex-col gap-4">
-            <div className="h-8 bg-ocean-100 dark:bg-ocean-800 rounded w-3/4" />
-            <div className="h-5 bg-ocean-100 dark:bg-ocean-800 rounded w-1/3" />
-            <div className="h-10 bg-ocean-100 dark:bg-ocean-800 rounded w-1/2 mt-4" />
-            <div className="h-12 bg-ocean-100 dark:bg-ocean-800 rounded-xl mt-4" />
+            <div className="h-8 bg-premium-navy/10 rounded w-3/4" />
+            <div className="h-5 bg-premium-navy/10 rounded w-1/3" />
+            <div className="h-10 bg-premium-navy/10 rounded w-1/2 mt-4" />
+            <div className="h-12 bg-premium-navy/10 rounded-xl mt-4" />
           </div>
         </div>
       </div>
@@ -140,11 +143,11 @@ export default function ProductDetailPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
         <p className="text-5xl mb-4">🐟</p>
-        <h1 className="font-display text-2xl text-ocean-900 dark:text-white mb-2">Product Not Found</h1>
-        <p className="text-ocean-400 mb-6">This product may have been removed or the URL is incorrect.</p>
+        <h1 className="font-display text-2xl text-premium-navy dark:text-white mb-2">Product Not Found</h1>
+        <p className="text-premium-navy/50 mb-6">This product may have been removed or the URL is incorrect.</p>
         <Link
           to={ROUTES.PRODUCTS}
-          className="inline-flex items-center justify-center font-medium transition-all duration-200 bg-ocean-700 hover:bg-ocean-900 text-white shadow-sm px-7 py-3.5 text-base rounded-xl"
+          className="inline-flex items-center justify-center font-medium transition-all duration-200 bg-premium-gold hover:bg-premium-gold-light text-premium-navy shadow-sm px-7 py-3.5 text-base rounded-xl"
         >
           Browse All Products
         </Link>
@@ -166,16 +169,23 @@ export default function ProductDetailPage() {
         ogType="product"
       >
         <script type="application/ld+json">{JSON.stringify(getProductLD(product))}</script>
+        <script type="application/ld+json">
+          {JSON.stringify(getBreadcrumbLD([
+            { name: 'Home', url: SITE_URL },
+            { name: 'Products', url: `${SITE_URL}${ROUTES.PRODUCTS}` },
+            { name: product.name, url: `${SITE_URL}${ROUTES.PRODUCTS}/${product.slug}` },
+          ]))}
+        </script>
       </PageSEO>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-sm text-ocean-400 mb-6 flex-wrap">
-          <Link to={ROUTES.HOME} className="hover:text-ocean-700 transition-colors">Home</Link>
+        <nav className="flex items-center gap-1.5 text-sm text-premium-navy/50 mb-6 flex-wrap">
+          <Link to={ROUTES.HOME} className="hover:text-premium-gold transition-colors">Home</Link>
           <ChevronRight size={13} />
-          <Link to={ROUTES.PRODUCTS} className="hover:text-ocean-700 transition-colors">Products</Link>
+          <Link to={ROUTES.PRODUCTS} className="hover:text-premium-gold transition-colors">Products</Link>
           <ChevronRight size={13} />
-          <span className="text-ocean-700 dark:text-ocean-200 font-medium truncate max-w-[200px]">
+          <span className="text-premium-navy dark:text-ocean-200 font-medium truncate max-w-[200px]">
             {product.name}
           </span>
         </nav>
@@ -186,7 +196,7 @@ export default function ProductDetailPage() {
           <div className="flex flex-col gap-3">
             <motion.div
               key={activeImage}
-              className="relative aspect-square rounded-2xl overflow-hidden bg-ocean-50 dark:bg-ocean-800 border border-ocean-100 dark:border-ocean-800"
+              className="relative aspect-square rounded-2xl overflow-hidden bg-premium-navy border border-white/5"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.25 }}
@@ -199,7 +209,7 @@ export default function ProductDetailPage() {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <Package size={80} className="text-ocean-200" />
+                  <Package size={80} className="text-premium-muted" />
                 </div>
               )}
 
@@ -222,15 +232,15 @@ export default function ProductDetailPage() {
                     className={[
                       'shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all',
                       activeImage === i
-                        ? 'border-ocean-700 scale-105'
-                        : 'border-ocean-100 dark:border-ocean-700 hover:border-ocean-400',
+                        ? 'border-premium-gold scale-105'
+                        : 'border-white/10 hover:border-premium-gold/50',
                     ].join(' ')}
                   >
                     {img ? (
                       <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full bg-ocean-100 dark:bg-ocean-800 flex items-center justify-center">
-                        <Package size={20} className="text-ocean-300" />
+                      <div className="w-full h-full bg-premium-navy flex items-center justify-center">
+                        <Package size={20} className="text-premium-muted" />
                       </div>
                     )}
                   </button>
@@ -249,11 +259,11 @@ export default function ProductDetailPage() {
             </div>
 
             <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-semibold text-ocean-900 dark:text-white leading-snug">
+              <h1 className="font-display text-2xl sm:text-3xl font-semibold text-premium-navy dark:text-white leading-snug">
                 {product.name}
               </h1>
               {product.brand && (
-                <p className="mt-1 text-sm text-ocean-400">by {product.brand}</p>
+                <p className="mt-1 text-sm text-premium-navy/50">by {product.brand}</p>
               )}
             </div>
 
@@ -262,7 +272,7 @@ export default function ProductDetailPage() {
               <StarRating rating={product.rating} count={product.reviewCount} size={16} />
               <button
                 onClick={() => setActiveTab('reviews')}
-                className="text-sm text-ocean-500 hover:text-ocean-700 underline underline-offset-2"
+                className="text-sm text-premium-navy/60 hover:text-premium-gold underline underline-offset-2"
               >
                 {product.reviewCount} {product.reviewCount === 1 ? 'review' : 'reviews'}
               </button>
@@ -270,12 +280,12 @@ export default function ProductDetailPage() {
 
             {/* Price */}
             <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-ocean-900 dark:text-white">
+              <span className="text-3xl font-semibold text-premium-gold">
                 {formatCurrency(product.price)}
               </span>
               {product.originalPrice && product.originalPrice > product.price && (
                 <>
-                  <span className="text-lg text-ocean-400 line-through">
+                  <span className="text-lg text-premium-navy/40 line-through">
                     {formatCurrency(product.originalPrice)}
                   </span>
                   <Badge variant="danger" className="text-sm font-semibold px-2 py-0.5">
@@ -289,20 +299,20 @@ export default function ProductDetailPage() {
             <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
               {product.weight && (
                 <div>
-                  <span className="text-ocean-400">Weight: </span>
-                  <span className="font-medium text-ocean-800 dark:text-ocean-100">{product.weight}</span>
+                  <span className="text-premium-navy/50">Weight: </span>
+                  <span className="font-medium text-premium-navy dark:text-ocean-100">{product.weight}</span>
                 </div>
               )}
               {product.origin && (
                 <div>
-                  <span className="text-ocean-400">Origin: </span>
-                  <span className="font-medium text-ocean-800 dark:text-ocean-100">{product.origin}</span>
+                  <span className="text-premium-navy/50">Origin: </span>
+                  <span className="font-medium text-premium-navy dark:text-ocean-100">{product.origin}</span>
                 </div>
               )}
               {product.brand && (
                 <div>
-                  <span className="text-ocean-400">Brand: </span>
-                  <span className="font-medium text-ocean-800 dark:text-ocean-100">{product.brand}</span>
+                  <span className="text-premium-navy/50">Brand: </span>
+                  <span className="font-medium text-premium-navy dark:text-ocean-100">{product.brand}</span>
                 </div>
               )}
             </div>
@@ -311,12 +321,12 @@ export default function ProductDetailPage() {
             {product.inStock ? (
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-4">
-                  <span className="text-sm font-medium text-ocean-700 dark:text-ocean-200">Quantity</span>
-                  <div className="flex items-center border border-ocean-200 dark:border-ocean-700 rounded-xl overflow-hidden">
+                  <span className="text-sm font-medium text-premium-navy dark:text-ocean-200">Quantity</span>
+                  <div className="flex items-center border border-premium-navy/15 dark:border-ocean-700 rounded-xl overflow-hidden">
                     <button
                       onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                       disabled={quantity <= 1}
-                      className="px-3 py-2 hover:bg-ocean-50 dark:hover:bg-ocean-800 disabled:opacity-40 transition-colors"
+                      className="px-3 py-2 hover:bg-premium-navy/5 dark:hover:bg-ocean-800 disabled:opacity-40 transition-colors"
                     >
                       <Minus size={14} />
                     </button>
@@ -326,24 +336,22 @@ export default function ProductDetailPage() {
                     <button
                       onClick={() => setQuantity((q) => Math.min(q + 1, product.stockQuantity ?? 10))}
                       disabled={quantity >= (product.stockQuantity ?? 10)}
-                      className="px-3 py-2 hover:bg-ocean-50 dark:hover:bg-ocean-800 disabled:opacity-40 transition-colors"
+                      className="px-3 py-2 hover:bg-premium-navy/5 dark:hover:bg-ocean-800 disabled:opacity-40 transition-colors"
                     >
                       <Plus size={14} />
                     </button>
                   </div>
-                  <span className="text-xs text-ocean-400">{product.stockQuantity} available</span>
+                  <span className="text-xs text-premium-navy/50">{product.stockQuantity} available</span>
                 </div>
 
                 <div className="flex gap-3">
-                  <Button
+                  <button
                     onClick={handleAddToCart}
-                    variant="primary"
-                    size="lg"
-                    leftIcon={<ShoppingCart size={18} />}
-                    className="flex-1"
+                    className="flex-1 flex items-center justify-center gap-2.5 py-3.5 px-7 rounded-xl text-base font-medium bg-premium-gold hover:bg-premium-gold-light text-premium-navy shadow-sm transition-colors"
                   >
+                    <ShoppingCart size={18} />
                     Add to Cart
-                  </Button>
+                  </button>
                   <button
                     onClick={() => toggleWishlist(product.id)}
                     aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
@@ -351,12 +359,12 @@ export default function ProductDetailPage() {
                       'px-4 rounded-xl border-2 transition-all duration-200 hover:scale-105',
                       isWishlisted
                         ? 'border-red-400 bg-red-50 dark:bg-red-900/20'
-                        : 'border-ocean-200 dark:border-ocean-700 hover:border-red-300',
+                        : 'border-premium-navy/15 dark:border-ocean-700 hover:border-red-300',
                     ].join(' ')}
                   >
                     <Heart
                       size={20}
-                      className={isWishlisted ? 'text-red-500 fill-red-500' : 'text-ocean-400'}
+                      className={isWishlisted ? 'text-red-500 fill-red-500' : 'text-premium-teal'}
                     />
                   </button>
                 </div>
@@ -368,28 +376,28 @@ export default function ProductDetailPage() {
             )}
 
             {/* Trust signals */}
-            <div className="flex flex-col gap-2 pt-2 border-t border-ocean-100 dark:border-ocean-800">
-              <div className="flex items-center gap-2.5 text-sm text-ocean-600 dark:text-ocean-300">
-                <Truck size={15} className="text-mint-400 shrink-0" />
+            <div className="flex flex-col gap-2 pt-2 border-t border-premium-navy/10 dark:border-ocean-800">
+              <div className="flex items-center gap-2.5 text-sm text-premium-navy/70 dark:text-ocean-300">
+                <Truck size={15} className="text-premium-teal shrink-0" />
                 Free delivery on orders above {formatCurrency(CONFIG.DELIVERY.FREE_DELIVERY_ABOVE)}
               </div>
-              <div className="flex items-center gap-2.5 text-sm text-ocean-600 dark:text-ocean-300">
-                <Shield size={15} className="text-mint-400 shrink-0" />
+              <div className="flex items-center gap-2.5 text-sm text-premium-navy/70 dark:text-ocean-300">
+                <Shield size={15} className="text-premium-teal shrink-0" />
                 100% fresh quality guarantee
               </div>
             </div>
 
             {/* Subscribe & Save */}
             {product.inStock && isAuthenticated && (
-              <div className="border border-ocean-200 dark:border-ocean-700 rounded-xl p-4 space-y-3">
+              <div className="border border-premium-navy/15 dark:border-ocean-700 rounded-xl p-4 space-y-3">
                 <div className="flex items-center gap-2">
                   <RefreshCw size={15} className="text-green-600" />
-                  <span className="text-sm font-semibold text-ocean-800 dark:text-ocean-200">
+                  <span className="text-sm font-semibold text-premium-navy dark:text-ocean-200">
                     Subscribe &amp; Save 10%
                   </span>
                   <Badge variant="success" className="text-[10px]">Auto-delivery</Badge>
                 </div>
-                <p className="text-xs text-ocean-500">
+                <p className="text-xs text-premium-navy/60">
                   {formatCurrency(product.price * 0.9)} / delivery — cancel anytime
                 </p>
                 <div className="flex gap-2 flex-wrap">
@@ -400,7 +408,7 @@ export default function ProductDetailPage() {
                       className={`px-3 py-1 text-xs rounded-full border transition-colors ${
                         subFrequency === f
                           ? 'bg-green-600 text-white border-green-600'
-                          : 'border-ocean-200 dark:border-ocean-700 text-ocean-600 dark:text-ocean-400 hover:border-green-400'
+                          : 'border-premium-navy/15 dark:border-ocean-700 text-premium-navy/60 dark:text-ocean-400 hover:border-green-400'
                       }`}
                     >
                       {f === 'biweekly' ? 'Every 2 weeks' : f.charAt(0).toUpperCase() + f.slice(1)}
@@ -424,7 +432,7 @@ export default function ProductDetailPage() {
 
         {/* ── Tabs: Description / Reviews ────────────── */}
         <div className="mb-16">
-          <div className="flex gap-1 border-b border-ocean-100 dark:border-ocean-800 mb-6">
+          <div className="flex gap-1 border-b border-premium-navy/10 dark:border-ocean-800 mb-6">
             {(['description', 'reviews', 'qa'] as const).map((tab) => (
               <button
                 key={tab}
@@ -432,8 +440,8 @@ export default function ProductDetailPage() {
                 className={[
                   'px-5 py-2.5 text-sm font-medium capitalize transition-colors border-b-2 -mb-px',
                   activeTab === tab
-                    ? 'border-ocean-700 text-ocean-900 dark:text-white'
-                    : 'border-transparent text-ocean-400 hover:text-ocean-700',
+                    ? 'border-premium-gold text-premium-navy dark:text-white'
+                    : 'border-transparent text-premium-navy/40 hover:text-premium-gold',
                 ].join(' ')}
               >
                 {tab === 'reviews' ? `Reviews (${product.reviewCount})` : tab === 'qa' ? 'Q&A' : 'Description'}
@@ -447,7 +455,7 @@ export default function ProductDetailPage() {
             </div>
           ) : activeTab === 'description' ? (
             <div className="max-w-3xl">
-              <p className="text-ocean-700 dark:text-ocean-200 leading-relaxed whitespace-pre-line">
+              <p className="text-premium-navy/80 dark:text-ocean-200 leading-relaxed whitespace-pre-line">
                 {product.description}
               </p>
               {product.tags && product.tags.length > 0 && (
@@ -467,22 +475,22 @@ export default function ProductDetailPage() {
                 {product.reviewCount > 0 && (
                   <div className="flex items-center gap-4">
                     <div className="text-center">
-                      <p className="text-4xl font-bold text-ocean-900 dark:text-white">{product.rating.toFixed(1)}</p>
+                      <p className="text-4xl font-bold text-premium-navy dark:text-white">{product.rating.toFixed(1)}</p>
                       <StarRating rating={product.rating} showCount={false} size={14} />
-                      <p className="text-xs text-ocean-400 mt-1">{product.reviewCount} review{product.reviewCount !== 1 ? 's' : ''}</p>
+                      <p className="text-xs text-premium-navy/50 mt-1">{product.reviewCount} review{product.reviewCount !== 1 ? 's' : ''}</p>
                     </div>
                   </div>
                 )}
                 {isAuthenticated && eligibility?.canReview && (
                   <button
                     onClick={() => setShowReviewModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 border-2 border-ocean-200 dark:border-ocean-700 rounded-xl text-sm font-medium text-ocean-700 dark:text-ocean-200 hover:border-gold-400 hover:text-gold-600 transition-all"
+                    className="flex items-center gap-2 px-4 py-2 border-2 border-premium-navy/15 dark:border-ocean-700 rounded-xl text-sm font-medium text-premium-navy/70 dark:text-ocean-200 hover:border-premium-gold hover:text-premium-gold transition-all"
                   >
                     <Pencil size={14} /> Write a Review
                   </button>
                 )}
                 {isAuthenticated && eligibility?.reason === 'already_reviewed' && (
-                  <span className="text-xs text-mint-600 dark:text-mint-400 flex items-center gap-1">
+                  <span className="text-xs text-premium-teal flex items-center gap-1">
                     ✓ You've reviewed this product
                   </span>
                 )}
@@ -490,13 +498,13 @@ export default function ProductDetailPage() {
 
               {/* Reviews list */}
               {reviews.length === 0 ? (
-                <div className="text-center py-12 text-ocean-400">
+                <div className="text-center py-12 text-premium-navy/40">
                   <Star size={32} className="mx-auto mb-3 opacity-30" />
                   <p className="text-sm">No reviews yet.</p>
                   {isAuthenticated && eligibility?.canReview && (
                     <button
                       onClick={() => setShowReviewModal(true)}
-                      className="mt-3 text-ocean-600 dark:text-ocean-300 underline text-sm"
+                      className="mt-3 text-premium-teal underline text-sm"
                     >
                       Be the first to review this product
                     </button>
@@ -507,16 +515,16 @@ export default function ProductDetailPage() {
                   {reviews.map(review => (
                     <div
                       key={review.id}
-                      className="p-5 rounded-xl bg-ocean-50 dark:bg-ocean-900 border border-ocean-100 dark:border-ocean-800"
+                      className="p-5 rounded-xl bg-premium-navy border border-white/5"
                     >
                       <div className="flex items-start justify-between gap-4 mb-2">
                         <div>
-                          <p className="font-medium text-ocean-900 dark:text-white text-sm">{review.userName}</p>
+                          <p className="font-medium text-white text-sm">{review.userName}</p>
                           <StarRating rating={review.rating} showCount={false} size={13} />
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="text-right">
-                            <p className="text-xs text-ocean-400">{formatDate(review.createdAt)}</p>
+                            <p className="text-xs text-premium-muted">{formatDate(review.createdAt)}</p>
                             {review.isVerifiedPurchase && (
                               <Badge variant="success" className="text-[10px] mt-1">Verified Purchase</Badge>
                             )}
@@ -525,14 +533,14 @@ export default function ProductDetailPage() {
                             <button
                               onClick={() => deleteMutation.mutate(review.id)}
                               aria-label="Delete your review"
-                              className="p-1 text-ocean-300 hover:text-red-500 transition-colors"
+                              className="p-1 text-premium-muted hover:text-red-400 transition-colors"
                             >
                               <Trash2 size={14} />
                             </button>
                           )}
                         </div>
                       </div>
-                      <p className="text-sm text-ocean-700 dark:text-ocean-200 leading-relaxed">{review.comment}</p>
+                      <p className="text-sm text-premium-cream/80 leading-relaxed">{review.comment}</p>
                     </div>
                   ))}
                 </div>

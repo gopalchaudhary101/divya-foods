@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import { CartDrawer } from '@/components/shared/CartDrawer'
+import { WhatsAppButton } from '@/components/shared/WhatsAppButton'
 import { useAppSelector } from '@/hooks/useAppSelector'
 
 export default function RootLayout() {
@@ -14,10 +15,10 @@ export default function RootLayout() {
   }, [isDarkMode])
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-[#03182E] text-ocean-900 dark:text-ocean-50 transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-premium-cream dark:bg-[#03182E] text-premium-navy dark:text-ocean-50 transition-colors duration-300">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-ocean-900 focus:text-white focus:rounded-lg focus:text-sm focus:font-medium focus:outline-none"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-premium-navy focus:text-white focus:rounded-lg focus:text-sm focus:font-medium focus:outline-none"
       >
         Skip to main content
       </a>
@@ -27,6 +28,7 @@ export default function RootLayout() {
         <Outlet />
       </main>
       <Footer />
+      <WhatsAppButton />
     </div>
   )
 }

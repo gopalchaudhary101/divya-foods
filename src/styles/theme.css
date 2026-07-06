@@ -1,0 +1,63 @@
+/*
+ * Premium redesign theme layer.
+ * Additive only — layered after index.css. Does not remove or override
+ * any existing --ocean-, --gold-, or --mint- variables or classes there.
+ */
+
+:root {
+  --df-navy: #0B1D2A;
+  --df-charcoal: #13242F;
+  --df-gold: #C9A227;
+  --df-gold-light: #E0BC55;
+  --df-teal: #2E8B8B;
+  --df-cream: #F5F1E8;
+  --df-muted: #9DB2BF;
+}
+
+/* Small-caps eyebrow label, e.g. "PREMIUM IMPORTED MARKETPLACE — NEW DELHI" */
+.df-eyebrow {
+  display: inline-block;
+  font-family: 'Inter', system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--df-teal);
+}
+
+/* Slow ambient Ken Burns zoom for hero backgrounds */
+@keyframes df-kenburns {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.08); }
+}
+.df-hero-zoom {
+  animation: df-kenburns 22s ease-in-out infinite alternate;
+}
+
+/* Gold glow lift on hover — category cards, feature panels */
+.df-glow-hover {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+.df-glow-hover:hover {
+  border-color: var(--df-gold);
+  box-shadow: 0 0 0 1px var(--df-gold), 0 16px 32px -12px rgba(201, 162, 39, 0.35);
+  transform: translateY(-4px);
+}
+
+/* Storefront form input — premium equivalent of index.css's .input-field.
+   Kept as a separate class (not an edit to .input-field) since that class is
+   also used across Admin pages, which stay on the pre-redesign palette. */
+.df-input {
+  @apply px-3 py-2.5 border border-premium-navy/15 dark:border-ocean-700 rounded-xl bg-white dark:bg-ocean-800 text-premium-navy dark:text-white placeholder-premium-navy/30 dark:placeholder-ocean-500 focus:outline-none focus:ring-2 focus:ring-premium-gold focus:border-transparent transition-colors text-sm;
+}
+
+/* Fade-up on scroll (paired with the useFadeUpOnScroll hook for non-framer-motion sections) */
+.df-fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.df-fade-up.df-visible {
+  opacity: 1;
+  transform: translateY(0);
+}

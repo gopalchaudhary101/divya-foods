@@ -7,6 +7,7 @@ If SMTP credentials are missing the functions return immediately without error.
 
 import smtplib
 import threading
+from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -39,6 +40,48 @@ def send_async(to: str, subject: str, html: str) -> None:
     if not to:
         return
     threading.Thread(target=_send, args=(to, subject, html), daemon=True).start()
+
+
+def _send_with_attachment(to: str, subject: str, html: str, attachment: bytes, filename: str) -> None:
+    if not settings.SMTP_USERNAME or not settings.SMTP_PASSWORD:
+        return
+    try:
+        msg = MIMEMultipart("mixed")
+        msg["Subject"] = subject
+        msg["From"]    = settings.EMAIL_FROM
+        msg["To"]      = to
+
+        body = MIMEMultipart("alternative")
+        body.attach(MIMEText(html, "html", "utf-8"))
+        msg.attach(body)
+
+        part = MIMEApplication(attachment, _subtype="pdf")
+        part.add_header("Content-Disposition", "attachment", filename=filename)
+        msg.attach(part)
+
+        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as srv:
+            srv.ehlo()
+            srv.starttls()
+            srv.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+            srv.sendmail(settings.EMAIL_FROM, to, msg.as_string())
+        print(f"[email] Sent '{subject}' (+attachment) to {to}")
+    except Exception as exc:
+        print(f"[email] Failed to send to {to}: {exc}")
+
+
+def send_invoice_email(to: str, order_number: str, pdf_bytes: bytes) -> None:
+    """Fire-and-forget — emails the invoice PDF as an attachment."""
+    if not to:
+        return
+    html = _wrap(
+        f"<h2>Invoice for Order {order_number}</h2>"
+        f"<p>Thank you for your order! Your invoice is attached as a PDF.</p>"
+    )
+    threading.Thread(
+        target=_send_with_attachment,
+        args=(to, f"Invoice — Order {order_number}", html, pdf_bytes, f"invoice-{order_number}.pdf"),
+        daemon=True,
+    ).start()
 
 
 # ─── Base template ────────────────────────────────────────────────────────────

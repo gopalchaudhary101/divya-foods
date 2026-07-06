@@ -21,17 +21,17 @@ export function StarRating({ rating, count, size = 14, showCount = true }: StarR
               size={size}
               className={
                 filled
-                  ? 'text-gold-500 fill-gold-500'
+                  ? 'text-premium-gold fill-premium-gold'
                   : half
-                    ? 'text-gold-400 fill-gold-200'
-                    : 'text-ocean-200 fill-ocean-100'
+                    ? 'text-premium-gold fill-premium-gold/30'
+                    : 'text-premium-muted/40 fill-transparent'
               }
             />
           )
         })}
       </div>
       {showCount && count !== undefined && (
-        <span className="text-xs text-ocean-400 dark:text-ocean-300">({count})</span>
+        <span className="text-xs text-premium-muted">({count})</span>
       )}
     </div>
   )

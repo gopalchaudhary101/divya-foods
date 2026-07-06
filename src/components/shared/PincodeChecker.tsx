@@ -52,9 +52,9 @@ export function PincodeChecker({ compact = false }: PincodeCheckerProps) {
   }
 
   return (
-    <div className={compact ? '' : 'bg-ocean-50 dark:bg-ocean-900/40 rounded-2xl p-4 border border-ocean-100 dark:border-ocean-800'}>
+    <div className={compact ? '' : 'bg-premium-navy/5 dark:bg-ocean-900/40 rounded-2xl p-4 border border-premium-navy/10 dark:border-ocean-800'}>
       {!compact && (
-        <p className="text-xs font-semibold text-ocean-500 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+        <p className="df-eyebrow mb-3 flex items-center gap-1.5">
           <MapPin size={12} /> Check Delivery Availability
         </p>
       )}
@@ -68,8 +68,8 @@ export function PincodeChecker({ compact = false }: PincodeCheckerProps) {
           placeholder="Enter pincode"
           maxLength={6}
           className={[
-            'flex-1 border border-ocean-200 dark:border-ocean-700 rounded-xl px-3 text-sm',
-            'dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-ocean-500',
+            'flex-1 border border-premium-navy/15 dark:border-ocean-700 rounded-xl px-3 text-sm',
+            'dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-premium-gold',
             compact ? 'py-2' : 'py-2.5',
           ].join(' ')}
         />
@@ -78,7 +78,7 @@ export function PincodeChecker({ compact = false }: PincodeCheckerProps) {
           disabled={input.length !== 6}
           className={[
             'px-4 rounded-xl text-sm font-semibold transition-colors',
-            'bg-ocean-700 text-white hover:bg-ocean-900 disabled:opacity-40 disabled:cursor-not-allowed',
+            'bg-premium-gold text-premium-navy hover:bg-premium-gold-light disabled:opacity-40 disabled:cursor-not-allowed',
             compact ? 'py-2' : 'py-2.5',
           ].join(' ')}
         >
@@ -90,12 +90,12 @@ export function PincodeChecker({ compact = false }: PincodeCheckerProps) {
         <div className={`mt-3 flex items-start gap-2 text-sm ${compact ? '' : ''}`}>
           {result.available ? (
             <>
-              <CheckCircle size={15} className="text-mint-500 shrink-0 mt-0.5" />
+              <CheckCircle size={15} className="text-premium-teal shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold text-mint-600 dark:text-mint-400">
+                <span className="font-semibold text-premium-teal">
                   Delivery available in {result.area}
                 </span>
-                <p className="text-xs text-ocean-400 mt-0.5 flex items-center gap-1">
+                <p className="text-xs text-premium-navy/50 dark:text-ocean-400 mt-0.5 flex items-center gap-1">
                   <Clock size={11} /> {result.eta}
                 </p>
               </div>
@@ -107,7 +107,7 @@ export function PincodeChecker({ compact = false }: PincodeCheckerProps) {
                 <span className="font-semibold text-red-600 dark:text-red-400">
                   Not serviceable yet
                 </span>
-                <p className="text-xs text-ocean-400 mt-0.5">
+                <p className="text-xs text-premium-navy/50 dark:text-ocean-400 mt-0.5">
                   We currently deliver to Delhi, Gurgaon, Noida & Greater Noida.
                 </p>
               </div>

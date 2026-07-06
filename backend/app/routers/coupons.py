@@ -30,8 +30,12 @@ def validate_coupon(body: ValidateRequest, db: Database = Depends(get_db)):
     if not doc.get("is_active", True):
         return _fail("This coupon is no longer active.")
 
-    if doc.get("expires_at") and doc["expires_at"] < now:
-        return _fail("This coupon has expired.")
+    expires_at = doc.get("expires_at")
+    if expires_at:
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if expires_at < now:
+            return _fail("This coupon has expired.")
 
     min_order = doc.get("min_order_value", 0)
     if body.order_amount < min_order:

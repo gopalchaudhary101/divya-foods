@@ -25,8 +25,17 @@ export default function Navbar() {
   const wishlistCount = useAppSelector((s) => s.wishlist.productIds.length)
 
   const [isUserMenuOpen, setUserMenuOpen] = React.useState(false)
+  const [isScrolled, setIsScrolled] = React.useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const { isOpen: searchOpen, open: openSearch, close: closeSearch } = useGlobalSearch()
+
+  // Presentational only: gains a glassy blur once the page scrolls
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 20)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   // Listen for the Ctrl/Cmd+K event dispatched by GlobalSearch
   useEffect(() => {
@@ -56,8 +65,8 @@ export default function Navbar() {
     [
       'text-sm font-medium transition-colors',
       isActive
-        ? 'text-gold-400'
-        : 'text-ocean-100 hover:text-white',
+        ? 'text-premium-gold'
+        : 'text-premium-cream/80 hover:text-white',
     ].join(' ')
 
   const handleLogout = async () => {
@@ -66,13 +75,18 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-ocean-900 shadow-lg">
+    <header
+      className={[
+        'sticky top-0 z-40 transition-all duration-300 bg-premium-navy',
+        isScrolled ? 'shadow-lg backdrop-blur-md bg-premium-navy/95' : 'shadow-lg',
+      ].join(' ')}
+    >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
 
         {/* ── Logo ─────────────────────────────────────────────── */}
         <Link
           to={ROUTES.HOME}
-          className="shrink-0 font-display text-xl font-semibold text-white hover:text-gold-400 transition-colors"
+          className="shrink-0 font-display text-xl font-semibold text-white hover:text-premium-gold transition-colors"
         >
           {CONFIG.APP_NAME}
         </Link>
@@ -103,10 +117,10 @@ export default function Navbar() {
             onClick={openSearch}
             aria-label="Search products (Ctrl+K)"
             title="Search (Ctrl+K)"
-            className="flex items-center gap-2 p-2.5 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
+            className="flex items-center gap-2 p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
           >
             <Search size={18} />
-            <span className="hidden lg:inline-flex items-center gap-1 text-xs text-ocean-400 border border-ocean-700 rounded px-1.5 py-0.5">
+            <span className="hidden lg:inline-flex items-center gap-1 text-xs text-premium-muted border border-premium-charcoal rounded px-1.5 py-0.5">
               <span>⌘K</span>
             </span>
           </button>
@@ -115,7 +129,7 @@ export default function Navbar() {
           <button
             onClick={() => dispatch(toggleDarkMode())}
             aria-label="Toggle dark mode"
-            className="p-2.5 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
+            className="p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
           >
             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
@@ -124,7 +138,7 @@ export default function Navbar() {
           <Link
             to={ROUTES.WISHLIST}
             aria-label={`Wishlist (${wishlistCount} items)`}
-            className="relative p-2.5 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
+            className="relative p-2.5 rounded-lg text-premium-muted hover:text-premium-teal hover:bg-premium-charcoal transition-colors"
           >
             <Heart size={18} />
             {wishlistCount > 0 && (
@@ -141,11 +155,11 @@ export default function Navbar() {
           <button
             onClick={() => dispatch(setCartOpen(true))}
             aria-label={`Cart (${cartCount} items)`}
-            className="relative p-2.5 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
+            className="relative p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
           >
             <ShoppingCart size={18} />
             {cartCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-gold-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-premium-gold text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                 {cartCount > 9 ? '9+' : cartCount}
               </span>
             )}
@@ -160,7 +174,7 @@ export default function Navbar() {
                   aria-expanded={isUserMenuOpen}
                   aria-haspopup="menu"
                   aria-label="Account menu"
-                  className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-ocean-100 hover:text-white hover:bg-ocean-700 transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ocean-400"
+                  className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-premium-cream/80 hover:text-white hover:bg-premium-charcoal transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-premium-teal"
                 >
                   {user?.avatar ? (
                     <img
@@ -169,7 +183,7 @@ export default function Navbar() {
                       className="w-6 h-6 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-ocean-700 flex items-center justify-center text-xs text-white font-bold" aria-hidden="true">
+                    <div className="w-6 h-6 rounded-full bg-premium-charcoal flex items-center justify-center text-xs text-white font-bold" aria-hidden="true">
                       {user?.name?.[0]?.toUpperCase() ?? 'U'}
                     </div>
                   )}
@@ -185,7 +199,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -8, scale: 0.97 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 mt-2 w-48 bg-white dark:bg-ocean-800 rounded-xl shadow-premium border border-ocean-100 dark:border-ocean-700 overflow-hidden py-1"
+                      className="absolute right-0 mt-2 w-48 bg-premium-charcoal rounded-xl shadow-premium border border-white/10 overflow-hidden py-1"
                     >
                       <DropdownLink to={ROUTES.PROFILE} icon={<User size={14} />} onClick={() => setUserMenuOpen(false)}>
                         My Profile
@@ -198,11 +212,11 @@ export default function Navbar() {
                           Admin Panel
                         </DropdownLink>
                       )}
-                      <hr className="my-1 border-ocean-100 dark:border-ocean-700" aria-hidden="true" />
+                      <hr className="my-1 border-white/10" aria-hidden="true" />
                       <button
                         role="menuitem"
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors focus-visible:outline-none focus-visible:bg-red-50 dark:focus-visible:bg-red-900/20"
+                        className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-400 hover:bg-red-900/20 transition-colors focus-visible:outline-none focus-visible:bg-red-900/20"
                       >
                         <LogOut size={14} aria-hidden="true" />
                         Sign Out
@@ -215,13 +229,13 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
                 <Link
                   to={ROUTES.AUTH.LOGIN}
-                  className="text-sm text-ocean-200 hover:text-white transition-colors font-medium px-3 py-1.5"
+                  className="text-sm text-premium-muted hover:text-white transition-colors font-medium px-3 py-1.5"
                 >
                   Sign In
                 </Link>
                 <Link
                   to={ROUTES.AUTH.REGISTER}
-                  className="text-sm bg-gold-500 hover:bg-gold-600 text-white font-medium px-4 py-1.5 rounded-lg transition-colors"
+                  className="text-sm bg-premium-gold hover:bg-premium-gold-light text-white font-medium px-4 py-1.5 rounded-lg transition-colors"
                 >
                   Join Free
                 </Link>
@@ -234,7 +248,7 @@ export default function Navbar() {
             onClick={() => dispatch(toggleMobileMenu())}
             aria-label="Toggle navigation menu"
             aria-expanded={isMobileMenuOpen}
-            className="md:hidden p-2.5 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
+            className="md:hidden p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -249,7 +263,7 @@ export default function Navbar() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="md:hidden overflow-hidden bg-ocean-900 border-t border-ocean-800"
+            className="md:hidden overflow-hidden bg-premium-navy border-t border-premium-charcoal"
           >
             <div className="px-4 py-4 flex flex-col gap-1">
               <MobileLink to={ROUTES.PRODUCTS} onClick={() => dispatch(toggleMobileMenu())}>
@@ -279,7 +293,7 @@ export default function Navbar() {
                   )}
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-ocean-800 transition-colors mt-1"
+                    className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-premium-charcoal transition-colors mt-1"
                   >
                     Sign Out
                   </button>
@@ -289,14 +303,14 @@ export default function Navbar() {
                   <Link
                     to={ROUTES.AUTH.LOGIN}
                     onClick={() => dispatch(toggleMobileMenu())}
-                    className="flex-1 text-center py-2.5 text-sm text-ocean-100 border border-ocean-700 rounded-lg hover:bg-ocean-800 transition-colors"
+                    className="flex-1 text-center py-2.5 text-sm text-premium-cream/80 border border-premium-charcoal rounded-lg hover:bg-premium-charcoal transition-colors"
                   >
                     Sign In
                   </Link>
                   <Link
                     to={ROUTES.AUTH.REGISTER}
                     onClick={() => dispatch(toggleMobileMenu())}
-                    className="flex-1 text-center py-2.5 text-sm bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors"
+                    className="flex-1 text-center py-2.5 text-sm bg-premium-gold text-white rounded-lg hover:bg-premium-gold-light transition-colors"
                   >
                     Join Free
                   </Link>
@@ -330,7 +344,7 @@ function DropdownLink({
       to={to}
       role="menuitem"
       onClick={onClick}
-      className="flex items-center gap-2.5 px-4 py-2 text-sm text-ocean-800 dark:text-ocean-100 hover:bg-ocean-50 dark:hover:bg-ocean-700 transition-colors focus-visible:outline-none focus-visible:bg-ocean-50 dark:focus-visible:bg-ocean-700"
+      className="flex items-center gap-2.5 px-4 py-2 text-sm text-premium-cream/80 hover:bg-premium-navy/60 hover:text-white transition-colors focus-visible:outline-none focus-visible:bg-premium-navy/60"
     >
       <span aria-hidden="true">{icon}</span>
       {children}
@@ -355,8 +369,8 @@ function MobileLink({
         [
           'px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
           isActive
-            ? 'bg-ocean-800 text-gold-400'
-            : 'text-ocean-100 hover:bg-ocean-800 hover:text-white',
+            ? 'bg-premium-charcoal text-premium-gold'
+            : 'text-premium-cream/80 hover:bg-premium-charcoal hover:text-white',
         ].join(' ')
       }
     >

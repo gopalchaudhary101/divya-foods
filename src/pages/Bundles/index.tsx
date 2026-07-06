@@ -10,13 +10,13 @@ import { ROUTES } from '@/constants/routes'
 
 function BundleSkeleton() {
   return (
-    <div className="bg-white dark:bg-ocean-900 border border-ocean-100 dark:border-ocean-800 rounded-2xl overflow-hidden animate-pulse">
-      <div className="h-40 bg-ocean-100 dark:bg-ocean-800" />
+    <div className="bg-white dark:bg-ocean-900 border border-premium-navy/10 dark:border-ocean-800 rounded-2xl overflow-hidden animate-pulse">
+      <div className="h-40 bg-premium-navy/10 dark:bg-ocean-800" />
       <div className="p-4 space-y-3">
-        <div className="h-4 bg-ocean-100 dark:bg-ocean-800 rounded w-3/4" />
-        <div className="h-3 bg-ocean-100 dark:bg-ocean-800 rounded w-full" />
-        <div className="h-3 bg-ocean-100 dark:bg-ocean-800 rounded w-1/2" />
-        <div className="h-8 bg-ocean-100 dark:bg-ocean-800 rounded-xl mt-4" />
+        <div className="h-4 bg-premium-navy/10 dark:bg-ocean-800 rounded w-3/4" />
+        <div className="h-3 bg-premium-navy/10 dark:bg-ocean-800 rounded w-full" />
+        <div className="h-3 bg-premium-navy/10 dark:bg-ocean-800 rounded w-1/2" />
+        <div className="h-8 bg-premium-navy/10 dark:bg-ocean-800 rounded-xl mt-4" />
       </div>
     </div>
   )
@@ -40,15 +40,15 @@ export default function BundlesPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-sm text-ocean-400 mb-6">
-          <Link to={ROUTES.HOME} className="hover:text-ocean-700 transition-colors">Home</Link>
+        <nav className="flex items-center gap-1.5 text-sm text-premium-navy/40 mb-6">
+          <Link to={ROUTES.HOME} className="hover:text-premium-gold transition-colors">Home</Link>
           <ChevronRight size={13} />
-          <span className="text-ocean-700 dark:text-ocean-200 font-medium">Bundle Deals</span>
+          <span className="text-premium-navy dark:text-ocean-200 font-medium">Bundle Deals</span>
         </nav>
 
         <div className="mb-8">
-          <h1 className="font-display text-3xl font-semibold text-ocean-900 dark:text-white">Bundle Deals</h1>
-          <p className="text-ocean-400 mt-1">Curated combos at a special price — more flavour, more savings.</p>
+          <h1 className="font-display text-3xl font-semibold text-premium-navy dark:text-white">Bundle Deals</h1>
+          <p className="text-premium-navy/40 mt-1">Curated combos at a special price — more flavour, more savings.</p>
         </div>
 
         {isLoading ? (
@@ -57,12 +57,12 @@ export default function BundlesPage() {
           </div>
         ) : bundles.length === 0 ? (
           <div className="py-24 text-center">
-            <Package size={56} className="mx-auto text-ocean-200 dark:text-ocean-700 mb-5" />
-            <h2 className="font-display text-2xl font-semibold text-ocean-900 dark:text-white mb-2">No bundles yet</h2>
-            <p className="text-ocean-400 mb-6">Check back soon — we're curating deals for you.</p>
+            <Package size={56} className="mx-auto text-premium-navy/20 dark:text-ocean-700 mb-5" />
+            <h2 className="font-display text-2xl font-semibold text-premium-navy dark:text-white mb-2">No bundles yet</h2>
+            <p className="text-premium-navy/40 mb-6">Check back soon — we're curating deals for you.</p>
             <Link
               to={ROUTES.PRODUCTS}
-              className="inline-flex items-center gap-2 bg-ocean-700 hover:bg-ocean-900 text-white px-6 py-3 rounded-xl font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-premium-gold hover:bg-premium-gold-light text-premium-navy px-6 py-3 rounded-xl font-medium transition-colors"
             >
               Browse Products
             </Link>

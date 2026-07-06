@@ -1,0 +1,28 @@
+app = "divya-foods-api"
+primary_region = "sin"       # Singapore — closest to Delhi NCR
+
+[build]
+  # Uses the existing Dockerfile in backend/
+
+[env]
+  DATABASE_NAME   = "divyafoods"
+  SMTP_HOST       = "smtp.gmail.com"
+  SMTP_PORT       = "587"
+  EMAIL_FROM      = "salesdivyafoods@gmail.com"
+
+[http_service]
+  internal_port        = 8000
+  force_https          = true
+  auto_stop_machines   = false   # keep always-on (no cold starts)
+  auto_start_machines  = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type       = "connections"
+    hard_limit = 25
+    soft_limit = 20
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

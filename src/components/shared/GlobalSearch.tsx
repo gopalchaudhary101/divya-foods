@@ -205,13 +205,13 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
       />
 
       {/* Panel */}
-      <div ref={panelRef} className="relative w-full max-w-xl bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl overflow-hidden">
+      <div ref={panelRef} className="relative w-full max-w-xl bg-premium-charcoal rounded-2xl shadow-2xl overflow-hidden">
 
         {/* Search input */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-ocean-100 dark:border-ocean-800">
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10">
           {loading
-            ? <div className="w-4 h-4 border-2 border-ocean-400 border-t-transparent rounded-full animate-spin shrink-0" />
-            : <Search size={18} className="text-ocean-400 shrink-0" />
+            ? <div className="w-4 h-4 border-2 border-premium-gold border-t-transparent rounded-full animate-spin shrink-0" />
+            : <Search size={18} className="text-premium-muted shrink-0" />
           }
           <input
             id={inputId}
@@ -221,7 +221,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
             onChange={e => { setQuery(e.target.value); setActiveIdx(-1) }}
             onKeyDown={handleKeyDown}
             placeholder="Search products, ingredients, categories…"
-            className="flex-1 bg-transparent text-sm text-ocean-900 dark:text-white placeholder:text-ocean-400 focus:outline-none"
+            className="flex-1 bg-transparent text-sm text-white placeholder:text-premium-muted focus:outline-none"
             autoComplete="off"
             spellCheck={false}
           />
@@ -229,13 +229,13 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
             <button
               type="button"
               onClick={() => { setQuery(''); setSuggestions([]); inputRef.current?.focus() }}
-              className="p-1 rounded-md text-ocean-400 hover:text-ocean-700 dark:hover:text-ocean-200"
+              className="p-1 rounded-md text-premium-muted hover:text-white"
               aria-label="Clear"
             >
               <X size={15} />
             </button>
           )}
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] border border-ocean-200 dark:border-ocean-700 text-ocean-400 rounded px-1.5 py-0.5 font-mono shrink-0">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] border border-white/15 text-premium-muted rounded px-1.5 py-0.5 font-mono shrink-0">
             Esc
           </kbd>
         </div>
@@ -246,7 +246,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
           {/* ── Instant suggestions ──────────────────────────────── */}
           {showSuggestions && suggestions.length > 0 && (
             <div className="py-2">
-              <p className="px-4 pt-1 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-ocean-400">
+              <p className="px-4 pt-1 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-premium-muted">
                 Products
               </p>
               <ul ref={listRef} role="listbox">
@@ -263,32 +263,32 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                       className={[
                         'w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors',
                         activeIdx === i
-                          ? 'bg-ocean-50 dark:bg-ocean-800'
-                          : 'hover:bg-ocean-50 dark:hover:bg-ocean-800',
+                          ? 'bg-white/5'
+                          : 'hover:bg-white/5',
                       ].join(' ')}
                     >
                       {/* Thumbnail */}
-                      <div className="w-10 h-10 rounded-lg overflow-hidden bg-ocean-100 dark:bg-ocean-800 shrink-0">
+                      <div className="w-10 h-10 rounded-lg overflow-hidden bg-premium-navy shrink-0">
                         {s.image
                           ? <img src={s.image} alt={s.name} className="w-full h-full object-cover" />
                           : <div className="w-full h-full flex items-center justify-center">
-                              <Package size={16} className="text-ocean-300" />
+                              <Package size={16} className="text-premium-muted" />
                             </div>
                         }
                       </div>
 
                       {/* Name + brand */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-ocean-900 dark:text-white leading-tight truncate">
+                        <p className="text-sm font-medium text-white leading-tight truncate">
                           {s.name}
                         </p>
                         {s.brand && (
-                          <p className="text-xs text-ocean-400 mt-0.5">{s.brand}</p>
+                          <p className="text-xs text-premium-muted mt-0.5">{s.brand}</p>
                         )}
                       </div>
 
                       {/* Price */}
-                      <span className="text-sm font-semibold text-ocean-800 dark:text-ocean-200 shrink-0">
+                      <span className="text-sm font-semibold text-premium-gold shrink-0">
                         {formatCurrency(s.price)}
                       </span>
                     </button>
@@ -300,9 +300,9 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
               <button
                 type="button"
                 onClick={() => commit(query)}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm text-ocean-600 dark:text-ocean-300 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors border-t border-ocean-50 dark:border-ocean-800 mt-1"
+                className="w-full flex items-center justify-between px-4 py-3 text-sm text-premium-cream/80 hover:bg-white/5 transition-colors border-t border-white/10 mt-1"
               >
-                <span>View all results for <strong className="text-ocean-900 dark:text-white">"{query}"</strong></span>
+                <span>View all results for <strong className="text-white">"{query}"</strong></span>
                 <Search size={14} />
               </button>
             </div>
@@ -312,17 +312,17 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
           {showEmpty && (
             <div className="py-10 text-center">
               <p className="text-3xl mb-2">🐟</p>
-              <p className="text-sm font-medium text-ocean-600 dark:text-ocean-300">
+              <p className="text-sm font-medium text-premium-cream/80">
                 No results for <strong>"{query}"</strong>
               </p>
-              <p className="text-xs text-ocean-400 mt-1">Try a different word or browse categories below.</p>
+              <p className="text-xs text-premium-muted mt-1">Try a different word or browse categories below.</p>
               <div className="flex flex-wrap justify-center gap-2 mt-4">
                 {POPULAR.slice(0, 5).map(p => (
                   <button
                     key={p}
                     type="button"
                     onClick={() => { setQuery(p); setActiveIdx(-1) }}
-                    className="px-3 py-1 bg-ocean-50 dark:bg-ocean-800 text-ocean-700 dark:text-ocean-200 rounded-full text-xs font-medium hover:bg-ocean-100 dark:hover:bg-ocean-700 transition-colors"
+                    className="px-3 py-1 bg-white/10 text-premium-cream/90 rounded-full text-xs font-medium hover:bg-white/20 transition-colors"
                   >
                     {p}
                   </button>
@@ -339,24 +339,24 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
               {recent.length > 0 && (
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-ocean-400 flex items-center gap-1.5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-premium-muted flex items-center gap-1.5">
                       <Clock size={11} /> Recent
                     </p>
                     <button
                       type="button"
                       onClick={() => { localStorage.removeItem(STORAGE_KEY); setRecent([]) }}
-                      className="text-[10px] text-ocean-400 hover:text-ocean-600"
+                      className="text-[10px] text-premium-muted hover:text-premium-gold"
                     >
                       Clear all
                     </button>
                   </div>
                   <div className="flex flex-col gap-0.5">
                     {recent.map(term => (
-                      <div key={term} className="flex items-center justify-between group rounded-lg hover:bg-ocean-50 dark:hover:bg-ocean-800 pr-1 transition-colors">
+                      <div key={term} className="flex items-center justify-between group rounded-lg hover:bg-white/5 pr-1 transition-colors">
                         <button
                           type="button"
                           onClick={() => commit(term)}
-                          className="flex-1 text-left text-sm text-ocean-700 dark:text-ocean-200 px-3 py-1.5"
+                          className="flex-1 text-left text-sm text-premium-cream/90 px-3 py-1.5"
                         >
                           {term}
                         </button>
@@ -366,7 +366,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                             removeRecent(term)
                             setRecent(getRecent())
                           }}
-                          className="p-1 opacity-0 group-hover:opacity-100 text-ocean-400 hover:text-red-500 transition-all"
+                          className="p-1 opacity-0 group-hover:opacity-100 text-premium-muted hover:text-red-400 transition-all"
                           aria-label={`Remove "${term}" from recent searches`}
                         >
                           <X size={12} />
@@ -379,7 +379,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
 
               {/* Popular searches */}
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-ocean-400 flex items-center gap-1.5 mb-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-premium-muted flex items-center gap-1.5 mb-2">
                   <TrendingUp size={11} /> Popular
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -388,7 +388,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                       key={p}
                       type="button"
                       onClick={() => commit(p)}
-                      className="px-3 py-1.5 bg-ocean-50 dark:bg-ocean-800 text-ocean-700 dark:text-ocean-200 rounded-full text-xs font-medium hover:bg-ocean-700 hover:text-white dark:hover:bg-ocean-700 transition-colors"
+                      className="px-3 py-1.5 bg-white/10 text-premium-cream/90 rounded-full text-xs font-medium hover:bg-premium-gold hover:text-premium-navy transition-colors"
                     >
                       {p}
                     </button>
@@ -400,15 +400,15 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
         </div>
 
         {/* Footer hint */}
-        <div className="hidden sm:flex items-center gap-4 px-4 py-2.5 border-t border-ocean-50 dark:border-ocean-800 bg-ocean-50/50 dark:bg-ocean-950/30">
-          <span className="text-[10px] text-ocean-400 flex items-center gap-1">
-            <kbd className="border border-ocean-200 dark:border-ocean-700 rounded px-1 font-mono">↑↓</kbd> navigate
+        <div className="hidden sm:flex items-center gap-4 px-4 py-2.5 border-t border-white/10 bg-premium-navy/30">
+          <span className="text-[10px] text-premium-muted flex items-center gap-1">
+            <kbd className="border border-white/15 rounded px-1 font-mono">↑↓</kbd> navigate
           </span>
-          <span className="text-[10px] text-ocean-400 flex items-center gap-1">
-            <kbd className="border border-ocean-200 dark:border-ocean-700 rounded px-1 font-mono">↵</kbd> select
+          <span className="text-[10px] text-premium-muted flex items-center gap-1">
+            <kbd className="border border-white/15 rounded px-1 font-mono">↵</kbd> select
           </span>
-          <span className="text-[10px] text-ocean-400 flex items-center gap-1">
-            <kbd className="border border-ocean-200 dark:border-ocean-700 rounded px-1 font-mono">Esc</kbd> close
+          <span className="text-[10px] text-premium-muted flex items-center gap-1">
+            <kbd className="border border-white/15 rounded px-1 font-mono">Esc</kbd> close
           </span>
         </div>
       </div>

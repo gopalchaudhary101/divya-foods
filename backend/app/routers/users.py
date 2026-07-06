@@ -24,6 +24,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
 class ProfileUpdateRequest(BaseModel):
     name: Optional[str] = Field(None, min_length=2, max_length=100)
     phone: Optional[str] = Field(None, pattern=r"^\+?[0-9]{10,15}$")
+    date_of_birth: Optional[str] = Field(None, pattern=r"^\d{4}-\d{2}-\d{2}$")
 
 
 @router.get("/profile")
@@ -43,6 +44,8 @@ def update_profile(
         update["name"] = body.name
     if body.phone is not None:
         update["phone"] = body.phone
+    if body.date_of_birth is not None:
+        update["date_of_birth"] = body.date_of_birth
 
     db.users.update_one({"_id": current_user["_id"]}, {"$set": update})
     updated = db.users.find_one({"_id": current_user["_id"]})

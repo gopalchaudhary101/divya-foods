@@ -20,9 +20,9 @@ interface AppNotification {
 }
 
 const TYPE_ICON = {
-  order_update: <Package size={14} className="text-ocean-500" />,
-  promotion:    <Tag size={14} className="text-gold-500" />,
-  system:       <Info size={14} className="text-mint-500" />,
+  order_update: <Package size={14} className="text-premium-teal" />,
+  promotion:    <Tag size={14} className="text-premium-gold" />,
+  system:       <Info size={14} className="text-premium-teal" />,
 }
 
 function timeAgo(iso: string): string {
@@ -85,7 +85,7 @@ export function NotificationBell() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="Notifications"
-        className="relative p-2.5 rounded-lg text-ocean-200 hover:text-white hover:bg-ocean-700 transition-colors"
+        className="relative p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
       >
         <Bell size={18} />
         {unreadCount > 0 && (
@@ -102,33 +102,33 @@ export function NotificationBell() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 mt-2 w-80 bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl border border-ocean-100 dark:border-ocean-800 z-50 overflow-hidden"
+            className="absolute right-0 mt-2 w-80 bg-premium-charcoal rounded-2xl shadow-2xl border border-white/10 z-50 overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-ocean-100 dark:border-ocean-800">
-              <span className="text-sm font-semibold text-ocean-900 dark:text-white">Notifications</span>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+              <span className="text-sm font-semibold text-white">Notifications</span>
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
                   <button
                     onClick={() => markAllRead.mutate()}
-                    className="text-xs text-ocean-400 hover:text-ocean-700 dark:hover:text-ocean-200 flex items-center gap-1 transition-colors"
+                    className="text-xs text-premium-muted hover:text-premium-gold flex items-center gap-1 transition-colors"
                   >
                     <Check size={11} /> Mark all read
                   </button>
                 )}
-                <button onClick={() => setOpen(false)} className="text-ocean-400 hover:text-ocean-700 transition-colors">
+                <button onClick={() => setOpen(false)} className="text-premium-muted hover:text-premium-gold transition-colors">
                   <X size={14} />
                 </button>
               </div>
             </div>
 
             {/* Push toggle */}
-            <div className="px-4 py-2.5 bg-ocean-50 dark:bg-ocean-800/50 border-b border-ocean-100 dark:border-ocean-800 flex items-center justify-between">
+            <div className="px-4 py-2.5 bg-premium-navy/50 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {pushStatus === 'subscribed'
-                  ? <Bell size={13} className="text-mint-500" />
-                  : <BellOff size={13} className="text-ocean-400" />}
-                <span className="text-xs text-ocean-600 dark:text-ocean-300">
+                  ? <Bell size={13} className="text-premium-teal" />
+                  : <BellOff size={13} className="text-premium-muted" />}
+                <span className="text-xs text-premium-cream/80">
                   {pushStatus === 'subscribed'   ? 'Push notifications on'  :
                    pushStatus === 'denied'       ? 'Notifications blocked'  :
                    pushStatus === 'unsupported'  ? 'Not supported'          :
@@ -139,7 +139,7 @@ export function NotificationBell() {
               {(pushStatus === 'unsubscribed' || pushStatus === 'subscribed') && (
                 <button
                   onClick={() => pushStatus === 'subscribed' ? unsubscribe() : subscribe()}
-                  className="text-xs font-medium text-ocean-600 dark:text-ocean-300 hover:text-ocean-900 dark:hover:text-white transition-colors"
+                  className="text-xs font-medium text-premium-cream/80 hover:text-white transition-colors"
                 >
                   {pushStatus === 'subscribed' ? 'Turn off' : 'Turn on'}
                 </button>
@@ -150,8 +150,8 @@ export function NotificationBell() {
             <div className="max-h-72 overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="py-10 text-center">
-                  <Bell size={28} className="mx-auto text-ocean-200 mb-2" />
-                  <p className="text-xs text-ocean-400">No notifications yet</p>
+                  <Bell size={28} className="mx-auto text-premium-muted mb-2" />
+                  <p className="text-xs text-premium-muted">No notifications yet</p>
                 </div>
               ) : (
                 notifications.slice(0, 10).map((n) => {
@@ -165,22 +165,22 @@ export function NotificationBell() {
                       to={linkTarget}
                       onClick={() => setOpen(false)}
                       className={[
-                        'flex gap-3 px-4 py-3 border-b border-ocean-50 dark:border-ocean-800 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors last:border-b-0',
-                        !n.is_read ? 'bg-ocean-50/70 dark:bg-ocean-800/40' : '',
+                        'flex gap-3 px-4 py-3 border-b border-white/5 hover:bg-white/5 transition-colors last:border-b-0',
+                        !n.is_read ? 'bg-white/[0.03]' : '',
                       ].join(' ')}
                     >
-                      <div className="w-7 h-7 rounded-full bg-ocean-100 dark:bg-ocean-700 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-7 h-7 rounded-full bg-premium-navy flex items-center justify-center shrink-0 mt-0.5">
                         {TYPE_ICON[n.type]}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-ocean-900 dark:text-white leading-snug">
+                        <p className="text-xs font-semibold text-white leading-snug">
                           {n.title}
                           {!n.is_read && (
-                            <span className="ml-1.5 inline-block w-1.5 h-1.5 bg-ocean-600 rounded-full align-middle" />
+                            <span className="ml-1.5 inline-block w-1.5 h-1.5 bg-premium-gold rounded-full align-middle" />
                           )}
                         </p>
-                        <p className="text-xs text-ocean-400 mt-0.5 line-clamp-2">{n.message}</p>
-                        <p className="text-[10px] text-ocean-300 mt-0.5">{timeAgo(n.created_at)}</p>
+                        <p className="text-xs text-premium-muted mt-0.5 line-clamp-2">{n.message}</p>
+                        <p className="text-[10px] text-premium-muted/70 mt-0.5">{timeAgo(n.created_at)}</p>
                       </div>
                     </Link>
                   )

@@ -73,13 +73,13 @@ export default function RegisterPage() {
     <>
       <Helmet><title>Create Account — Divya Foods</title></Helmet>
 
-      <div className="min-h-screen flex bg-ocean-50 dark:bg-[#03182E]">
+      <div className="min-h-screen flex bg-premium-cream dark:bg-[#03182E]">
 
         {/* ── Left branding panel (desktop) ── */}
-        <div className="hidden lg:flex lg:w-1/2 bg-ocean-gradient flex-col justify-between p-12">
+        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-premium-navy to-[#060F16] flex-col justify-between p-12">
           <Link to={ROUTES.HOME} className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-              <Fish size={22} className="text-white" />
+            <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+              <Fish size={22} className="text-premium-gold" />
             </div>
             <span className="font-display text-2xl font-bold text-white">Divya Foods</span>
           </Link>
@@ -88,7 +88,7 @@ export default function RegisterPage() {
             <h2 className="font-display text-4xl font-bold text-white leading-snug">
               Join Delhi's Premier<br />Seafood Community
             </h2>
-            <p className="mt-4 text-ocean-200 text-lg leading-relaxed">
+            <p className="mt-4 text-premium-muted text-lg leading-relaxed">
               Create your account and get access to exclusive deals,<br />
               order tracking, and priority delivery.
             </p>
@@ -101,13 +101,13 @@ export default function RegisterPage() {
               ].map(({ label, desc }) => (
                 <div key={label} className="bg-white/10 rounded-xl p-4">
                   <p className="font-semibold text-white text-sm">{label}</p>
-                  <p className="text-ocean-300 text-xs mt-0.5">{desc}</p>
+                  <p className="text-premium-muted text-xs mt-0.5">{desc}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <p className="text-ocean-400 text-xs">
+          <p className="text-premium-muted text-xs">
             © {new Date().getFullYear()} Divya Foods · O-52, Saurabh Vihar, New Delhi
           </p>
         </div>
@@ -118,16 +118,16 @@ export default function RegisterPage() {
 
             {/* Mobile logo */}
             <Link to={ROUTES.HOME} className="flex lg:hidden items-center gap-2 mb-8">
-              <div className="w-8 h-8 bg-ocean-gradient rounded-xl flex items-center justify-center">
-                <Fish size={18} className="text-white" />
+              <div className="w-8 h-8 bg-premium-navy rounded-xl flex items-center justify-center">
+                <Fish size={18} className="text-premium-gold" />
               </div>
-              <span className="font-display text-xl font-bold text-ocean-900 dark:text-white">Divya Foods</span>
+              <span className="font-display text-xl font-bold text-premium-navy dark:text-white">Divya Foods</span>
             </Link>
 
-            <h1 className="font-display text-3xl font-bold text-ocean-900 dark:text-white">
+            <h1 className="font-display text-3xl font-bold text-premium-navy dark:text-white">
               Create your account
             </h1>
-            <p className="mt-1.5 text-sm text-ocean-400">
+            <p className="mt-1.5 text-sm text-premium-navy/50">
               Join thousands of seafood lovers in Delhi NCR
             </p>
 
@@ -178,7 +178,12 @@ export default function RegisterPage() {
                 error={errors.password}
                 leftIcon={<Lock size={16} />}
                 rightIcon={
-                  <button type="button" onClick={() => setShowPassword(v => !v)} className="text-ocean-400 hover:text-ocean-700 transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(v => !v)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    className="text-premium-navy/40 hover:text-premium-gold transition-colors"
+                  >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 }
@@ -200,6 +205,7 @@ export default function RegisterPage() {
 
               <Button
                 type="submit"
+                variant="premium"
                 size="lg"
                 loading={isLoading}
                 className="w-full mt-1"
@@ -207,18 +213,18 @@ export default function RegisterPage() {
                 Create Account
               </Button>
 
-              <p className="text-center text-xs text-ocean-400">
+              <p className="text-center text-xs text-premium-navy/40">
                 By creating an account you agree to our{' '}
-                <span className="text-ocean-600">Terms of Service</span> and{' '}
-                <span className="text-ocean-600">Privacy Policy</span>
+                <span className="text-premium-teal">Terms of Service</span> and{' '}
+                <span className="text-premium-teal">Privacy Policy</span>
               </p>
             </form>
 
-            <p className="mt-6 text-center text-sm text-ocean-400">
+            <p className="mt-6 text-center text-sm text-premium-navy/50">
               Already have an account?{' '}
               <Link
                 to={ROUTES.AUTH.LOGIN}
-                className="font-medium text-ocean-700 hover:text-ocean-900 transition-colors"
+                className="font-medium text-premium-teal hover:text-premium-gold transition-colors"
               >
                 Sign in
               </Link>

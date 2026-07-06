@@ -418,9 +418,9 @@ function ProductCard({ p }: { p: SearchProduct }) {
   return (
     <Link
       to={`/products/${p.slug}`}
-      className="flex items-center gap-2.5 bg-ocean-50 dark:bg-ocean-800 rounded-xl p-2.5 hover:bg-ocean-100 dark:hover:bg-ocean-700 transition-colors group"
+      className="flex items-center gap-2.5 bg-premium-navy/5 dark:bg-ocean-800 rounded-xl p-2.5 hover:bg-premium-navy/10 dark:hover:bg-ocean-700 transition-colors group"
     >
-      <div className="w-10 h-10 rounded-lg overflow-hidden bg-ocean-100 dark:bg-ocean-700 shrink-0">
+      <div className="w-10 h-10 rounded-lg overflow-hidden bg-premium-navy/10 dark:bg-ocean-700 shrink-0">
         {p.images[0] ? (
           <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
         ) : (
@@ -428,14 +428,14 @@ function ProductCard({ p }: { p: SearchProduct }) {
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold text-ocean-800 dark:text-ocean-200 truncate">{p.name}</p>
-        <p className="text-xs text-ocean-500">{formatCurrency(p.price)}</p>
+        <p className="text-xs font-semibold text-premium-navy dark:text-ocean-200 truncate">{p.name}</p>
+        <p className="text-xs text-premium-gold">{formatCurrency(p.price)}</p>
       </div>
       <div className="flex items-center gap-1 shrink-0">
         {!p.inStock && (
           <span className="text-xs text-red-400">Out</span>
         )}
-        <ChevronRight size={13} className="text-ocean-400 group-hover:text-ocean-600 transition-colors" />
+        <ChevronRight size={13} className="text-premium-navy/40 group-hover:text-premium-gold transition-colors" />
       </div>
     </Link>
   )
@@ -445,12 +445,12 @@ function ProductCard({ p }: { p: SearchProduct }) {
 
 function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
-    <div className="bg-ocean-50 dark:bg-ocean-800 rounded-xl overflow-hidden">
-      <div className="px-3 pt-3 pb-2 border-b border-ocean-100 dark:border-ocean-700">
-        <p className="font-semibold text-sm text-ocean-900 dark:text-white">
+    <div className="bg-premium-navy/5 dark:bg-ocean-800 rounded-xl overflow-hidden">
+      <div className="px-3 pt-3 pb-2 border-b border-premium-navy/10 dark:border-ocean-700">
+        <p className="font-semibold text-sm text-premium-navy dark:text-white">
           {recipe.emoji} {recipe.name}
         </p>
-        <div className="flex items-center gap-3 mt-1 text-xs text-ocean-500">
+        <div className="flex items-center gap-3 mt-1 text-xs text-premium-navy/50">
           <span className="flex items-center gap-1"><Clock size={11} /> {recipe.time}</span>
           <span>Serves {recipe.serves}</span>
           <span>{recipe.difficulty}</span>
@@ -458,21 +458,21 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
       </div>
       <div className="p-3 space-y-2.5">
         <div>
-          <p className="text-xs font-semibold text-ocean-600 dark:text-ocean-400 mb-1">Ingredients</p>
+          <p className="text-xs font-semibold text-premium-teal mb-1">Ingredients</p>
           <ul className="space-y-0.5">
             {recipe.ingredients.map((ing, i) => (
-              <li key={i} className="text-xs text-ocean-700 dark:text-ocean-300 flex items-start gap-1.5">
-                <span className="text-ocean-400 mt-0.5 shrink-0">•</span>{ing}
+              <li key={i} className="text-xs text-premium-navy/80 dark:text-ocean-300 flex items-start gap-1.5">
+                <span className="text-premium-gold mt-0.5 shrink-0">•</span>{ing}
               </li>
             ))}
           </ul>
         </div>
         <div>
-          <p className="text-xs font-semibold text-ocean-600 dark:text-ocean-400 mb-1">Steps</p>
+          <p className="text-xs font-semibold text-premium-teal mb-1">Steps</p>
           <ol className="space-y-1.5">
             {recipe.steps.map((step, i) => (
-              <li key={i} className="text-xs text-ocean-700 dark:text-ocean-300 flex items-start gap-2">
-                <span className="shrink-0 w-4 h-4 rounded-full bg-ocean-200 dark:bg-ocean-700 flex items-center justify-center text-ocean-700 dark:text-ocean-300 font-semibold text-[10px]">{i + 1}</span>
+              <li key={i} className="text-xs text-premium-navy/80 dark:text-ocean-300 flex items-start gap-2">
+                <span className="shrink-0 w-4 h-4 rounded-full bg-premium-gold/20 flex items-center justify-center text-premium-gold font-semibold text-[10px]">{i + 1}</span>
                 {step}
               </li>
             ))}
@@ -489,7 +489,7 @@ function MessageBubble({ msg, onChip }: { msg: Msg; onChip: (chip: string) => vo
   if (msg.role === 'user') {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[80%] bg-ocean-700 text-white rounded-2xl rounded-br-sm px-3.5 py-2.5 text-sm leading-relaxed">
+        <div className="max-w-[80%] bg-premium-gold text-premium-navy rounded-2xl rounded-br-sm px-3.5 py-2.5 text-sm leading-relaxed">
           {msg.text}
         </div>
       </div>
@@ -501,23 +501,23 @@ function MessageBubble({ msg, onChip }: { msg: Msg; onChip: (chip: string) => vo
       {/* Bot bubble */}
       {msg.searching ? (
         <div className="flex items-end gap-2">
-          <div className="w-6 h-6 rounded-full bg-ocean-100 dark:bg-ocean-700 flex items-center justify-center shrink-0">
-            <Search size={12} className="text-ocean-500 animate-pulse" />
+          <div className="w-6 h-6 rounded-full bg-premium-navy/10 dark:bg-ocean-700 flex items-center justify-center shrink-0">
+            <Search size={12} className="text-premium-teal animate-pulse" />
           </div>
-          <div className="bg-ocean-50 dark:bg-ocean-800 rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1 items-center h-10">
+          <div className="bg-premium-navy/5 dark:bg-ocean-800 rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1 items-center h-10">
             {[0, 150, 300].map(d => (
-              <span key={d} className="w-1.5 h-1.5 bg-ocean-400 rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
+              <span key={d} className="w-1.5 h-1.5 bg-premium-navy/30 rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
             ))}
           </div>
         </div>
       ) : (
         <div className="flex items-end gap-2">
-          <div className="w-6 h-6 rounded-full bg-ocean-100 dark:bg-ocean-700 flex items-center justify-center shrink-0 mb-0.5">
-            <Headphones size={12} className="text-ocean-500" />
+          <div className="w-6 h-6 rounded-full bg-premium-navy/10 dark:bg-ocean-700 flex items-center justify-center shrink-0 mb-0.5">
+            <Headphones size={12} className="text-premium-teal" />
           </div>
           <div className="max-w-[85%] flex flex-col gap-2">
             {msg.text && (
-              <div className="bg-ocean-50 dark:bg-ocean-800 text-ocean-900 dark:text-ocean-100 rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm leading-relaxed">
+              <div className="bg-premium-navy/5 dark:bg-ocean-800 text-premium-navy dark:text-ocean-100 rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm leading-relaxed">
                 <RichText text={msg.text} />
               </div>
             )}
@@ -528,9 +528,9 @@ function MessageBubble({ msg, onChip }: { msg: Msg; onChip: (chip: string) => vo
               </div>
             )}
             {msg.products && msg.products.length === 0 && msg.text === '' && (
-              <div className="bg-ocean-50 dark:bg-ocean-800 text-ocean-700 dark:text-ocean-300 rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm">
+              <div className="bg-premium-navy/5 dark:bg-ocean-800 text-premium-navy/70 dark:text-ocean-300 rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm">
                 No products found for that search. Try browsing our{' '}
-                <Link to="/products" className="text-ocean-600 dark:text-ocean-400 underline">full catalog</Link>.
+                <Link to="/products" className="text-premium-teal underline">full catalog</Link>.
               </div>
             )}
           </div>
@@ -544,7 +544,7 @@ function MessageBubble({ msg, onChip }: { msg: Msg; onChip: (chip: string) => vo
             <button
               key={chip}
               onClick={() => onChip(chip)}
-              className="px-2.5 py-1 text-xs bg-white dark:bg-ocean-800 border border-ocean-200 dark:border-ocean-600 text-ocean-700 dark:text-ocean-300 rounded-full hover:bg-ocean-50 dark:hover:bg-ocean-700 hover:border-ocean-400 transition-colors"
+              className="px-2.5 py-1 text-xs bg-white dark:bg-ocean-800 border border-premium-navy/15 dark:border-ocean-600 text-premium-navy dark:text-ocean-300 rounded-full hover:bg-premium-navy/5 dark:hover:bg-ocean-700 hover:border-premium-gold/50 transition-colors"
             >
               {chip}
             </button>
@@ -679,18 +679,18 @@ export function FreeChatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 340, damping: 30 }}
-            className="fixed bottom-[88px] right-4 z-50 w-[340px] sm:w-[380px] rounded-2xl shadow-2xl overflow-hidden bg-white dark:bg-ocean-900 border border-ocean-100 dark:border-ocean-700 flex flex-col"
+            className="fixed bottom-[88px] right-4 z-50 w-[340px] sm:w-[380px] rounded-2xl shadow-2xl overflow-hidden bg-white dark:bg-ocean-900 border border-premium-navy/10 dark:border-ocean-700 flex flex-col"
             style={{ maxHeight: 'min(560px, calc(100dvh - 120px))' }}
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-ocean-800 to-ocean-600 px-4 py-3 flex items-center gap-3 shrink-0">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                <Headphones size={16} className="text-white" />
+            <div className="bg-gradient-to-r from-premium-navy to-[#1B3A4B] px-4 py-3 flex items-center gap-3 shrink-0">
+              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                <Headphones size={16} className="text-premium-gold" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-white font-semibold text-sm leading-tight">Divya Foods Support</p>
-                <p className="text-ocean-200 text-xs flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-mint-400 inline-block" />
+                <p className="text-premium-muted text-xs flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-premium-teal inline-block" />
                   Online · Always here to help
                 </p>
               </div>
@@ -710,12 +710,12 @@ export function FreeChatbot() {
               ))}
               {busy && messages[messages.length - 1]?.role !== 'bot' && (
                 <div className="flex items-end gap-2">
-                  <div className="w-6 h-6 rounded-full bg-ocean-100 dark:bg-ocean-700 flex items-center justify-center shrink-0">
-                    <Headphones size={12} className="text-ocean-500" />
+                  <div className="w-6 h-6 rounded-full bg-premium-navy/10 dark:bg-ocean-700 flex items-center justify-center shrink-0">
+                    <Headphones size={12} className="text-premium-teal" />
                   </div>
-                  <div className="bg-ocean-50 dark:bg-ocean-800 rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1 items-center h-10">
+                  <div className="bg-premium-navy/5 dark:bg-ocean-800 rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1 items-center h-10">
                     {[0, 150, 300].map(d => (
-                      <span key={d} className="w-1.5 h-1.5 bg-ocean-400 rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
+                      <span key={d} className="w-1.5 h-1.5 bg-premium-navy/30 rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
                     ))}
                   </div>
                 </div>
@@ -724,7 +724,7 @@ export function FreeChatbot() {
             </div>
 
             {/* Input row */}
-            <div className="px-3 py-3 border-t border-ocean-100 dark:border-ocean-700 flex gap-2 shrink-0 bg-white dark:bg-ocean-900">
+            <div className="px-3 py-3 border-t border-premium-navy/10 dark:border-ocean-700 flex gap-2 shrink-0 bg-white dark:bg-ocean-900">
               <input
                 ref={inputRef}
                 value={input}
@@ -732,13 +732,13 @@ export function FreeChatbot() {
                 onKeyDown={handleKey}
                 disabled={busy}
                 placeholder="Ask about delivery, recipes, products…"
-                className="flex-1 text-sm bg-ocean-50 dark:bg-ocean-800 text-ocean-900 dark:text-ocean-100 placeholder-ocean-400 rounded-xl px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-ocean-500 transition-all disabled:opacity-60"
+                className="flex-1 text-sm bg-premium-navy/5 dark:bg-ocean-800 text-premium-navy dark:text-ocean-100 placeholder-premium-navy/30 rounded-xl px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-premium-gold transition-all disabled:opacity-60"
               />
               <button
                 onClick={() => handleSend(input)}
                 disabled={!input.trim() || busy}
                 aria-label="Send"
-                className="w-10 h-10 bg-ocean-700 hover:bg-ocean-600 active:bg-ocean-800 disabled:opacity-40 text-white rounded-xl flex items-center justify-center transition-colors shrink-0"
+                className="w-10 h-10 bg-premium-gold hover:bg-premium-gold-light active:bg-premium-gold-light disabled:opacity-40 text-premium-navy rounded-xl flex items-center justify-center transition-colors shrink-0"
               >
                 <Send size={15} />
               </button>
@@ -753,7 +753,7 @@ export function FreeChatbot() {
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
         aria-label={open ? 'Close support chat' : 'Open support chat'}
-        className="fixed bottom-6 right-4 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-ocean-700 to-ocean-500 text-white shadow-lg shadow-ocean-900/40 flex items-center justify-center"
+        className="fixed bottom-6 right-4 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-premium-navy to-[#1B3A4B] text-premium-gold shadow-lg shadow-black/40 flex items-center justify-center"
       >
         <AnimatePresence mode="wait" initial={false}>
           {open ? (

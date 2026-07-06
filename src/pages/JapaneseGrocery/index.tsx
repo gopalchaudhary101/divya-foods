@@ -10,6 +10,7 @@ import { addToCart } from '@/features/cart/cartSlice'
 import { ROUTES } from '@/constants/routes'
 import { CONFIG } from '@/constants/config'
 import { RECIPES } from '@/data/recipes'
+import { getFAQLD } from '@/utils/structuredData'
 import type { Product } from '@/types'
 import toast from 'react-hot-toast'
 
@@ -83,15 +84,15 @@ function IngredientGuide() {
   return (
     <motion.section
       variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-      className="py-14 px-4 bg-ocean-950"
+      className="py-14 px-4 bg-premium-navy"
     >
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
-          <p className="text-gold-400 text-xs font-bold uppercase tracking-widest mb-2">The Japanese Kitchen</p>
+          <p className="df-eyebrow mb-2 w-full">The Japanese Kitchen</p>
           <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3">
             6 Ingredients Every Home Cook Needs
           </h2>
-          <p className="text-ocean-300 text-sm max-w-xl mx-auto">
+          <p className="text-premium-muted text-sm max-w-xl mx-auto">
             Understanding these six pantry staples unlocks almost every Japanese dish.
             Each one is available here — imported directly from Japan.
           </p>
@@ -111,8 +112,8 @@ function IngredientGuide() {
               {/* Content */}
               <div className="relative z-10">
                 <div className="text-3xl font-bold text-white mb-0.5">{ing.kanji}</div>
-                <div className="text-sm font-semibold text-gold-400 mb-2">{ing.romaji}</div>
-                <p className="text-ocean-200 text-sm leading-relaxed mb-3">{ing.description}</p>
+                <div className="text-sm font-semibold text-premium-gold mb-2">{ing.romaji}</div>
+                <p className="text-premium-cream/80 text-sm leading-relaxed mb-3">{ing.description}</p>
 
                 {/* Use-cases */}
                 <div className="flex flex-wrap gap-1.5 mb-3">
@@ -125,7 +126,7 @@ function IngredientGuide() {
 
                 <Link
                   to={`${ROUTES.PRODUCTS}?category=japanese-grocery&search=${ing.searchTag}`}
-                  className="text-xs font-semibold text-gold-400 hover:text-gold-300 flex items-center gap-1 transition-colors"
+                  className="text-xs font-semibold text-premium-gold hover:text-premium-gold-light flex items-center gap-1 transition-colors"
                 >
                   Shop {ing.romaji} <ChevronRight size={12} />
                 </Link>
@@ -142,12 +143,12 @@ function IngredientGuide() {
 
 function ProductSkeleton() {
   return (
-    <div className="rounded-2xl bg-white dark:bg-ocean-900 border border-ocean-100 dark:border-ocean-800 overflow-hidden animate-pulse">
-      <div className="aspect-square bg-ocean-100 dark:bg-ocean-800" />
+    <div className="rounded-2xl bg-premium-charcoal border border-white/5 overflow-hidden animate-pulse">
+      <div className="aspect-square bg-premium-navy" />
       <div className="p-4 space-y-2">
-        <div className="h-3 bg-ocean-100 dark:bg-ocean-800 rounded w-3/4" />
-        <div className="h-3 bg-ocean-100 dark:bg-ocean-800 rounded w-1/2" />
-        <div className="h-8 bg-ocean-100 dark:bg-ocean-800 rounded-lg mt-3" />
+        <div className="h-3 bg-premium-navy rounded w-3/4" />
+        <div className="h-3 bg-premium-navy rounded w-1/2" />
+        <div className="h-8 bg-premium-navy rounded-lg mt-3" />
       </div>
     </div>
   )
@@ -177,12 +178,12 @@ function WhyAuthentic() {
   return (
     <motion.section
       variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-      className="py-14 px-4 bg-white dark:bg-ocean-950"
+      className="py-14 px-4 bg-premium-cream dark:bg-ocean-950"
     >
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
-          <p className="text-gold-500 text-xs font-bold uppercase tracking-widest mb-2">Why It Matters</p>
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-ocean-900 dark:text-white">
+          <p className="df-eyebrow mb-2 w-full">Why It Matters</p>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold text-premium-navy dark:text-white">
             Authentic vs. Substitute — There's a Real Difference
           </h2>
         </div>
@@ -190,8 +191,8 @@ function WhyAuthentic() {
           {WHY.map(w => (
             <div key={w.title} className="text-center">
               <div className="text-4xl mb-3">{w.emoji}</div>
-              <h3 className="font-semibold text-ocean-900 dark:text-white mb-2">{w.title}</h3>
-              <p className="text-ocean-500 dark:text-ocean-400 text-sm leading-relaxed">{w.text}</p>
+              <h3 className="font-semibold text-premium-navy dark:text-white mb-2">{w.title}</h3>
+              <p className="text-premium-navy/50 dark:text-ocean-400 text-sm leading-relaxed">{w.text}</p>
             </div>
           ))}
         </div>
@@ -212,17 +213,17 @@ function RecipeTeaser() {
   return (
     <motion.section
       variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-      className="py-14 px-4 bg-ocean-50 dark:bg-ocean-900/50"
+      className="py-14 px-4 bg-premium-cream dark:bg-ocean-900/50"
     >
       <div className="max-w-6xl mx-auto">
         <div className="flex items-baseline justify-between mb-6">
           <div>
-            <p className="text-gold-500 text-xs font-bold uppercase tracking-widest mb-1">Cook With It</p>
-            <h2 className="text-xl sm:text-2xl font-display font-bold text-ocean-900 dark:text-white">
+            <p className="df-eyebrow mb-1">Cook With It</p>
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-premium-navy dark:text-white">
               Japanese-Inspired Recipes
             </h2>
           </div>
-          <Link to={ROUTES.RECIPES} className="text-xs text-ocean-500 hover:text-ocean-700 dark:hover:text-ocean-300 flex items-center gap-1">
+          <Link to={ROUTES.RECIPES} className="text-xs text-premium-teal hover:text-premium-gold dark:hover:text-ocean-300 flex items-center gap-1">
             All recipes <ChevronRight size={14} />
           </Link>
         </div>
@@ -232,17 +233,17 @@ function RecipeTeaser() {
             <Link
               key={r.id}
               to={ROUTES.RECIPES}
-              className="group bg-white dark:bg-ocean-900 rounded-2xl p-5 border border-ocean-100 dark:border-ocean-800 hover:border-ocean-300 dark:hover:border-ocean-600 transition-all hover:shadow-md"
+              className="group bg-white dark:bg-ocean-900 rounded-2xl p-5 border border-premium-navy/10 dark:border-ocean-800 hover:border-premium-gold/40 dark:hover:border-ocean-600 transition-all hover:shadow-md"
             >
               <div className="text-4xl mb-3">{r.emoji}</div>
-              <h3 className="font-semibold text-ocean-900 dark:text-white text-sm mb-1">{r.name}</h3>
-              <p className="text-xs text-ocean-500 dark:text-ocean-400 line-clamp-2 mb-3">{r.description}</p>
-              <div className="flex items-center gap-3 text-xs text-ocean-400">
+              <h3 className="font-semibold text-premium-navy dark:text-white text-sm mb-1">{r.name}</h3>
+              <p className="text-xs text-premium-navy/50 dark:text-ocean-400 line-clamp-2 mb-3">{r.description}</p>
+              <div className="flex items-center gap-3 text-xs text-premium-navy/40">
                 <span>{r.time}</span>
                 <span>·</span>
                 <span className="capitalize">{r.difficulty}</span>
               </div>
-              <div className="mt-3 text-xs font-medium text-ocean-600 dark:text-ocean-400 group-hover:text-ocean-900 dark:group-hover:text-white transition-colors flex items-center gap-1">
+              <div className="mt-3 text-xs font-medium text-premium-gold group-hover:text-premium-gold-light transition-colors flex items-center gap-1">
                 See recipe <ChevronRight size={12} />
               </div>
             </Link>
@@ -280,14 +281,14 @@ function CookingFAQ() {
   return (
     <motion.section
       variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-      className="py-14 px-4 bg-white dark:bg-ocean-950"
+      className="py-14 px-4 bg-premium-cream dark:bg-ocean-950"
     >
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center gap-2 mb-2 justify-center">
-          <BookOpen size={16} className="text-gold-500" />
-          <p className="text-gold-500 text-xs font-bold uppercase tracking-widest">Cooking Guide</p>
+          <BookOpen size={16} className="text-premium-gold" />
+          <p className="text-premium-gold text-xs font-bold uppercase tracking-widest">Cooking Guide</p>
         </div>
-        <h2 className="text-xl sm:text-2xl font-display font-bold text-ocean-900 dark:text-white text-center mb-8">
+        <h2 className="text-xl sm:text-2xl font-display font-bold text-premium-navy dark:text-white text-center mb-8">
           Common Questions
         </h2>
 
@@ -295,19 +296,19 @@ function CookingFAQ() {
           {FAQ.map((item, i) => (
             <div
               key={i}
-              className="border border-ocean-100 dark:border-ocean-800 rounded-xl overflow-hidden"
+              className="border border-premium-navy/10 dark:border-ocean-800 rounded-xl overflow-hidden"
             >
               <button
-                className="w-full text-left px-5 py-4 flex items-start justify-between gap-4 hover:bg-ocean-50 dark:hover:bg-ocean-900 transition-colors"
+                className="w-full text-left px-5 py-4 flex items-start justify-between gap-4 hover:bg-premium-navy/5 dark:hover:bg-ocean-900 transition-colors"
                 onClick={() => setOpen(open === i ? null : i)}
               >
-                <span className="text-sm font-medium text-ocean-900 dark:text-white">{item.q}</span>
-                <span className="shrink-0 text-ocean-400 text-lg leading-none mt-0.5">
+                <span className="text-sm font-medium text-premium-navy dark:text-white">{item.q}</span>
+                <span className="shrink-0 text-premium-navy/40 text-lg leading-none mt-0.5">
                   {open === i ? '−' : '+'}
                 </span>
               </button>
               {open === i && (
-                <div className="px-5 pb-4 text-sm text-ocean-600 dark:text-ocean-300 leading-relaxed border-t border-ocean-50 dark:border-ocean-800 pt-3">
+                <div className="px-5 pb-4 text-sm text-premium-navy/70 dark:text-ocean-300 leading-relaxed border-t border-premium-navy/5 dark:border-ocean-800 pt-3">
                   {item.a}
                 </div>
               )}
@@ -351,10 +352,14 @@ export default function JapaneseGroceryPage() {
       <PageSEO
         title="Japanese Grocery — Authentic Pantry Essentials — Divya Foods"
         description="Shop authentic Japanese pantry ingredients in Delhi — miso paste, mirin, nori, soy sauce, dashi and more. Imported directly from Japan, delivered across NCR."
-      />
+      >
+        <script type="application/ld+json">
+          {JSON.stringify(getFAQLD(FAQ.map(item => ({ question: item.q, answer: item.a }))))}
+        </script>
+      </PageSEO>
 
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <div className="bg-ocean-950 text-white px-4 pt-14 pb-20 relative overflow-hidden">
+      <div className="bg-premium-navy text-white px-4 pt-14 pb-20 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 opacity-5 pointer-events-none select-none overflow-hidden">
           <div className="absolute top-6 left-6 text-[8rem] font-bold leading-none">和食</div>
@@ -368,16 +373,16 @@ export default function JapaneseGroceryPage() {
           </div>
           <h1 className="text-4xl sm:text-5xl font-display font-bold mb-4 leading-tight">
             Japanese Kitchen<br />
-            <span className="text-gold-400">Essentials</span>
+            <span className="text-premium-gold">Essentials</span>
           </h1>
-          <p className="text-ocean-200 text-base sm:text-lg max-w-2xl mx-auto mb-8">
+          <p className="text-premium-muted text-base sm:text-lg max-w-2xl mx-auto mb-8">
             Authentic miso, mirin, nori, shoyu and more — imported directly from Japan.
             Everything your kitchen needs to cook real Japanese food at home.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <a
               href="#products"
-              className="px-7 py-3 bg-gold-500 hover:bg-gold-400 text-ocean-900 font-semibold rounded-full text-sm transition-colors"
+              className="px-7 py-3 bg-premium-gold hover:bg-premium-gold-light text-premium-navy font-semibold rounded-full text-sm transition-colors"
             >
               Shop All Products
             </a>
@@ -397,15 +402,15 @@ export default function JapaneseGroceryPage() {
       <IngredientGuide />
 
       {/* ── Products ──────────────────────────────────────────── */}
-      <section id="products" className="py-12 px-4 bg-white dark:bg-ocean-950">
+      <section id="products" className="py-12 px-4 bg-premium-cream dark:bg-ocean-950">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-baseline justify-between mb-6">
             <div>
-              <p className="text-gold-500 text-xs font-bold uppercase tracking-widest mb-1">Shop</p>
-              <h2 className="text-xl sm:text-2xl font-display font-bold text-ocean-900 dark:text-white">
+              <p className="df-eyebrow mb-1">Shop</p>
+              <h2 className="text-xl sm:text-2xl font-display font-bold text-premium-navy dark:text-white">
                 Japanese Grocery
                 {!isLoading && products.length > 0 && (
-                  <span className="ml-2 text-base font-normal text-ocean-400">
+                  <span className="ml-2 text-base font-normal text-premium-navy/40">
                     ({products.length} products)
                   </span>
                 )}
@@ -413,7 +418,7 @@ export default function JapaneseGroceryPage() {
             </div>
             <Link
               to={`${ROUTES.PRODUCTS}?category=japanese-grocery`}
-              className="text-xs text-ocean-500 hover:text-ocean-700 dark:hover:text-ocean-300 flex items-center gap-1"
+              className="text-xs text-premium-teal hover:text-premium-gold dark:hover:text-ocean-300 flex items-center gap-1"
             >
               View in store <ChevronRight size={14} />
             </Link>
@@ -426,8 +431,8 @@ export default function JapaneseGroceryPage() {
           ) : products.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-5xl mb-4">🍱</div>
-              <p className="text-ocean-500 mb-2">Japanese grocery products coming soon.</p>
-              <p className="text-ocean-400 text-sm">
+              <p className="text-premium-navy/60 mb-2">Japanese grocery products coming soon.</p>
+              <p className="text-premium-navy/40 text-sm">
                 Contact us on WhatsApp to request specific items.
               </p>
             </div>
@@ -453,14 +458,14 @@ export default function JapaneseGroceryPage() {
       {/* ── Footer CTA ────────────────────────────────────────── */}
       <motion.section
         variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-        className="py-14 px-4 bg-gradient-to-br from-ocean-900 to-ocean-700 text-white text-center"
+        className="py-14 px-4 bg-gradient-to-br from-premium-navy to-[#060F16] text-white text-center"
       >
         <div className="max-w-xl mx-auto">
           <div className="text-4xl mb-4">🍱</div>
           <h2 className="text-xl sm:text-2xl font-display font-bold mb-3">
             Can't find what you need?
           </h2>
-          <p className="text-ocean-200 text-sm mb-6">
+          <p className="text-premium-muted text-sm mb-6">
             We take custom Japanese pantry orders. If you need a specific brand, sauce, or ingredient
             not listed here — just WhatsApp us and we'll source it.
           </p>
@@ -469,7 +474,7 @@ export default function JapaneseGroceryPage() {
               href={`https://wa.me/${CONFIG.CONTACT.WHATSAPP}?text=Hi Divya Foods! I'm looking for a specific Japanese ingredient.`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-7 py-3 bg-gold-500 hover:bg-gold-400 text-ocean-900 font-semibold rounded-full text-sm transition-colors flex items-center gap-2"
+              className="px-7 py-3 bg-premium-gold hover:bg-premium-gold-light text-premium-navy font-semibold rounded-full text-sm transition-colors flex items-center gap-2"
             >
               <MessageCircle size={15} /> Request Custom Order
             </a>

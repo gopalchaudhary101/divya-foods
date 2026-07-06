@@ -6,7 +6,10 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
 } from 'recharts'
-import { LayoutDashboard, TrendingUp, ShoppingBag, IndianRupee, Package } from 'lucide-react'
+import {
+  LayoutDashboard, TrendingUp, ShoppingBag, IndianRupee, Package, Truck, CheckCircle2, XCircle, Timer,
+  Repeat, AlertTriangle,
+} from 'lucide-react'
 import axiosInstance from '@/services/api/axiosInstance'
 import type { ApiResponse } from '@/types'
 import { formatCurrency } from '@/utils/formatCurrency'
@@ -25,6 +28,29 @@ interface AnalyticsData {
     lastMonthOrders:  number
     thisMonthRevenue: number
   }
+  deliveryAnalytics: {
+    totalDeliveries:      number
+    activeDeliveries:     number
+    completedDeliveries:  number
+    cancelledDeliveries:  number
+    avgDeliveryTimeHours: number
+  }
+  salesSummary: Record<'today' | 'yesterday' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'allTime', { revenue: number; orders: number }>
+  estimatedProfit: {
+    totalRevenue: number
+    estimatedCost: number
+    estimatedProfit: number
+    productsWithCostData: number
+    totalProductsSold: number
+  }
+  worstSellers:          { name: string; units: number }[]
+  fastMoving:            { name: string; unitsLast30Days: number }[]
+  slowMoving:            { name: string; unitsLast30Days: number }[]
+  mostViewed:            { name: string; views: number }[]
+  leastViewed:           { name: string; views: number }[]
+  topCustomers:          { name: string; email: string; totalSpent: number; orderCount: number }[]
+  returningCustomersPct: number
+  abandonedOrders:       number
 }
 
 // ─── Colour palettes ──────────────────────────────────────────────────────────
@@ -98,6 +124,38 @@ function Skeleton({ h = 'h-56' }: { h?: string }) {
   return <div className={`skeleton rounded-xl ${h}`} />
 }
 
+// ─── Mini bar list (top-10 style rankings) ─────────────────────────────────────
+
+function MiniBarList({ items, valueKey, unit = '', emptyText = 'No data yet' }: {
+  items: { name: string; [key: string]: string | number }[]
+  valueKey: string
+  unit?: string
+  emptyText?: string
+}) {
+  if (items.length === 0) {
+    return <div className="h-40 flex items-center justify-center text-ocean-300 text-sm">{emptyText}</div>
+  }
+  const max = Math.max(1, ...items.map(i => Number(i[valueKey])))
+  return (
+    <div className="space-y-2.5">
+      {items.map((item, i) => (
+        <div key={i}>
+          <div className="flex justify-between gap-2 text-xs mb-1">
+            <span className="text-ocean-700 dark:text-ocean-200 truncate">{item.name}</span>
+            <span className="font-semibold text-ocean-900 dark:text-white shrink-0">{item[valueKey]}{unit}</span>
+          </div>
+          <div className="h-1.5 bg-ocean-50 dark:bg-ocean-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-ocean-500 rounded-full"
+              style={{ width: `${(Number(item[valueKey]) / max) * 100}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ─── Custom tooltip ───────────────────────────────────────────────────────────
 
 function RevenueTooltip({ active, payload, label }: {
@@ -151,6 +209,28 @@ export default function AdminAnalyticsPage() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+          {/* Sales summary across periods */}
+          <ChartCard title="Sales Summary">
+            {isLoading ? (
+              <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+                {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} h="h-20" />)}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+                {([
+                  ['today', "Today"], ['yesterday', 'Yesterday'], ['thisWeek', 'This Week'],
+                  ['thisMonth', 'This Month'], ['thisYear', 'This Year'], ['allTime', 'All Time'],
+                ] as const).map(([key, label]) => (
+                  <div key={key} className="p-3 rounded-xl bg-ocean-50 dark:bg-ocean-800/50">
+                    <p className="text-xs font-semibold text-ocean-400 uppercase tracking-widest mb-1">{label}</p>
+                    <p className="text-base font-bold text-ocean-900 dark:text-white">{formatCurrency(raw?.salesSummary?.[key]?.revenue ?? 0)}</p>
+                    <p className="text-xs text-ocean-400 mt-0.5">{raw?.salesSummary?.[key]?.orders ?? 0} order{raw?.salesSummary?.[key]?.orders !== 1 ? 's' : ''}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </ChartCard>
 
           {/* Metric cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -327,6 +407,123 @@ export default function AdminAnalyticsPage() {
               </ResponsiveContainer>
             )}
           </ChartCard>
+
+          {/* Delivery analytics */}
+          <ChartCard title="Delivery Analytics">
+            {isLoading ? (
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} h="h-20" />)}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                <MetricCard icon={<Truck size={18} />} label="Total Deliveries" value={String(raw?.deliveryAnalytics?.totalDeliveries ?? 0)} />
+                <MetricCard icon={<Package size={18} />} label="Active" value={String(raw?.deliveryAnalytics?.activeDeliveries ?? 0)} />
+                <MetricCard icon={<CheckCircle2 size={18} />} label="Completed" value={String(raw?.deliveryAnalytics?.completedDeliveries ?? 0)} />
+                <MetricCard icon={<XCircle size={18} />} label="Cancelled / Failed" value={String(raw?.deliveryAnalytics?.cancelledDeliveries ?? 0)} />
+                <MetricCard
+                  icon={<Timer size={18} />}
+                  label="Avg Delivery Time"
+                  value={raw?.deliveryAnalytics?.avgDeliveryTimeHours ? `${raw.deliveryAnalytics.avgDeliveryTimeHours}h` : '—'}
+                />
+              </div>
+            )}
+          </ChartCard>
+
+          {/* Estimated profit */}
+          <ChartCard title="Estimated Profit">
+            {isLoading ? <Skeleton h="h-28" /> : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
+                  <MetricCard icon={<IndianRupee size={18} />} label="Total Revenue" value={formatCurrency(raw?.estimatedProfit?.totalRevenue ?? 0)} accent />
+                  <MetricCard icon={<TrendingUp size={18} />} label="Estimated Cost" value={formatCurrency(raw?.estimatedProfit?.estimatedCost ?? 0)} />
+                  <MetricCard icon={<IndianRupee size={18} />} label="Estimated Profit" value={formatCurrency(raw?.estimatedProfit?.estimatedProfit ?? 0)} />
+                </div>
+                <p className="text-xs text-ocean-400">
+                  Based on average received-purchase cost for {raw?.estimatedProfit?.productsWithCostData ?? 0} of{' '}
+                  {raw?.estimatedProfit?.totalProductsSold ?? 0} sold products — products without a purchase-order
+                  cost history are treated as zero cost, so this is an estimate, not exact profit.
+                </p>
+              </>
+            )}
+          </ChartCard>
+
+          {/* Best vs worst sellers */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ChartCard title="Best Sellers (Units Sold)">
+              {isLoading ? <Skeleton h="h-40" /> : (
+                <MiniBarList items={raw?.topProducts ?? []} valueKey="units" unit=" units" emptyText="No sales data yet" />
+              )}
+            </ChartCard>
+            <ChartCard title="Worst Sellers (Units Sold)">
+              {isLoading ? <Skeleton h="h-40" /> : (
+                <MiniBarList items={raw?.worstSellers ?? []} valueKey="units" unit=" units" emptyText="No products yet" />
+              )}
+            </ChartCard>
+          </div>
+
+          {/* Fast vs slow moving */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ChartCard title="Fast Moving (Last 30 Days)">
+              {isLoading ? <Skeleton h="h-40" /> : (
+                <MiniBarList items={raw?.fastMoving ?? []} valueKey="unitsLast30Days" unit=" units" emptyText="No recent sales" />
+              )}
+            </ChartCard>
+            <ChartCard title="Slow Moving (In Stock, Last 30 Days)">
+              {isLoading ? <Skeleton h="h-40" /> : (
+                <MiniBarList items={raw?.slowMoving ?? []} valueKey="unitsLast30Days" unit=" units" emptyText="No in-stock products" />
+              )}
+            </ChartCard>
+          </div>
+
+          {/* Most vs least viewed */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ChartCard title="Most Viewed Products">
+              {isLoading ? <Skeleton h="h-40" /> : (
+                <MiniBarList items={raw?.mostViewed ?? []} valueKey="views" unit=" views" emptyText="No product views yet" />
+              )}
+            </ChartCard>
+            <ChartCard title="Least Viewed Products">
+              {isLoading ? <Skeleton h="h-40" /> : (
+                <MiniBarList items={raw?.leastViewed ?? []} valueKey="views" unit=" views" emptyText="No products yet" />
+              )}
+            </ChartCard>
+          </div>
+
+          {/* Customers */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ChartCard title="Top Customers">
+              {isLoading ? <Skeleton h="h-40" /> : (raw?.topCustomers?.length ?? 0) === 0 ? (
+                <div className="h-40 flex items-center justify-center text-ocean-300 text-sm">No customers yet</div>
+              ) : (
+                <div className="space-y-2">
+                  {raw?.topCustomers?.map((c, i) => (
+                    <div key={i} className="flex items-center justify-between text-sm py-1.5 border-b border-ocean-50 dark:border-ocean-800 last:border-0">
+                      <div className="min-w-0">
+                        <p className="font-medium text-ocean-900 dark:text-white truncate">{c.name}</p>
+                        <p className="text-xs text-ocean-400 truncate">{c.email} · {c.orderCount} order{c.orderCount !== 1 ? 's' : ''}</p>
+                      </div>
+                      <span className="font-bold text-ocean-900 dark:text-white shrink-0">{formatCurrency(c.totalSpent)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </ChartCard>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 content-start">
+              <MetricCard
+                icon={<Repeat size={20} />}
+                label="Returning Customers"
+                value={isLoading ? '—' : `${raw?.returningCustomersPct ?? 0}%`}
+                sub="2+ paid orders"
+              />
+              <MetricCard
+                icon={<AlertTriangle size={20} />}
+                label="Abandoned Orders"
+                value={isLoading ? '—' : String(raw?.abandonedOrders ?? 0)}
+                sub="Pending & unpaid 24h+"
+              />
+            </div>
+          </div>
 
         </div>
       </div>

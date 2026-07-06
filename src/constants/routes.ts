@@ -15,6 +15,11 @@ export const ROUTES = {
   SUBSCRIPTIONS: '/subscriptions',
   RECIPES: '/recipes',
   JAPANESE_GROCERY: '/japanese-grocery',
+  ABOUT: '/about',
+  TRACK_ORDER: '/track-order',
+  BULK_ORDER: '/bulk-order',
+  DRIVER: '/driver',
+  BUSINESS_SOLUTIONS: '/business-solutions',
   AUTH: {
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
@@ -31,5 +36,11 @@ export const ROUTES = {
     COUPONS: '/admin/coupons',
     ANALYTICS: '/admin/analytics',
     BUNDLES: '/admin/bundles',
+    SETTINGS: '/admin/settings',
+    INVENTORY: '/admin/inventory',
+    BULK_ORDERS: '/admin/bulk-orders',
+    GIFT_CARDS: '/admin/gift-cards',
+    DRIVERS: '/admin/drivers',
+    USERS: '/admin/users',
   },
 } as const

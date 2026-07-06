@@ -39,11 +39,11 @@ export default function SubscriptionsPage() {
   const subs = data ?? []
 
   return (
-    <div className="min-h-screen bg-ocean-50 dark:bg-ocean-950 py-10 px-4">
+    <div className="min-h-screen bg-premium-cream dark:bg-ocean-950 py-10 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
-          <RefreshCw size={22} className="text-ocean-600" />
-          <h1 className="text-2xl font-bold text-ocean-900 dark:text-ocean-100">Subscriptions</h1>
+          <RefreshCw size={22} className="text-premium-teal" />
+          <h1 className="text-2xl font-bold text-premium-navy dark:text-ocean-100">Subscriptions</h1>
         </div>
 
         {isLoading ? (
@@ -54,9 +54,9 @@ export default function SubscriptionsPage() {
           </div>
         ) : subs.length === 0 ? (
           <div className="text-center py-16 bg-white dark:bg-ocean-900 rounded-2xl">
-            <RefreshCw size={40} className="mx-auto mb-3 text-ocean-300" />
-            <p className="text-ocean-600 dark:text-ocean-400 font-medium">No active subscriptions</p>
-            <p className="text-sm text-ocean-400 mt-1">
+            <RefreshCw size={40} className="mx-auto mb-3 text-premium-navy/30" />
+            <p className="text-premium-navy/70 dark:text-ocean-400 font-medium">No active subscriptions</p>
+            <p className="text-sm text-premium-navy/40 mt-1">
               Subscribe to products from their product page and save 10%!
             </p>
           </div>
@@ -82,21 +82,21 @@ export default function SubscriptionsPage() {
                       />
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-ocean-900 dark:text-ocean-100 truncate">{sub.productName}</p>
-                      <p className="text-sm text-ocean-500 mt-0.5">
+                      <p className="font-medium text-premium-navy dark:text-ocean-100 truncate">{sub.productName}</p>
+                      <p className="text-sm text-premium-navy/50 mt-0.5">
                         Qty: {sub.quantity} · {FREQ_LABELS[sub.frequency]}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="text-sm font-semibold text-ocean-900 dark:text-ocean-100">
+                        <span className="text-sm font-semibold text-premium-gold">
                           ₹{discountedPrice.toFixed(0)}
                         </span>
-                        <span className="text-xs text-ocean-400 line-through">₹{sub.productPrice}</span>
+                        <span className="text-xs text-premium-navy/40 line-through">₹{sub.productPrice}</span>
                         <span className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-1.5 py-0.5 rounded-full font-medium">
                           {sub.discountPct}% off
                         </span>
                       </div>
                       {sub.nextDelivery && (
-                        <p className="text-xs text-ocean-400 mt-1">
+                        <p className="text-xs text-premium-navy/40 mt-1">
                           Next delivery: {new Date(sub.nextDelivery).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
                       )}
@@ -117,7 +117,7 @@ export default function SubscriptionsPage() {
                         title={isPaused ? 'Resume' : 'Pause'}
                         onClick={() => updateMutation.mutate({ id: sub.id, status: isPaused ? 'active' : 'paused' })}
                         disabled={updateMutation.isPending}
-                        className="p-2 rounded-lg bg-ocean-100 dark:bg-ocean-800 hover:bg-ocean-200 dark:hover:bg-ocean-700 text-ocean-600 dark:text-ocean-300 transition-colors"
+                        className="p-2 rounded-lg bg-premium-navy/10 dark:bg-ocean-800 hover:bg-premium-navy/20 dark:hover:bg-ocean-700 text-premium-navy dark:text-ocean-300 transition-colors"
                       >
                         {isPaused ? <Play size={14} /> : <Pause size={14} />}
                       </button>
@@ -135,8 +135,8 @@ export default function SubscriptionsPage() {
                   </div>
 
                   {/* Frequency selector */}
-                  <div className="flex gap-2 mt-4 pt-4 border-t border-ocean-100 dark:border-ocean-800">
-                    <span className="text-xs text-ocean-500 self-center">Frequency:</span>
+                  <div className="flex gap-2 mt-4 pt-4 border-t border-premium-navy/10 dark:border-ocean-800">
+                    <span className="text-xs text-premium-navy/50 self-center">Frequency:</span>
                     {(['weekly', 'biweekly', 'monthly'] as SubscriptionFrequency[]).map(f => (
                       <button
                         key={f}
@@ -144,8 +144,8 @@ export default function SubscriptionsPage() {
                         disabled={updateMutation.isPending}
                         className={`px-3 py-1 text-xs rounded-full border transition-colors ${
                           sub.frequency === f
-                            ? 'bg-ocean-700 text-white border-ocean-700'
-                            : 'border-ocean-200 dark:border-ocean-700 text-ocean-600 dark:text-ocean-400 hover:border-ocean-400'
+                            ? 'bg-premium-gold text-premium-navy border-premium-gold'
+                            : 'border-premium-navy/15 dark:border-ocean-700 text-premium-navy/60 dark:text-ocean-400 hover:border-premium-gold/50'
                         }`}
                       >
                         {f.charAt(0).toUpperCase() + f.slice(1)}

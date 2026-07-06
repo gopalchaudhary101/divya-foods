@@ -19,7 +19,7 @@ export function Spinner({ size = 'md', className = '' }: SpinnerProps) {
       role="status"
       aria-label="Loading"
       className={[
-        'rounded-full border-ocean-200 border-t-ocean-600 animate-spin',
+        'rounded-full border-premium-navy/15 border-t-premium-gold animate-spin',
         sizeClasses[size],
         className,
       ]
@@ -31,9 +31,9 @@ export function Spinner({ size = 'md', className = '' }: SpinnerProps) {
 
 export function FullPageSpinner() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-white dark:bg-ocean-950">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-premium-cream dark:bg-ocean-950">
       <Spinner size="lg" />
-      <p className="text-sm text-ocean-400 font-medium tracking-wide">Loading…</p>
+      <p className="text-sm text-premium-navy/40 font-medium tracking-wide">Loading…</p>
     </div>
   )
 }
