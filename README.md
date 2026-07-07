@@ -39,7 +39,7 @@ Add screenshots/GIFs here, e.g.:
 - slowapi (rate limiting)
 - Pytest + httpx (test suite)
 
-**Deployment:** Frontend on Vercel, backend on Render, database on MongoDB Atlas.
+**Deployment:** Frontend on Vercel, backend on Railway, database on MongoDB Atlas.
 
 ## Features
 
@@ -54,7 +54,7 @@ Add screenshots/GIFs here, e.g.:
 - Gift cards and referral rewards
 - Wishlist
 - Subscriptions (recurring orders)
-- User authentication (register/login) with JWT access + refresh tokens
+- User authentication (register/login/forgot & reset password) with JWT access + refresh tokens
 - Customer roles: customer, driver, and admin
 - Driver dashboard for delivery-scoped order management
 - Admin dashboard: products, orders (with bulk actions), users, coupons, bundles, banners, gift cards, inventory, drivers, analytics, and site settings
@@ -75,8 +75,8 @@ Add screenshots/GIFs here, e.g.:
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/gopalchaudhary101/divya-foods.git
-cd divya-foods
+git clone https://github.com/gopalchaudhary101/divya-luxury-seafoods.git
+cd divya-luxury-seafoods
 ```
 
 ### 2. Frontend setup
