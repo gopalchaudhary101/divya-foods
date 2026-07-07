@@ -80,7 +80,10 @@ def test_upload_requires_auth(client):
 
 def test_upload_returns_503_when_cloudinary_unconfigured(client, db):
     hdrs = _admin_headers(client, db)
-    r = client.post("/upload/image", files={"file": ("test.jpg", _TINY_JPEG, "image/jpeg")}, headers=hdrs)
+    with patch("app.routers.upload.settings.CLOUDINARY_CLOUD_NAME", ""), \
+         patch("app.routers.upload.settings.CLOUDINARY_API_KEY", ""), \
+         patch("app.routers.upload.settings.CLOUDINARY_API_SECRET", ""):
+        r = client.post("/upload/image", files={"file": ("test.jpg", _TINY_JPEG, "image/jpeg")}, headers=hdrs)
     assert r.status_code == 503
 
 
@@ -261,7 +264,10 @@ def test_upload_images_requires_admin(client, db):
 
 def test_upload_images_returns_503_when_cloudinary_unconfigured(client, db):
     hdrs = _admin_headers(client, db)
-    r = client.post("/upload/images", files=[("files", ("a.jpg", _TINY_JPEG, "image/jpeg"))], headers=hdrs)
+    with patch("app.routers.upload.settings.CLOUDINARY_CLOUD_NAME", ""), \
+         patch("app.routers.upload.settings.CLOUDINARY_API_KEY", ""), \
+         patch("app.routers.upload.settings.CLOUDINARY_API_SECRET", ""):
+        r = client.post("/upload/images", files=[("files", ("a.jpg", _TINY_JPEG, "image/jpeg"))], headers=hdrs)
     assert r.status_code == 503
 
 
