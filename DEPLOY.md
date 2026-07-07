@@ -42,7 +42,7 @@ git push -u origin main
 ## Step 2 — Deploy backend to Railway
 
 1. Go to **railway.com → New Project → Deploy from GitHub repo**
-2. Select your repo and set the service's **Root Directory** to `backend`
+2. Select your repo and set the service's **Root Directory** to `backend` — this is required, not optional: without it Railway builds from the repo root, finds the frontend's `package.json` first, and fails on `npm ci`
 3. Railway auto-detects `backend/railway.toml` and builds from `backend/Dockerfile`
 4. Go to the service's **Variables** tab and fill in these secrets:
 
