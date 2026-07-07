@@ -8,16 +8,33 @@ interface CartState {
   totalPrice: number
 }
 
-const initialState: CartState = {
-  items: [],
-  totalItems: 0,
-  totalPrice: 0,
+const STORAGE_KEY = 'cart_items'
+
+function loadStoredItems(): CartItem[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
+
+function persistItems(items: CartItem[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
 }
 
 function recalculate(state: CartState) {
   state.totalItems = state.items.reduce((sum, i) => sum + i.quantity, 0)
   state.totalPrice = state.items.reduce((sum, i) => sum + i.price * i.quantity, 0)
+  persistItems(state.items)
 }
+
+const initialState: CartState = {
+  items: loadStoredItems(),
+  totalItems: 0,
+  totalPrice: 0,
+}
+recalculate(initialState)
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -45,8 +62,7 @@ const cartSlice = createSlice({
     },
     clearCart: (state) => {
       state.items = []
-      state.totalItems = 0
-      state.totalPrice = 0
+      recalculate(state)
     },
   },
 })
