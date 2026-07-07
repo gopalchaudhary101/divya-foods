@@ -1,6 +1,10 @@
+import logging
+
 from pymongo import MongoClient
 from pymongo.database import Database
 from app.config import settings
+
+logger = logging.getLogger("app.database")
 
 _client: MongoClient | None = None
 _database: Database | None = None
@@ -14,7 +18,7 @@ def connect_to_mongo() -> None:
         connectTimeoutMS=5000,
     )
     _database = _client[settings.DATABASE_NAME]
-    print(f"[DB] Connected to MongoDB — database: {settings.DATABASE_NAME}")
+    logger.info("Connected to MongoDB — database: %s", settings.DATABASE_NAME)
 
     from app.utils.db_init import create_indexes
     create_indexes(_database)
@@ -23,7 +27,7 @@ def connect_to_mongo() -> None:
 def close_mongo_connection() -> None:
     if _client:
         _client.close()
-        print("[DB] MongoDB connection closed")
+        logger.info("MongoDB connection closed")
 
 
 def get_database() -> Database:
