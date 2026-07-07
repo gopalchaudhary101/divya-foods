@@ -24,6 +24,13 @@ _STATIC_PAGES = [
     ("recipes", "weekly", "0.7"),
     ("about", "monthly", "0.5"),
     ("bundles", "weekly", "0.6"),
+    ("contact", "monthly", "0.4"),
+    ("privacy-policy", "yearly", "0.2"),
+    ("terms-and-conditions", "yearly", "0.2"),
+    ("refund-policy", "yearly", "0.2"),
+    ("shipping-policy", "yearly", "0.2"),
+    ("cancellation-policy", "yearly", "0.2"),
+    ("cookies-policy", "yearly", "0.2"),
 ]
 
 
