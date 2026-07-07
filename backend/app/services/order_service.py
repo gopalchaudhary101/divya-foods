@@ -420,9 +420,22 @@ def initiate_order(db: Database, user: dict, body: dict) -> dict:
 def verify_payment(db: Database, user: dict, body: dict) -> dict:
     """
     Step 2 — called from frontend after Razorpay popup succeeds.
-    Verifies HMAC-SHA256 signature. On success:
-      - Marks order as confirmed + paid
-      - Clears the server-side cart
+
+    Verification is layered — the HMAC signature alone is not sufficient:
+      1. Signature check    — proves *a* payment was made for this
+                               (razorpay_order_id, razorpay_payment_id) pair.
+      2. Order ownership    — proves that razorpay_order_id is the one WE
+                               created for THIS order. Without this, a valid
+                               signature from any other (e.g. cheaper) paid
+                               order could be replayed here to mark a
+                               different, pricier order as paid for free.
+      3. Amount + status    — an independent fetch from Razorpay's API
+                               confirms the payment was actually captured
+                               (not just authorized, or since refunded) and
+                               that its amount matches this order's total.
+
+    Idempotent: calling this twice for an already-paid order (client retry,
+    or a race with the webhook) just returns the existing order unchanged.
     """
     order_id      = body.get("order_id")
     rzp_order_id  = body.get("razorpay_order_id")
@@ -442,15 +455,60 @@ def verify_payment(db: Database, user: dict, body: dict) -> dict:
     if not hmac.compare_digest(expected, rzp_signature or ""):
         raise HTTPException(status_code=400, detail="Payment verification failed — invalid signature.")
 
-    # ── Update order ──────────────────────────────────────────────────────────
     try:
         oid = ObjectId(order_id)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid order ID.")
 
+    doc = db.orders.find_one({"_id": oid, "user_id": user["_id"]})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Order not found.")
+
+    # Idempotency — already verified (client retry, or the webhook beat us to it)
+    if doc.get("payment_status") == "paid":
+        return {"success": True, "data": _order_to_dict(doc)}
+
+    # ── Order ownership ────────────────────────────────────────────────────────
+    if doc.get("razorpay_order_id") != rzp_order_id:
+        raise HTTPException(status_code=400, detail="Payment does not match this order.")
+
+    # ── Independently confirm amount + capture status with Razorpay ───────────
+    rzp = _rzp_client()
+    try:
+        payment = rzp.payment.fetch(rzp_payment_id)
+    except Exception:
+        raise HTTPException(
+            status_code=502,
+            detail="Could not verify payment with Razorpay. Please try again or contact support.",
+        )
+
+    if payment.get("status") != "captured":
+        raise HTTPException(status_code=400, detail=f"Payment not captured (status: {payment.get('status')}).")
+
+    expected_paise = int(round(doc["total"] * 100))
+    if payment.get("amount") != expected_paise:
+        raise HTTPException(status_code=400, detail="Payment amount does not match order total.")
+
+    doc = _finalize_paid_order(db, oid, rzp_payment_id, rzp_signature)
+    return {"success": True, "data": _order_to_dict(doc)}
+
+
+def _finalize_paid_order(db: Database, oid: ObjectId, rzp_payment_id: str, rzp_signature: Optional[str]) -> dict:
+    """
+    Shared completion path for a payment that has been verified as genuine —
+    used by both the client-driven verify_payment() call and the Razorpay
+    webhook handler, so a payment is finalized exactly the same way no matter
+    which one gets there first. Safe to call even if already paid (no-ops).
+    """
+    doc = db.orders.find_one({"_id": oid})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Order not found.")
+    if doc.get("payment_status") == "paid":
+        return doc
+
     now = _utcnow()
-    result = db.orders.update_one(
-        {"_id": oid, "user_id": user["_id"]},
+    db.orders.update_one(
+        {"_id": oid},
         {
             "$set": {
                 "status":              "confirmed",
@@ -468,12 +526,10 @@ def verify_payment(db: Database, user: dict, body: dict) -> dict:
             },
         },
     )
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Order not found.")
 
     # ── Clear server cart ─────────────────────────────────────────────────────
     db.carts.update_one(
-        {"user_id": user["_id"]},
+        {"user_id": doc["user_id"]},
         {"$set": {"items": [], "updated_at": now}},
     )
 
@@ -491,10 +547,138 @@ def verify_payment(db: Database, user: dict, body: dict) -> dict:
         doc["gift_card_committed"] = True
 
     # Send order confirmation email (non-blocking)
-    customer_email = _get_customer_email(db, user["_id"])
+    customer_email = _get_customer_email(db, doc["user_id"])
     email_service.order_confirmation(_order_to_dict(doc), customer_email)
 
-    return {"success": True, "data": _order_to_dict(doc)}
+    return doc
+
+
+def _fail_pending_order(db: Database, oid: ObjectId, reason: str) -> None:
+    """
+    Called when Razorpay reports a payment failure for an order that's still
+    pending. Releases the stock reservation made at checkout (same as a
+    customer cancellation) so the inventory isn't held hostage by a payment
+    that's never going to complete.
+    """
+    doc = db.orders.find_one({"_id": oid})
+    if not doc or doc.get("payment_status") in ("paid", "failed"):
+        return  # already resolved one way or another — nothing to do
+
+    now = _utcnow()
+    db.orders.update_one(
+        {"_id": oid},
+        {
+            "$set": {"payment_status": "failed", "updated_at": now},
+            "$push": {
+                "tracking_timeline": {
+                    "status": "payment_failed", "timestamp": now, "note": reason,
+                }
+            },
+        },
+    )
+    _release_reserved_stock(db, doc.get("items", []))
+    if doc.get("stock_quantity_restored") is not True and doc["status"] == "pending":
+        # Mirror cancel_order's stock restoration — a failed payment means the
+        # items decremented at checkout need to go back on the shelf.
+        for item in doc.get("items", []):
+            db.products.update_one(
+                {"_id": item["product_id"]},
+                {"$inc": {"stock_quantity": item["quantity"]}},
+            )
+        db.orders.update_one({"_id": oid}, {"$set": {"stock_quantity_restored": True}})
+
+
+def _refund_order(db: Database, oid: ObjectId, refund_id: str, amount_paise: int, full: bool) -> None:
+    """Records a Razorpay refund against an order. Idempotent per refund_id."""
+    doc = db.orders.find_one({"_id": oid})
+    if not doc:
+        return
+    if any(r.get("refund_id") == refund_id for r in doc.get("refunds", [])):
+        return  # already recorded this exact refund
+
+    now = _utcnow()
+    db.orders.update_one(
+        {"_id": oid},
+        {
+            "$set": {
+                "payment_status": "refunded" if full else doc.get("payment_status"),
+                "updated_at": now,
+            },
+            "$push": {
+                "refunds": {
+                    "refund_id": refund_id,
+                    "amount": amount_paise / 100,
+                    "full": full,
+                    "created_at": now,
+                },
+                "tracking_timeline": {
+                    "status": "refunded" if full else "partially_refunded",
+                    "timestamp": now,
+                    "note": f"Refund of ₹{amount_paise / 100:.2f} processed via Razorpay",
+                },
+            },
+        },
+    )
+
+
+# ─── Razorpay webhooks ─────────────────────────────────────────────────────────
+# Authoritative, server-to-server confirmation independent of the customer's
+# browser — the client-side verify_payment() call above can be skipped,
+# retried, or tampered with, but Razorpay's webhook is signed with a secret
+# only Razorpay and this server know. Both paths converge on the same
+# idempotent _finalize_paid_order(), so whichever arrives first wins and the
+# other is a safe no-op.
+
+def verify_webhook_signature(raw_body: bytes, signature: str) -> bool:
+    if not settings.RAZORPAY_WEBHOOK_SECRET:
+        return False
+    expected = hmac.new(
+        settings.RAZORPAY_WEBHOOK_SECRET.encode(),
+        raw_body,
+        hashlib.sha256,
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature or "")
+
+
+def handle_razorpay_webhook(db: Database, event: dict) -> dict:
+    """
+    Dispatches a verified Razorpay webhook event. The caller (router layer)
+    is responsible for signature verification before this is ever invoked.
+    """
+    event_type = event.get("event", "")
+    payload = event.get("payload", {})
+
+    if event_type == "payment.captured":
+        entity = payload.get("payment", {}).get("entity", {})
+        rzp_order_id = entity.get("order_id")
+        doc = db.orders.find_one({"razorpay_order_id": rzp_order_id}) if rzp_order_id else None
+        if doc:
+            expected_paise = int(round(doc["total"] * 100))
+            if entity.get("amount") == expected_paise:
+                _finalize_paid_order(db, doc["_id"], entity.get("id", ""), None)
+
+    elif event_type == "payment.failed":
+        entity = payload.get("payment", {}).get("entity", {})
+        rzp_order_id = entity.get("order_id")
+        doc = db.orders.find_one({"razorpay_order_id": rzp_order_id}) if rzp_order_id else None
+        if doc:
+            reason = entity.get("error_description") or "Payment failed at Razorpay."
+            _fail_pending_order(db, doc["_id"], reason)
+
+    elif event_type in ("refund.created", "refund.processed"):
+        entity = payload.get("refund", {}).get("entity", {})
+        payment_entity = payload.get("payment", {}).get("entity", {})
+        rzp_order_id = payment_entity.get("order_id")
+        doc = db.orders.find_one({"razorpay_order_id": rzp_order_id}) if rzp_order_id else None
+        if doc:
+            full = entity.get("amount") == payment_entity.get("amount")
+            _refund_order(db, doc["_id"], entity.get("id", ""), entity.get("amount", 0), full)
+
+    # order.paid is intentionally not separately handled — it fires alongside
+    # payment.captured for the same event and _finalize_paid_order is already
+    # idempotent, so handling it again here would be pure duplication.
+
+    return {"success": True}
 
 
 def get_my_orders(db: Database, user_id: ObjectId, page: int = 1, limit: int = 10) -> dict:

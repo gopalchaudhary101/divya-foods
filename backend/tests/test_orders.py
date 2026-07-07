@@ -30,10 +30,16 @@ _FAKE_RZP_ORDER_ID   = "order_fake_abc123"
 _FAKE_RZP_PAYMENT_ID = "pay_fake_xyz789"
 
 
-def _mock_rzp():
-    """Return a patch context that fakes razorpay.Client in order_service."""
+def _mock_rzp(captured_amount=None):
+    """
+    Return a patch context that fakes razorpay.Client in order_service.
+    Pass captured_amount (in paise) when the call under test will reach
+    verify_payment's server-side Razorpay payment.fetch confirmation.
+    """
     mock_client = MagicMock()
     mock_client.order.create.return_value = {"id": _FAKE_RZP_ORDER_ID}
+    if captured_amount is not None:
+        mock_client.payment.fetch.return_value = {"status": "captured", "amount": captured_amount}
     # Patch the class where it's imported in order_service
     return patch("app.services.order_service.razorpay.Client", return_value=mock_client)
 
@@ -142,7 +148,7 @@ def test_verify_payment_valid_signature(client, db):
     # Use the SAME secret the backend will use for HMAC verification
     signature = _real_signature(_FAKE_RZP_ORDER_ID, _FAKE_RZP_PAYMENT_ID)
 
-    with patch("app.services.email_service.send_async"):   # suppress email thread
+    with patch("app.services.email_service.send_async"), _mock_rzp(captured_amount=120000):
         r = client.post("/orders/verify", json={
             "order_id":            order_id,
             "razorpay_order_id":   _FAKE_RZP_ORDER_ID,
@@ -154,6 +160,121 @@ def test_verify_payment_valid_signature(client, db):
     data = r.json()["data"]
     assert data["status"]        == "confirmed"
     assert data["paymentStatus"] == "paid"
+
+
+def test_verify_payment_rejects_signature_from_a_different_order(client, db):
+    """
+    Critical: a genuinely valid Razorpay signature for one order must not be
+    replayable against a different order_id to mark it paid for free.
+    """
+    pid   = _setup_user_and_product(db)
+    token = get_token(client, "user@test.com")
+
+    with _mock_rzp():
+        init_a = client.post("/orders", json={
+            "delivery_address": _ADDRESS,
+            "items": [{"productId": pid, "quantity": 1}],
+        }, headers=bearer(token))
+    order_a_id = init_a.json()["data"]["orderId"]
+
+    # A signature that is genuinely valid — just not for order A.
+    other_rzp_order_id = "order_belongs_to_someone_else"
+    signature = _real_signature(other_rzp_order_id, _FAKE_RZP_PAYMENT_ID)
+
+    r = client.post("/orders/verify", json={
+        "order_id":            order_a_id,
+        "razorpay_order_id":   other_rzp_order_id,
+        "razorpay_payment_id": _FAKE_RZP_PAYMENT_ID,
+        "razorpay_signature":  signature,
+    }, headers=bearer(token))
+
+    assert r.status_code == 400
+    assert "match" in r.json()["detail"].lower()
+
+    order = db.orders.find_one({"_id": ObjectId(order_a_id)})
+    assert order["payment_status"] == "pending"   # untouched
+
+
+def test_verify_payment_rejects_uncaptured_payment(client, db):
+    pid   = _setup_user_and_product(db)
+    token = get_token(client, "user@test.com")
+
+    with _mock_rzp():
+        init = client.post("/orders", json={
+            "delivery_address": _ADDRESS,
+            "items": [{"productId": pid, "quantity": 1}],
+        }, headers=bearer(token))
+    order_id = init.json()["data"]["orderId"]
+
+    signature = _real_signature(_FAKE_RZP_ORDER_ID, _FAKE_RZP_PAYMENT_ID)
+    uncaptured_client = MagicMock()
+    uncaptured_client.payment.fetch.return_value = {"status": "authorized", "amount": 120000}
+    with patch("app.services.order_service.razorpay.Client", return_value=uncaptured_client):
+        r = client.post("/orders/verify", json={
+            "order_id":            order_id,
+            "razorpay_order_id":   _FAKE_RZP_ORDER_ID,
+            "razorpay_payment_id": _FAKE_RZP_PAYMENT_ID,
+            "razorpay_signature":  signature,
+        }, headers=bearer(token))
+
+    assert r.status_code == 400
+    assert "captured" in r.json()["detail"].lower()
+
+
+def test_verify_payment_rejects_amount_mismatch(client, db):
+    pid   = _setup_user_and_product(db)
+    token = get_token(client, "user@test.com")
+
+    with _mock_rzp():
+        init = client.post("/orders", json={
+            "delivery_address": _ADDRESS,
+            "items": [{"productId": pid, "quantity": 1}],
+        }, headers=bearer(token))
+    order_id = init.json()["data"]["orderId"]
+
+    signature = _real_signature(_FAKE_RZP_ORDER_ID, _FAKE_RZP_PAYMENT_ID)
+    with _mock_rzp(captured_amount=100):   # order total is 120000 paise, not 100
+        r = client.post("/orders/verify", json={
+            "order_id":            order_id,
+            "razorpay_order_id":   _FAKE_RZP_ORDER_ID,
+            "razorpay_payment_id": _FAKE_RZP_PAYMENT_ID,
+            "razorpay_signature":  signature,
+        }, headers=bearer(token))
+
+    assert r.status_code == 400
+    assert "amount" in r.json()["detail"].lower()
+
+
+def test_verify_payment_is_idempotent(client, db):
+    """Calling verify twice for an already-paid order just returns success,
+    without re-fetching from Razorpay or re-sending emails."""
+    pid   = _setup_user_and_product(db)
+    token = get_token(client, "user@test.com")
+
+    with _mock_rzp():
+        init = client.post("/orders", json={
+            "delivery_address": _ADDRESS,
+            "items": [{"productId": pid, "quantity": 1}],
+        }, headers=bearer(token))
+    order_id = init.json()["data"]["orderId"]
+    signature = _real_signature(_FAKE_RZP_ORDER_ID, _FAKE_RZP_PAYMENT_ID)
+
+    with patch("app.services.email_service.send_async") as mock_send, _mock_rzp(captured_amount=120000):
+        r1 = client.post("/orders/verify", json={
+            "order_id": order_id, "razorpay_order_id": _FAKE_RZP_ORDER_ID,
+            "razorpay_payment_id": _FAKE_RZP_PAYMENT_ID, "razorpay_signature": signature,
+        }, headers=bearer(token))
+        assert r1.status_code == 200
+        first_call_count = mock_send.call_count
+
+        # Second call — no _mock_rzp needed at all, since an already-paid order
+        # short-circuits before ever reaching payment.fetch.
+        r2 = client.post("/orders/verify", json={
+            "order_id": order_id, "razorpay_order_id": _FAKE_RZP_ORDER_ID,
+            "razorpay_payment_id": _FAKE_RZP_PAYMENT_ID, "razorpay_signature": signature,
+        }, headers=bearer(token))
+        assert r2.status_code == 200
+        assert mock_send.call_count == first_call_count   # no duplicate email
 
 
 def test_verify_payment_releases_reservation_without_changing_stock_quantity(client, db):
@@ -172,7 +293,7 @@ def test_verify_payment_releases_reservation_without_changing_stock_quantity(cli
     assert after_initiate["reserved_stock"] == 2
 
     signature = _real_signature(_FAKE_RZP_ORDER_ID, _FAKE_RZP_PAYMENT_ID)
-    with patch("app.services.email_service.send_async"):
+    with patch("app.services.email_service.send_async"), _mock_rzp(captured_amount=240000):
         client.post("/orders/verify", json={
             "order_id":            order_id,
             "razorpay_order_id":   _FAKE_RZP_ORDER_ID,
@@ -539,7 +660,7 @@ def test_guest_checkout_and_verify_payment(client, db):
     order_id = init.json()["data"]["orderId"]
 
     signature = _real_signature(_FAKE_RZP_ORDER_ID, _FAKE_RZP_PAYMENT_ID)
-    with patch("app.services.email_service.send_async"):
+    with patch("app.services.email_service.send_async"), _mock_rzp(captured_amount=70000):
         r = client.post("/orders/guest/verify", json={
             "order_id":            order_id,
             "email":               "guest@test.com",

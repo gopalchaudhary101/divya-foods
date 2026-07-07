@@ -41,8 +41,14 @@ class Settings(BaseSettings):
     CLOUDINARY_API_SECRET: str = ""
 
     # Razorpay — payment gateway
+    # Same variable names work for both TEST and LIVE mode — Razorpay encodes the
+    # mode into the key itself (rzp_test_... vs rzp_live_...), so switching to
+    # production is just swapping these three values in the environment, no code
+    # change needed. RAZORPAY_WEBHOOK_SECRET comes from the separate webhook
+    # config in the Razorpay dashboard (Settings → Webhooks), not the API keys.
     RAZORPAY_KEY_ID: str = ""
     RAZORPAY_KEY_SECRET: str = ""
+    RAZORPAY_WEBHOOK_SECRET: str = ""
 
     # SMTP Email
     SMTP_HOST: str = "smtp.gmail.com"

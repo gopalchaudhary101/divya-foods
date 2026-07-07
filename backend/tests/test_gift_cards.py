@@ -25,9 +25,11 @@ _FAKE_RZP_ORDER_ID   = "order_fake_abc123"
 _FAKE_RZP_PAYMENT_ID = "pay_fake_xyz789"
 
 
-def _mock_rzp():
+def _mock_rzp(captured_amount=None):
     mock_client = MagicMock()
     mock_client.order.create.return_value = {"id": _FAKE_RZP_ORDER_ID}
+    if captured_amount is not None:
+        mock_client.payment.fetch.return_value = {"status": "captured", "amount": captured_amount}
     return patch("app.services.order_service.razorpay.Client", return_value=mock_client)
 
 
@@ -163,7 +165,7 @@ def test_gift_card_balance_debited_after_payment_verified(client, db):
     order_id = init.json()["data"]["orderId"]
     signature = _real_signature(_FAKE_RZP_ORDER_ID, _FAKE_RZP_PAYMENT_ID)
 
-    with patch("app.services.email_service.send_async"):
+    with patch("app.services.email_service.send_async"), _mock_rzp(captured_amount=100000):
         r = client.post("/orders/verify", json={
             "order_id":            order_id,
             "razorpay_order_id":   _FAKE_RZP_ORDER_ID,
@@ -191,7 +193,7 @@ def test_gift_card_refunded_on_cancellation_after_payment(client, db):
     order_id = init.json()["data"]["orderId"]
     signature = _real_signature(_FAKE_RZP_ORDER_ID, _FAKE_RZP_PAYMENT_ID)
 
-    with patch("app.services.email_service.send_async"):
+    with patch("app.services.email_service.send_async"), _mock_rzp(captured_amount=100000):
         client.post("/orders/verify", json={
             "order_id":            order_id,
             "razorpay_order_id":   _FAKE_RZP_ORDER_ID,

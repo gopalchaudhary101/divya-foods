@@ -18,6 +18,7 @@ from app.routers import sitemap
 from app.routers import bulk_orders
 from app.routers import gift_cards
 from app.routers import driver
+from app.routers import webhooks
 
 _MONGO_OP = re.compile(r'\$[a-zA-Z]')
 
@@ -96,6 +97,7 @@ app.include_router(sitemap.router)
 app.include_router(bulk_orders.router)
 app.include_router(gift_cards.router)
 app.include_router(driver.router)
+app.include_router(webhooks.router)
 
 
 # ─── Health Endpoints ─────────────────────────────────────────────────────────
