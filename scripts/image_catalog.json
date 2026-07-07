@@ -143,9 +143,11 @@
       "assets\\products\\seafood\\octopus-whole\\octopus-whole-01.webp"
     ],
     "thumbnail": "assets\\products\\seafood\\octopus-whole\\octopus-whole-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "seafood/squid-tube": {
     "product_name": "Squid Tube IQF",
@@ -367,9 +369,11 @@
       "assets\\products\\seafood\\chilean-sea-bass\\chilean-sea-bass-01.webp"
     ],
     "thumbnail": "assets\\products\\seafood\\chilean-sea-bass\\chilean-sea-bass-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "seafood/black-cod": {
     "product_name": "Black Cod Headless",
@@ -829,9 +833,11 @@
       "assets\\products\\japanese\\japanese-pepper\\japanese-pepper-01.webp"
     ],
     "thumbnail": "assets\\products\\japanese\\japanese-pepper\\japanese-pepper-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "japanese/katsuobushi": {
     "product_name": "Katsuobushi Bonito Flakes",
@@ -1071,9 +1077,11 @@
       "assets\\products\\japanese\\thai-curry-paste\\thai-curry-paste-01.webp"
     ],
     "thumbnail": "assets\\products\\japanese\\thai-curry-paste\\thai-curry-paste-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "japanese/yuzu-koshu": {
     "product_name": "Yuzu Koshu Citrus Paste",
@@ -1569,9 +1577,11 @@
       "assets\\products\\groceries\\thai-curry-paste\\thai-curry-paste-01.webp"
     ],
     "thumbnail": "assets\\products\\groceries\\thai-curry-paste\\thai-curry-paste-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "sauces/sushi-vinegar": {
     "product_name": "Sushi Vinegar Mizkan",

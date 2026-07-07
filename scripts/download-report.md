@@ -1,17 +1,17 @@
 # Divya Luxury Seafoods — Image Download Report
 
-**Generated:** 2026-07-07 12:36:37
+**Generated:** 2026-07-07 15:25:32
 
 ## Summary
 
 | Metric | Count |
 |--------|-------|
 | Total products processed | 145 |
-| Products with real images | 15 |
-| Products needing real images | 130 |
+| Products with real images | 20 |
+| Products needing real images | 125 |
 | Total images created | 145 |
-| Real photos (own) | 15 |
-| Placeholder images | 130 |
+| Real photos (own) | 20 |
+| Placeholder images | 125 |
 
 ## Category Breakdown
 
@@ -51,7 +51,6 @@
 - `groceries/red-lotus-flour` — Red Lotus Rice Flour
 - `groceries/rice-flour-glutinous` — Glutinous Rice Flour
 - `groceries/szechuan-pepper` — Szechuan Pepper Corn
-- `groceries/thai-curry-paste` — Thai Curry Paste Namjai
 - `groceries/wheat-starch` — Wheat Starch
 - `groceries/white-fungus` — White Silver Ear Fungus
 - `japanese/bamboo-leaf` — Bamboo Leaf Sushi
@@ -68,7 +67,6 @@
 - `japanese/hondashi` — Hondashi Dashi Stock
 - `japanese/ikura-salmon-roe` — Ikura Salmon Roe
 - `japanese/japanese-curry` — Japanese Curry Golden Vermont
-- `japanese/japanese-pepper` — Shichimi Ichimi Pepper
 - `japanese/kaiso-salad` — Kaiso Mixed Seaweed Salad
 - `japanese/kampachi-fillet` — Kampachi Amberjack Fillet
 - `japanese/katsuobushi` — Katsuobushi Bonito Flakes
@@ -93,7 +91,6 @@
 - `japanese/soba-noodle` — Soba Buckwheat Noodle
 - `japanese/somen-noodle` — Somen Thin Noodle
 - `japanese/spring-roll-sheet` — Spring Roll Sheet
-- `japanese/thai-curry-paste` — Thai Curry Paste
 - `japanese/tobikko-black` — Tobikko Black Flying Fish Roe
 - `japanese/tobikko-green` — Tobikko Green Flying Fish Roe
 - `japanese/tobikko-orange` — Tobikko Orange Flying Fish Roe
@@ -142,9 +139,7 @@
 - `seafood/basa-fillet-indian` — Indian Basa Fish Fillet
 - `seafood/basa-fillet-vietnamese` — Vietnamese Basa Fish Fillet
 - `seafood/black-cod` — Black Cod Headless
-- `seafood/chilean-sea-bass` — Chilean Sea Bass
 - `seafood/lobster-whole` — Lobster Whole
-- `seafood/octopus-whole` — Octopus Whole
 - `seafood/prawns-fresh` — Fresh Head-On Prawns
 - `seafood/prawns-iqf` — Frozen IQF Prawns
 - `seafood/prawns-tempura` — Tempura Prawns
