@@ -226,26 +226,26 @@ THUMBNAIL_SIZE = (300, 300)
 RESPONSIVE_SIZES = [400, 800, 1200]
 
 # ─── Colors for placeholder images ────────────────────────────────────────────
-PLACEHOLDER_COLORS = {
-    "Frozen Seafood":    [(13, 71, 161), (21, 101, 192)],   # deep blue gradient
-    "Japanese Products": [(183, 28, 28), (229, 57, 53)],    # Japanese red
-    "Imported Meat":     [(74, 20, 140), (106, 27, 154)],   # dark purple
-    "Groceries":         [(27, 94, 32), (46, 125, 50)],     # green
-    "Cheese":            [(245, 127, 23), (251, 140, 0)],   # amber
-    "Sauces":            [(62, 39, 35), (93, 64, 55)],      # dark brown
-    "Gourmet Products":  [(49, 27, 146), (69, 39, 160)],    # royal purple
-}
+# Matches the site's actual "premium" Tailwind palette (tailwind.config.cjs)
+# instead of arbitrary category colors, so placeholders look on-brand.
+PREMIUM_NAVY      = (11, 29, 42)     # #0B1D2A
+PREMIUM_CHARCOAL  = (19, 36, 47)     # #13242F
+PREMIUM_GOLD      = (201, 162, 39)   # #C9A227
+PREMIUM_GOLD_LIGHT = (224, 188, 85)  # #E0BC55
+PREMIUM_TEAL      = (46, 139, 139)   # #2E8B8B
+PREMIUM_CREAM     = (245, 241, 232)  # #F5F1E8
+PREMIUM_MUTED     = (157, 178, 191)  # #9DB2BF
 
 
 def create_placeholder(folder_path: Path, product_name: str, category: str, index: int) -> Path:
-    """Create a premium-looking placeholder image with product name."""
-    colors = PLACEHOLDER_COLORS.get(category, [(30, 30, 30), (50, 50, 50)])
-    c1, c2 = colors[0], colors[1]
+    """Create an on-brand placeholder image with product name, matching the
+    site's premium navy/gold/teal palette (tailwind.config.cjs)."""
+    c1, c2 = PREMIUM_NAVY, PREMIUM_CHARCOAL
 
     img = Image.new("RGB", (1200, 1200), c1)
     draw = ImageDraw.Draw(img)
 
-    # Gradient-like effect with overlapping rectangles
+    # Subtle vertical gradient, navy -> charcoal
     for i in range(1200):
         ratio = i / 1200
         r = int(c1[0] + (c2[0] - c1[0]) * ratio)
@@ -253,39 +253,42 @@ def create_placeholder(folder_path: Path, product_name: str, category: str, inde
         b = int(c1[2] + (c2[2] - c1[2]) * ratio)
         draw.line([(0, i), (1200, i)], fill=(r, g, b))
 
-    # White border frame
-    draw.rectangle([40, 40, 1160, 1160], outline=(255, 255, 255, 180), width=4)
-    draw.rectangle([60, 60, 1140, 1140], outline=(255, 255, 255, 80), width=2)
-
-    # Top label
-    draw.rectangle([0, 0, 1200, 120], fill=(0, 0, 0, 120))
+    # Thin gold border frame (matches site's premium-gold accent)
+    draw.rectangle([36, 36, 1164, 1164], outline=PREMIUM_GOLD, width=3)
+    draw.rectangle([52, 52, 1148, 1148], outline=PREMIUM_GOLD_LIGHT, width=1)
 
     try:
-        font_large  = ImageFont.truetype("arial.ttf", 56)
-        font_medium = ImageFont.truetype("arial.ttf", 40)
-        font_small  = ImageFont.truetype("arial.ttf", 28)
-        font_brand  = ImageFont.truetype("arialbd.ttf", 48)
+        font_large = ImageFont.truetype("georgia.ttf", 58)
+        font_small = ImageFont.truetype("arial.ttf", 26)
+        font_brand = ImageFont.truetype("georgiab.ttf", 44)
     except Exception:
-        font_large  = ImageFont.load_default()
-        font_medium = font_large
-        font_small  = font_large
-        font_brand  = font_large
+        try:
+            font_large = ImageFont.truetype("arial.ttf", 58)
+            font_small = ImageFont.truetype("arial.ttf", 26)
+            font_brand = ImageFont.truetype("arialbd.ttf", 44)
+        except Exception:
+            font_large = font_small = font_brand = ImageFont.load_default()
 
-    # Divya Luxury Seafoods brand
-    brand_text = "DIVYA FOODS"
-    draw.text((600, 60), brand_text, fill=(255, 255, 255), font=font_brand, anchor="mm")
+    # Brand — current name, not the pre-rebrand "Divya Foods"
+    draw.text((600, 100), "DIVYA LUXURY SEAFOODS", fill=PREMIUM_GOLD_LIGHT, font=font_brand, anchor="mm")
+    draw.line([(400, 140), (800, 140)], fill=PREMIUM_GOLD, width=1)
 
-    # Camera icon placeholder area
-    draw.ellipse([500, 300, 700, 500], outline=(255, 255, 255, 150), width=3)
-    draw.line([(580, 390), (620, 390)], fill=(255, 255, 255, 150), width=3)
-    draw.line([(600, 370), (600, 410)], fill=(255, 255, 255, 150), width=3)
+    # Simple camera icon (rounded body + lens circle + viewfinder bump)
+    icon_cx, icon_cy = 600, 400
+    draw.rounded_rectangle(
+        [icon_cx - 110, icon_cy - 70, icon_cx + 110, icon_cy + 70],
+        radius=18, outline=PREMIUM_MUTED, width=4
+    )
+    draw.rectangle([icon_cx - 40, icon_cy - 92, icon_cx + 40, icon_cy - 68], fill=PREMIUM_MUTED)
+    draw.ellipse([icon_cx - 42, icon_cy - 42, icon_cx + 42, icon_cy + 42], outline=PREMIUM_MUTED, width=4)
+    draw.ellipse([icon_cx - 22, icon_cy - 22, icon_cx + 22, icon_cy + 22], outline=PREMIUM_TEAL, width=3)
 
     # Product name (wrap long names)
     words = product_name.upper().split()
     lines = []
     current = ""
     for word in words:
-        if len(current + " " + word) <= 22:
+        if len(current + " " + word) <= 24:
             current = (current + " " + word).strip()
         else:
             if current:
@@ -294,20 +297,24 @@ def create_placeholder(folder_path: Path, product_name: str, category: str, inde
     if current:
         lines.append(current)
 
-    y_start = 580
+    y_start = 590
     for line in lines:
-        draw.text((600, y_start), line, fill=(255, 255, 255), font=font_large, anchor="mm")
-        y_start += 70
+        draw.text((600, y_start), line, fill=PREMIUM_CREAM, font=font_large, anchor="mm")
+        y_start += 66
 
-    # "Premium Product Image" subtext
-    draw.text((600, y_start + 30), "Premium Product Image Coming Soon", fill=(255, 255, 255, 180), font=font_small, anchor="mm")
+    # Subtext
+    draw.text((600, y_start + 34), "Photo coming soon", fill=PREMIUM_MUTED, font=font_small, anchor="mm")
 
-    # Category badge
-    draw.rounded_rectangle([200, 1020, 1000, 1090], radius=20, fill=(255, 255, 255, 30))
-    draw.text((600, 1055), category.upper(), fill=(255, 255, 255), font=font_small, anchor="mm")
+    # Category badge (teal pill, matches site's teal accent)
+    badge_w = min(960, 140 + len(category) * 20)
+    draw.rounded_rectangle(
+        [600 - badge_w // 2, 1010, 600 + badge_w // 2, 1075],
+        radius=18, fill=PREMIUM_TEAL
+    )
+    draw.text((600, 1042), category.upper(), fill=PREMIUM_CREAM, font=font_small, anchor="mm")
 
-    # Bottom URL
-    draw.text((600, 1140), "www.divyafoods.com", fill=(255, 255, 255, 120), font=font_small, anchor="mm")
+    # Bottom mark
+    draw.text((600, 1140), "divyafoods.com", fill=PREMIUM_MUTED, font=font_small, anchor="mm")
 
     # Save as WebP
     slug = folder_path.name
