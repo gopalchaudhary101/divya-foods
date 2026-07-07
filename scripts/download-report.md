@@ -1,17 +1,17 @@
 # Divya Luxury Seafoods — Image Download Report
 
-**Generated:** 2026-07-07 15:25:32
+**Generated:** 2026-07-07 15:41:47
 
 ## Summary
 
 | Metric | Count |
 |--------|-------|
 | Total products processed | 145 |
-| Products with real images | 20 |
-| Products needing real images | 125 |
+| Products with real images | 22 |
+| Products needing real images | 123 |
 | Total images created | 145 |
-| Real photos (own) | 20 |
-| Placeholder images | 125 |
+| Real photos (own) | 22 |
+| Placeholder images | 123 |
 
 ## Category Breakdown
 
@@ -158,5 +158,3 @@
 - `seafood/squid-ink` — Squid Ink
 - `seafood/squid-ring` — Squid Ring
 - `seafood/tempura-prawns` — Tempura Prawns Battered
-- `seafood/tilapia-fillet` — Tilapia Fish Fillet
-- `seafood/tuna-yellowfin-saku` — Yellowfin Tuna Saku Block

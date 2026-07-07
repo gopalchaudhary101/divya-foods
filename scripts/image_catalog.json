@@ -43,9 +43,11 @@
       "assets\\products\\seafood\\tilapia-fillet\\tilapia-fillet-01.webp"
     ],
     "thumbnail": "assets\\products\\seafood\\tilapia-fillet\\tilapia-fillet-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "seafood/basa-fillet-indian": {
     "product_name": "Indian Basa Fish Fillet",
@@ -357,9 +359,11 @@
       "assets\\products\\seafood\\tuna-yellowfin-saku\\tuna-yellowfin-saku-01.webp"
     ],
     "thumbnail": "assets\\products\\seafood\\tuna-yellowfin-saku\\tuna-yellowfin-saku-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "seafood/chilean-sea-bass": {
     "product_name": "Chilean Sea Bass",
