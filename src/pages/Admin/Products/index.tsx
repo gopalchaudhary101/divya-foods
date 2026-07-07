@@ -7,6 +7,7 @@ import {
   Package, Star, TrendingUp, Image as ImageIcon,
   CheckCircle, LayoutDashboard,
   CheckSquare, Square, Download, UploadCloud, Images, Megaphone,
+  Eye, EyeOff,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
@@ -40,6 +41,7 @@ interface AdminProduct {
   tags: string[]
   isFeatured: boolean
   isBestSeller: boolean
+  isPublished: boolean
   description: string
   createdAt: string
 }
@@ -72,6 +74,7 @@ interface ProductFormValues {
   inStock: boolean
   isFeatured: boolean
   isBestSeller: boolean
+  isPublished: boolean
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -194,6 +197,7 @@ function ProductFormDrawer({
       inStock:       product?.inStock       ?? true,
       isFeatured:    product?.isFeatured    ?? false,
       isBestSeller:  product?.isBestSeller  ?? false,
+      isPublished:   product?.isPublished   ?? true,
     },
   })
 
@@ -223,6 +227,7 @@ function ProductFormDrawer({
         inStock:       values.inStock,
         isFeatured:    values.isFeatured,
         isBestSeller:  values.isBestSeller,
+        isPublished:   values.isPublished,
       }
       if (isEdit) {
         const { data } = await axiosInstance.put<ApiResponse<AdminProduct>>(
@@ -402,6 +407,7 @@ function ProductFormDrawer({
                 { field: 'inStock',      label: 'In Stock',      icon: <CheckCircle size={14} /> },
                 { field: 'isFeatured',   label: 'Featured',      icon: <Star size={14} /> },
                 { field: 'isBestSeller', label: 'Best Seller',   icon: <TrendingUp size={14} /> },
+                { field: 'isPublished',  label: 'Published (visible to customers)', icon: <Eye size={14} /> },
               ] as const
             ).map(({ field, label, icon }) => {
               const val = watch(field)
@@ -445,7 +451,7 @@ function QuickToggle({
   title,
 }: {
   productId: string
-  field: 'inStock' | 'isFeatured' | 'isBestSeller'
+  field: 'inStock' | 'isFeatured' | 'isBestSeller' | 'isPublished'
   value: boolean
   icon: React.ReactNode
   title: string
@@ -506,7 +512,14 @@ function ProductRow({
               : <div className="w-full h-full flex items-center justify-center"><ImageIcon size={14} className="text-ocean-200" /></div>}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-medium text-ocean-900 dark:text-white truncate max-w-[200px]">{product.name}</p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm font-medium text-ocean-900 dark:text-white truncate max-w-[200px]">{product.name}</p>
+              {!product.isPublished && (
+                <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                  Draft
+                </span>
+              )}
+            </div>
             <p className="text-xs text-ocean-400 font-mono truncate max-w-[200px]">{product.slug}</p>
           </div>
         </div>
@@ -532,6 +545,7 @@ function ProductRow({
           <QuickToggle productId={product.id} field="inStock"      value={product.inStock}      icon={<CheckCircle size={15} />} title="Toggle In Stock" />
           <QuickToggle productId={product.id} field="isFeatured"   value={product.isFeatured}   icon={<Star size={15} />}        title="Toggle Featured" />
           <QuickToggle productId={product.id} field="isBestSeller" value={product.isBestSeller} icon={<TrendingUp size={15} />}  title="Toggle Best Seller" />
+          <QuickToggle productId={product.id} field="isPublished"  value={product.isPublished}  icon={product.isPublished ? <Eye size={15} /> : <EyeOff size={15} />} title={product.isPublished ? 'Published — click to unpublish (hide from customers)' : 'Draft — click to publish (make visible to customers)'} />
         </div>
       </td>
 
@@ -840,7 +854,7 @@ export default function AdminProductsPage() {
                       <th className="px-4 py-3">Price</th>
                       <th className="px-4 py-3">Stock</th>
                       <th className="px-4 py-3 whitespace-nowrap">
-                        <span title="Stock / Featured / Best-Seller">Stock · Feat · Best</span>
+                        <span title="Stock / Featured / Best-Seller / Published">Stock · Feat · Best · Pub</span>
                       </th>
                       <th className="px-4 py-3">Actions</th>
                     </tr>
@@ -893,6 +907,7 @@ export default function AdminProductsPage() {
             <span className="flex items-center gap-1"><CheckCircle size={12} className="text-ocean-600" /> In Stock</span>
             <span className="flex items-center gap-1"><Star size={12} className="text-ocean-600" /> Featured</span>
             <span className="flex items-center gap-1"><TrendingUp size={12} className="text-ocean-600" /> Best Seller</span>
+            <span className="flex items-center gap-1"><Eye size={12} className="text-ocean-600" /> Published</span>
             <span className="text-ocean-300">— Click icons to toggle</span>
           </p>
         </div>

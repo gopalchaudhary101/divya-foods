@@ -117,7 +117,7 @@ def insert_category(db, name="Frozen Seafood", slug="frozen-seafood"):
     return result.inserted_id
 
 
-def insert_product(db, category_id, name="Test Salmon", price=999.0, in_stock=True):
+def insert_product(db, category_id, name="Test Salmon", price=999.0, in_stock=True, is_published=True):
     from bson import ObjectId
     slug = name.lower().replace(" ", "-")
     result = db.products.insert_one({
@@ -137,6 +137,7 @@ def insert_product(db, category_id, name="Test Salmon", price=999.0, in_stock=Tr
         "review_count":   10,
         "is_featured":    True,
         "is_best_seller": False,
+        "is_published":   is_published,
         "created_at":     _now(),
         "updated_at":     _now(),
     })

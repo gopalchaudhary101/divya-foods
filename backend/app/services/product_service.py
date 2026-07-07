@@ -74,7 +74,7 @@ def get_products(
     Paginated + filtered product list.
     Returns a dict that matches the frontend's PaginatedResponse<Product>.
     """
-    query: dict = {}
+    query: dict = {"is_published": {"$ne": False}}
 
     if search:
         query["$text"] = {"$search": search}
@@ -131,7 +131,7 @@ def get_by_slug(db: Database, slug: str) -> dict:
     """Single product by URL slug. Raises 404 if not found. Counts as a page view
     for the 'Most/Least Viewed Products' analytics — incremented here since this is
     the only place a customer-facing product detail fetch happens."""
-    doc = db.products.find_one({"slug": slug})
+    doc = db.products.find_one({"slug": slug, "is_published": {"$ne": False}})
     if not doc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product '{slug}' not found.")
     db.products.update_one({"_id": doc["_id"]}, {"$inc": {"view_count": 1}})
@@ -176,7 +176,7 @@ def get_qr_code_png(db: Database, product_id: str) -> tuple[bytes, str]:
 def get_featured(db: Database, limit: int = 8) -> dict:
     """Products marked is_featured=True, sorted newest first."""
     docs = list(
-        db.products.find({"is_featured": True, "in_stock": True})
+        db.products.find({"is_featured": True, "in_stock": True, "is_published": {"$ne": False}})
         .sort([("created_at", -1)])
         .limit(limit)
     )
@@ -186,7 +186,7 @@ def get_featured(db: Database, limit: int = 8) -> dict:
 def get_best_sellers(db: Database, limit: int = 8) -> dict:
     """Products marked is_best_seller=True, sorted by review_count."""
     docs = list(
-        db.products.find({"is_best_seller": True, "in_stock": True})
+        db.products.find({"is_best_seller": True, "in_stock": True, "is_published": {"$ne": False}})
         .sort([("review_count", -1)])
         .limit(limit)
     )
@@ -246,7 +246,7 @@ def search_products(db: Database, query: str, limit: int = 20) -> dict:
     expanded = _expand_query(query)
     docs = list(
         db.products.find(
-            {"$text": {"$search": expanded}},
+            {"$text": {"$search": expanded}, "is_published": {"$ne": False}},
             {"score": {"$meta": "textScore"}},
         )
         .sort([("score", {"$meta": "textScore"})])
@@ -267,7 +267,7 @@ def get_suggestions(db: Database, query: str, limit: int = 6) -> dict:
     expanded = _expand_query(query)
     docs = list(
         db.products.find(
-            {"$text": {"$search": expanded}},
+            {"$text": {"$search": expanded}, "is_published": {"$ne": False}},
             {
                 "_id": 1, "name": 1, "slug": 1,
                 "price": 1, "images": 1, "brand": 1,
@@ -325,6 +325,7 @@ def _to_admin_item(doc: dict, cat_map: dict) -> dict:
         "tags":          doc.get("tags", []),
         "isFeatured":    doc.get("is_featured", False),
         "isBestSeller":  doc.get("is_best_seller", False),
+        "isPublished":   doc.get("is_published", True),
         "description":   doc.get("description", ""),
         "createdAt":     doc["created_at"].isoformat() if doc.get("created_at") else None,
     }
@@ -824,6 +825,7 @@ def admin_create_product(db: Database, data: dict) -> dict:
         "review_count":   0,
         "is_featured":    bool(data.get("isFeatured", False)),
         "is_best_seller": bool(data.get("isBestSeller", False)),
+        "is_published":   True if data.get("isPublished") is None else bool(data["isPublished"]),
         "created_at":     now,
         "updated_at":     now,
     }
@@ -873,6 +875,7 @@ def admin_update_product(db: Database, product_id: str, data: dict) -> dict:
     if "lowStockThreshold" in data: upd["low_stock_threshold"] = int(data["lowStockThreshold"] or 0)
     if "isFeatured"    in data: upd["is_featured"]    = bool(data["isFeatured"])
     if "isBestSeller"  in data: upd["is_best_seller"] = bool(data["isBestSeller"])
+    if "isPublished"   in data: upd["is_published"]   = bool(data["isPublished"])
 
     db.products.update_one({"_id": oid}, {"$set": upd})
 
@@ -1045,7 +1048,7 @@ def get_related(db: Database, product_id: str, limit: int = 6) -> dict:
 
     docs = list(
         db.products.find(
-            {"category_id": source["category_id"], "_id": {"$ne": oid}, "in_stock": True}
+            {"category_id": source["category_id"], "_id": {"$ne": oid}, "in_stock": True, "is_published": {"$ne": False}}
         )
         .sort([("rating", -1)])
         .limit(limit)
@@ -1055,7 +1058,7 @@ def get_related(db: Database, product_id: str, limit: int = 6) -> dict:
         # Top up with newest products from any category
         existing_ids = {d["_id"] for d in docs} | {oid}
         extras = list(
-            db.products.find({"_id": {"$nin": list(existing_ids)}, "in_stock": True})
+            db.products.find({"_id": {"$nin": list(existing_ids)}, "in_stock": True, "is_published": {"$ne": False}})
             .sort([("created_at", -1)])
             .limit(limit - len(docs))
         )

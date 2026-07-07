@@ -94,6 +94,7 @@ class ProductInDB(MongoBaseModel):
     tags: List[str] = []
     is_featured: bool = False
     is_best_seller: bool = False
+    is_published: bool = True   # False = admin draft, hidden from all public/customer queries
     meta_title: Optional[str] = None
     meta_description: Optional[str] = None
     attributes: Dict[str, Any] = {}

@@ -94,6 +94,7 @@ class ProductUpsertRequest(BaseModel):
     inStock: Optional[bool] = None
     isFeatured: Optional[bool] = None
     isBestSeller: Optional[bool] = None
+    isPublished: Optional[bool] = None
     lowStockThreshold: Optional[int] = None
 
 
