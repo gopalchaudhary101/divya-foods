@@ -35,6 +35,7 @@ def create_indexes(db: Database) -> None:
     db.products.create_index("is_featured")
     db.products.create_index("is_best_seller")
     db.products.create_index("in_stock")
+    db.products.create_index("is_published")
     db.products.create_index([("price", 1)])
     db.products.create_index([("rating", -1)])
     db.products.create_index([("created_at", -1)])
@@ -63,6 +64,9 @@ def create_indexes(db: Database) -> None:
     db.orders.create_index([("created_at", -1)])
     # Admin dashboard: filter by status + sort by date
     db.orders.create_index([("status", 1), ("created_at", -1)])
+    # Razorpay webhook lookup — every payment.captured/failed/refund event looks
+    # up the order by razorpay_order_id, independent of the customer's browser
+    db.orders.create_index("razorpay_order_id", sparse=True)
 
     # ── cart ──────────────────────────────────────────────────────────────────
     db.cart.create_index("user_id", unique=True)   # one cart per user
@@ -102,5 +106,9 @@ def create_indexes(db: Database) -> None:
     # ── push_subscriptions ────────────────────────────────────────────────────
     db.push_subscriptions.create_index("endpoint", unique=True)
     db.push_subscriptions.create_index("user_id")
+
+    # ── contact_submissions ───────────────────────────────────────────────────
+    db.contact_submissions.create_index([("created_at", -1)])
+    db.contact_submissions.create_index("email")
 
     print("[DB] All indexes created successfully")
