@@ -19,7 +19,7 @@ import { getErrorMessage } from '@/utils/apiError'
 import axiosInstance from '@/services/api/axiosInstance'
 import { setCredentials } from '@/features/auth/authSlice'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
-import type { Address, ApiResponse } from '@/types'
+import type { Address } from '@/types'
 import { ROUTES } from '@/constants/routes'
 
 // ─── Avatar initials ─────────────────────────────────────────────────────────

@@ -7,7 +7,6 @@ Silently drops stale subscriptions (410 Gone) from the database.
 
 import json
 import logging
-from typing import Optional
 
 from pymongo.database import Database
 

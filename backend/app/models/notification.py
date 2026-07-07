@@ -11,7 +11,7 @@ data dict stores contextual info:
 """
 
 from datetime import datetime
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Dict, Literal
 
 from pydantic import Field
 

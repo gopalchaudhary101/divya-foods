@@ -18,7 +18,7 @@ from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
-from app.models.base import MongoBaseModel, PyObjectId, utcnow
+from app.models.base import MongoBaseModel, utcnow
 
 
 # ─── Request Schemas ──────────────────────────────────────────────────────────

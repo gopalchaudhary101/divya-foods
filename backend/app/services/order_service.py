@@ -19,7 +19,6 @@ from fastapi import HTTPException, status
 from pymongo.database import Database
 
 from app.config import settings
-from app.models.address import AddressSnapshot
 from app.services import email_service, invoice_service, product_service, settings_service, membership_service, gift_card_service
 
 

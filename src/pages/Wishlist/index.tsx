@@ -1,7 +1,7 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link, useNavigate } from 'react-router-dom'
-import { Heart, ShoppingCart, ChevronRight, LogIn } from 'lucide-react'
+import { Heart, ChevronRight, LogIn } from 'lucide-react'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useWishlistQuery } from '@/hooks/useWishlist'

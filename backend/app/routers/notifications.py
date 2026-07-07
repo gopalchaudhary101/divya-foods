@@ -14,7 +14,6 @@ In-app notifications:
 from typing import Optional
 from datetime import datetime, timezone
 
-from bson import ObjectId
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 from pymongo.database import Database

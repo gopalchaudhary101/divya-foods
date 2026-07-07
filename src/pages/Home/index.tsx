@@ -4,7 +4,7 @@ import { PageSEO } from '@/components/shared/PageSEO'
 import { motion } from 'framer-motion'
 import {
   Truck, ShieldCheck, Star, Phone, MessageCircle,
-  Clock, ChevronRight, Snowflake, Globe, Award,
+  Clock, ChevronRight, Snowflake, Globe,
   Anchor, PackageCheck, Quote,
 } from 'lucide-react'
 import PremiumHeroBackground from '@/components/shared/PremiumHeroBackground'

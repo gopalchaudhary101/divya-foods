@@ -357,7 +357,6 @@ export default function AdminAnalyticsPage() {
                       width={110}
                     />
                     <Tooltip formatter={(val) => [INR(Number(val)), 'Revenue']} />
-                    {raw?.revenueByCategory.map((_, i) => null)}
                     <Bar dataKey="revenue" radius={[0, 4, 4, 0]} maxBarSize={22}>
                       {raw?.revenueByCategory.map((_, i) => (
                         <Cell key={i} fill={BAR_COLORS[i % BAR_COLORS.length]} />

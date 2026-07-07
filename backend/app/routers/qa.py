@@ -6,7 +6,6 @@ POST /qa/{product_id}  → submit a question (authenticated customers)
 """
 from datetime import datetime, timezone
 
-from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from pymongo.database import Database

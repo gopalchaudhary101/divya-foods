@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
@@ -8,7 +8,6 @@ import userEvent from '@testing-library/user-event'
 import ProductDetailPage from './index'
 import { productApi } from '@/services/api/productApi'
 import { reviewApi } from '@/services/api/reviewApi'
-import { wishlistApi } from '@/services/api/wishlistApi'
 import { createTestStore, createTestQueryClient, type PartialRootState } from '@/test/testUtils'
 
 vi.mock('@/services/api/productApi', () => ({

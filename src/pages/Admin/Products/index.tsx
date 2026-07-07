@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import {
   Plus, Search, Edit2, Trash2, X, ChevronDown,
   Package, Star, TrendingUp, Image as ImageIcon,
-  CheckCircle, XCircle, LayoutDashboard,
+  CheckCircle, LayoutDashboard,
   CheckSquare, Square, Download, UploadCloud, Images, Megaphone,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'

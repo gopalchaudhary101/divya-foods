@@ -6,7 +6,7 @@ Subscriptions are removed when the browser revokes them (410 Gone from push serv
 """
 
 from datetime import datetime
-from typing import Any, Dict
+from typing import Dict
 
 from pydantic import Field
 

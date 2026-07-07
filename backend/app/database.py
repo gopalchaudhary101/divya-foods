@@ -21,7 +21,6 @@ def connect_to_mongo() -> None:
 
 
 def close_mongo_connection() -> None:
-    global _client
     if _client:
         _client.close()
         print("[DB] MongoDB connection closed")

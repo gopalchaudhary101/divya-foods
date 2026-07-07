@@ -13,7 +13,7 @@ import { useState, useRef, useEffect, KeyboardEvent, Fragment } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   MessageCircle, X, Send, Headphones, Search,
-  ChevronRight, ExternalLink, Clock,
+  ChevronRight, Clock,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import axiosInstance from '@/services/api/axiosInstance'
@@ -596,7 +596,7 @@ export function FreeChatbot() {
 
     // Normalise chip labels → query text (strip emoji prefix)
     const queryText = text
-      .replace(/^[🚚🍳❄📞💳🛍🍤🧄🌶🍱🦀🔍]\s*/, '')
+      .replace(/^[🚚🍳❄📞💳🛍🍤🧄🌶🍱🦀🔍]\s*/u, '')
       .replace(/^Back to menu$/i, 'menu')
 
     // Special chips

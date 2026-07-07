@@ -20,7 +20,6 @@ from pymongo.errors import DuplicateKeyError
 from app.models.user import (
     UserCreate,
     UserLogin,
-    UserInDB,
     UserResponse,
     TokenResponse,
 )
@@ -31,11 +30,8 @@ from app.utils.security import (
     create_access_token,
     generate_refresh_token,
     hash_refresh_token,
-    verify_refresh_token,
     generate_reset_token,
-    decode_access_token,
 )
-from app.config import settings
 from app.services import email_service
 
 
