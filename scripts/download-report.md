@@ -1,17 +1,17 @@
 # Divya Luxury Seafoods — Image Download Report
 
-**Generated:** 2026-07-07 12:27:18
+**Generated:** 2026-07-07 12:36:37
 
 ## Summary
 
 | Metric | Count |
 |--------|-------|
 | Total products processed | 145 |
-| Products with real images | 8 |
-| Products needing real images | 137 |
+| Products with real images | 15 |
+| Products needing real images | 130 |
 | Total images created | 145 |
-| Real photos (own) | 8 |
-| Placeholder images | 137 |
+| Real photos (own) | 15 |
+| Placeholder images | 130 |
 
 ## Category Breakdown
 
@@ -47,17 +47,14 @@
 - `groceries/mushroom-porcini` — Porcini Mushroom Dried
 - `groceries/mushroom-shiitake` — Shiitake Mushroom Dried
 - `groceries/mushroom-straw-canned` — Straw Mushroom Canned
-- `groceries/potato-starch` — Potato Starch
 - `groceries/puff-pastry` — Puff Pastry Ready Rolled
 - `groceries/red-lotus-flour` — Red Lotus Rice Flour
 - `groceries/rice-flour-glutinous` — Glutinous Rice Flour
 - `groceries/szechuan-pepper` — Szechuan Pepper Corn
-- `groceries/tempura-powder` — Tempura Batter Powder
 - `groceries/thai-curry-paste` — Thai Curry Paste Namjai
 - `groceries/wheat-starch` — Wheat Starch
 - `groceries/white-fungus` — White Silver Ear Fungus
 - `japanese/bamboo-leaf` — Bamboo Leaf Sushi
-- `japanese/bamboo-shoot` — Bamboo Shoot Canned
 - `japanese/edamame` — Edamame Green Soybeans
 - `japanese/furikake` — Furikake Rice Seasoning
 - `japanese/gari-pink` — Gari Pink Pickled Ginger
@@ -96,9 +93,7 @@
 - `japanese/soba-noodle` — Soba Buckwheat Noodle
 - `japanese/somen-noodle` — Somen Thin Noodle
 - `japanese/spring-roll-sheet` — Spring Roll Sheet
-- `japanese/sushi-rice` — Sushi Rice Premium
 - `japanese/thai-curry-paste` — Thai Curry Paste
-- `japanese/thai-rice-jasmine` — Thai Jasmine Rice
 - `japanese/tobikko-black` — Tobikko Black Flying Fish Roe
 - `japanese/tobikko-green` — Tobikko Green Flying Fish Roe
 - `japanese/tobikko-orange` — Tobikko Orange Flying Fish Roe
@@ -137,7 +132,6 @@
 - `sauces/mirin` — Mirin Sweet Rice Wine
 - `sauces/oyster-sauce` — Oyster Sauce LKK
 - `sauces/sake` — Sake Japanese Rice Wine
-- `sauces/sesame-oil` — Sesame Oil Kadoya
 - `sauces/soy-sauce-kikkoman` — Kikkoman Soy Sauce
 - `sauces/soy-sauce-tamari` — Tamari Soy Sauce Gluten Free
 - `sauces/sriracha-hot-sauce` — Sriracha Hot Chilli Sauce
@@ -149,7 +143,6 @@
 - `seafood/basa-fillet-vietnamese` — Vietnamese Basa Fish Fillet
 - `seafood/black-cod` — Black Cod Headless
 - `seafood/chilean-sea-bass` — Chilean Sea Bass
-- `seafood/lobster-tail` — Lobster Tail
 - `seafood/lobster-whole` — Lobster Whole
 - `seafood/octopus-whole` — Octopus Whole
 - `seafood/prawns-fresh` — Fresh Head-On Prawns

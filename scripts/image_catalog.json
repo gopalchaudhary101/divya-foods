@@ -245,9 +245,11 @@
       "assets\\products\\seafood\\lobster-tail\\lobster-tail-01.webp"
     ],
     "thumbnail": "assets\\products\\seafood\\lobster-tail\\lobster-tail-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "seafood/salmon-fillet-norwegian": {
     "product_name": "Norwegian Salmon Fillet Sushi Grade",
@@ -751,9 +753,11 @@
       "assets\\products\\japanese\\sushi-rice\\sushi-rice-01.webp"
     ],
     "thumbnail": "assets\\products\\japanese\\sushi-rice\\sushi-rice-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "japanese/thai-rice-jasmine": {
     "product_name": "Thai Jasmine Rice",
@@ -763,9 +767,11 @@
       "assets\\products\\japanese\\thai-rice-jasmine\\thai-rice-jasmine-01.webp"
     ],
     "thumbnail": "assets\\products\\japanese\\thai-rice-jasmine\\thai-rice-jasmine-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "japanese/hondashi": {
     "product_name": "Hondashi Dashi Stock",
@@ -1113,9 +1119,11 @@
       "assets\\products\\japanese\\bamboo-shoot\\bamboo-shoot-01.webp"
     ],
     "thumbnail": "assets\\products\\japanese\\bamboo-shoot\\bamboo-shoot-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "meat/duck-whole": {
     "product_name": "Whole Duck Eden Duck Thailand",
@@ -1401,9 +1409,11 @@
       "assets\\products\\groceries\\tempura-powder\\tempura-powder-01.webp"
     ],
     "thumbnail": "assets\\products\\groceries\\tempura-powder\\tempura-powder-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "groceries/chicken-seasoning-knorr": {
     "product_name": "Knorr Chicken Seasoning Powder",
@@ -1449,9 +1459,11 @@
       "assets\\products\\groceries\\potato-starch\\potato-starch-01.webp"
     ],
     "thumbnail": "assets\\products\\groceries\\potato-starch\\potato-starch-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "groceries/wheat-starch": {
     "product_name": "Wheat Starch",
@@ -1653,9 +1665,11 @@
       "assets\\products\\sauces\\sesame-oil\\sesame-oil-01.webp"
     ],
     "thumbnail": "assets\\products\\sauces\\sesame-oil\\sesame-oil-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "sauces/tonkatsu-sauce": {
     "product_name": "Tonkatsu Sauce Bulldog",
