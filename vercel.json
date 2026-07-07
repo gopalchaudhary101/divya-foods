@@ -1,7 +1,7 @@
 {
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "https://divya-foods-api-production-9380.up.railway.app/sitemap.xml" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!sw\\.js|registerSW\\.js|manifest\\.webmanifest|workbox-).*)", "destination": "/index.html" }
   ],
   "headers": [
     {
