@@ -126,8 +126,10 @@ def test_webhook_payment_captured_is_idempotent(client, db):
     }
     with patch("app.services.email_service.send_async") as mock_send:
         _post_webhook(client, event)
+        first_call_count = mock_send.call_count   # order_confirmation + admin_new_order_notification
+        assert first_call_count > 0
         _post_webhook(client, event)   # duplicate delivery — Razorpay retries are expected
-        assert mock_send.call_count == 1   # only finalized (and emailed) once
+        assert mock_send.call_count == first_call_count   # only finalized (and emailed) once
 
 
 def test_webhook_payment_failed_releases_stock(client, db):

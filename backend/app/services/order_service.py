@@ -402,7 +402,9 @@ def initiate_order(db: Database, user: dict, body: dict) -> dict:
         if fully_covered:
             db.carts.update_one({"user_id": user_id}, {"$set": {"items": [], "updated_at": now}})
         customer_email = _get_customer_email(db, user_id)
-        email_service.order_confirmation(_order_to_dict(db.orders.find_one({"_id": result.inserted_id})), customer_email)
+        confirmed_order = _order_to_dict(db.orders.find_one({"_id": result.inserted_id}))
+        email_service.order_confirmation(confirmed_order, customer_email)
+        email_service.admin_new_order_notification(confirmed_order)
 
     return {
         "success": True,
@@ -548,7 +550,9 @@ def _finalize_paid_order(db: Database, oid: ObjectId, rzp_payment_id: str, rzp_s
 
     # Send order confirmation email (non-blocking)
     customer_email = _get_customer_email(db, doc["user_id"])
-    email_service.order_confirmation(_order_to_dict(doc), customer_email)
+    order_dict = _order_to_dict(doc)
+    email_service.order_confirmation(order_dict, customer_email)
+    email_service.admin_new_order_notification(order_dict)
 
     return doc
 
@@ -619,6 +623,9 @@ def _refund_order(db: Database, oid: ObjectId, refund_id: str, amount_paise: int
             },
         },
     )
+
+    customer_email = _get_customer_email(db, doc["user_id"])
+    email_service.refund_processed(_order_to_dict(doc), customer_email, amount_paise / 100, full)
 
 
 # ─── Razorpay webhooks ─────────────────────────────────────────────────────────

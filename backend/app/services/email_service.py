@@ -3,70 +3,80 @@ Email service — HTML transactional emails via SMTP.
 
 Sending is fire-and-forget (daemon thread) so it never blocks an HTTP response.
 If SMTP credentials are missing the functions return immediately without error.
+Transient SMTP failures (network blips, momentary auth hiccups) are retried
+a couple of times with a short backoff before being logged as a real failure.
 """
 
+import logging
 import smtplib
 import threading
+import time
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from html import escape as _esc
 
 from app.config import settings
 
+logger = logging.getLogger("app.email")
 
-# ─── Core sender ──────────────────────────────────────────────────────────────
+_MAX_ATTEMPTS = 3
+_RETRY_DELAY_SECONDS = 2
 
-def _send(to: str, subject: str, html: str) -> None:
+
+def _build_message(to: str, subject: str, html: str, attachment: bytes = None, filename: str = "") -> MIMEMultipart:
+    if attachment is not None:
+        msg = MIMEMultipart("mixed")
+        msg["Subject"], msg["From"], msg["To"] = subject, settings.EMAIL_FROM, to
+        body = MIMEMultipart("alternative")
+        body.attach(MIMEText(html, "html", "utf-8"))
+        msg.attach(body)
+        part = MIMEApplication(attachment, _subtype="pdf")
+        part.add_header("Content-Disposition", "attachment", filename=filename)
+        msg.attach(part)
+        return msg
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"], msg["From"], msg["To"] = subject, settings.EMAIL_FROM, to
+    msg.attach(MIMEText(html, "html", "utf-8"))
+    return msg
+
+
+def _deliver(msg: MIMEMultipart, to: str) -> None:
+    with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as srv:
+        srv.ehlo()
+        srv.starttls()
+        srv.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+        srv.sendmail(settings.EMAIL_FROM, to, msg.as_string())
+
+
+def _send_with_retry(to: str, subject: str, html: str, attachment: bytes = None, filename: str = "") -> None:
     if not settings.SMTP_USERNAME or not settings.SMTP_PASSWORD:
-        return  # SMTP not configured — skip silently
-    try:
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"]    = settings.EMAIL_FROM
-        msg["To"]      = to
-        msg.attach(MIMEText(html, "html", "utf-8"))
-        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as srv:
-            srv.ehlo()
-            srv.starttls()
-            srv.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
-            srv.sendmail(settings.EMAIL_FROM, to, msg.as_string())
-        print(f"[email] Sent '{subject}' to {to}")
-    except Exception as exc:
-        print(f"[email] Failed to send to {to}: {exc}")
+        return  # SMTP not configured — skip silently, never crash the caller
+
+    msg = _build_message(to, subject, html, attachment, filename)
+    last_error = None
+    for attempt in range(1, _MAX_ATTEMPTS + 1):
+        try:
+            _deliver(msg, to)
+            logger.info("Sent '%s' to %s (attempt %d)", subject, to, attempt)
+            return
+        except Exception as exc:  # noqa: BLE001 — SMTP failures must never crash the caller
+            last_error = exc
+            if attempt < _MAX_ATTEMPTS:
+                time.sleep(_RETRY_DELAY_SECONDS * attempt)
+    logger.error("Failed to send '%s' to %s after %d attempts: %s", subject, to, _MAX_ATTEMPTS, last_error)
 
 
 def send_async(to: str, subject: str, html: str) -> None:
     """Fire-and-forget — spawns a daemon thread."""
     if not to:
         return
-    threading.Thread(target=_send, args=(to, subject, html), daemon=True).start()
+    threading.Thread(target=_send_with_retry, args=(to, subject, html), daemon=True).start()
 
 
 def _send_with_attachment(to: str, subject: str, html: str, attachment: bytes, filename: str) -> None:
-    if not settings.SMTP_USERNAME or not settings.SMTP_PASSWORD:
-        return
-    try:
-        msg = MIMEMultipart("mixed")
-        msg["Subject"] = subject
-        msg["From"]    = settings.EMAIL_FROM
-        msg["To"]      = to
-
-        body = MIMEMultipart("alternative")
-        body.attach(MIMEText(html, "html", "utf-8"))
-        msg.attach(body)
-
-        part = MIMEApplication(attachment, _subtype="pdf")
-        part.add_header("Content-Disposition", "attachment", filename=filename)
-        msg.attach(part)
-
-        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as srv:
-            srv.ehlo()
-            srv.starttls()
-            srv.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
-            srv.sendmail(settings.EMAIL_FROM, to, msg.as_string())
-        print(f"[email] Sent '{subject}' (+attachment) to {to}")
-    except Exception as exc:
-        print(f"[email] Failed to send to {to}: {exc}")
+    _send_with_retry(to, subject, html, attachment, filename)
 
 
 def send_invoice_email(to: str, order_number: str, pdf_bytes: bytes) -> None:
@@ -123,7 +133,7 @@ a{{color:#0C447C}}
 
 def _items_table(items: list, subtotal: float, delivery: float, discount: float, total: float, coupon: str = "") -> str:
     rows = "".join(
-        f'<tr><td>{it["name"]}</td>'
+        f'<tr><td>{_esc(it["name"])}</td>'
         f'<td style="text-align:center">{it["quantity"]}</td>'
         f'<td style="text-align:right">&#8377;{it["price"]:,.2f}</td>'
         f'<td style="text-align:right">&#8377;{it["price"] * it["quantity"]:,.2f}</td></tr>'
@@ -151,12 +161,15 @@ def _items_table(items: list, subtotal: float, delivery: float, discount: float,
 
 
 def _addr(a: dict) -> str:
-    line2 = f', {a["address_line2"]}' if a.get("address_line2") else ""
+    # Every field here is customer-supplied at checkout — escape before embedding
+    # in HTML, or a malicious full_name/address could inject markup into the
+    # admin's own inbox when this renders inside admin_new_order_notification().
+    line2 = f', {_esc(a["address_line2"])}' if a.get("address_line2") else ""
     return (
-        f'<strong>{a.get("full_name","")}</strong><br>'
-        f'{a.get("address_line1","")}{line2}<br>'
-        f'{a.get("city","")}, {a.get("state","")} &ndash; {a.get("pincode","")}<br>'
-        f'&#128222; {a.get("phone","")}'
+        f'<strong>{_esc(a.get("full_name",""))}</strong><br>'
+        f'{_esc(a.get("address_line1",""))}{line2}<br>'
+        f'{_esc(a.get("city",""))}, {_esc(a.get("state",""))} &ndash; {_esc(a.get("pincode",""))}<br>'
+        f'&#128222; {_esc(a.get("phone",""))}'
     )
 
 
@@ -301,3 +314,60 @@ def password_reset(customer_email: str, reset_token: str) -> None:
   <a href="{reset_url}" style="color:#0C447C;word-break:break-all">{reset_url}</a>
 </p>""")
     send_async(customer_email, "Reset Your Password — Divya Luxury Seafoods", html)
+
+
+# ─── Refunds ──────────────────────────────────────────────────────────────────
+
+def refund_processed(order: dict, customer_email: str, amount: float, full: bool) -> None:
+    """Sent when Razorpay actually confirms a refund (webhook), not merely when
+    a cancellation is requested — order_cancelled() covers the request itself."""
+    a = order.get("deliveryAddress", {})
+    scope = "full" if full else "partial"
+    html = _wrap(f"""
+<h2>Refund Processed &#128176;</h2>
+<p style="color:#6B7280;margin:0 0 18px">Hi {a.get("full_name","there")}, a {scope} refund for your order has been processed.</p>
+<p><strong>Order Number:</strong> {order["orderNumber"]} &nbsp;
+   <span class="badge badge-blue">Refunded</span></p>
+<div class="refund-box">
+  &#128176; <strong>&#8377;{amount:,.2f}</strong> has been refunded to your original payment method.<br>
+  &#9200; It typically takes <strong>5&ndash;7 business days</strong> to reflect in your account.
+</div>
+<div class="info-box">
+  &#128172; Questions about this refund? Call <strong>+91&nbsp;9999123242</strong> or reply to this email.
+</div>""")
+    send_async(customer_email, f"Refund Processed — {order['orderNumber']} | Divya Luxury Seafoods", html)
+
+
+# ─── Admin-facing notifications ───────────────────────────────────────────────
+
+def admin_new_order_notification(order: dict) -> None:
+    """Alerts the business owner's inbox the moment a paid order comes in —
+    small operations don't have a dashboard open all day."""
+    a = order.get("deliveryAddress", {})
+    rows = "".join(f'<li>{it["quantity"]}&times; {_esc(it["name"])}</li>' for it in order.get("items", []))
+    html = _wrap(f"""
+<h2>New Order Received &#128229;</h2>
+<p><strong>Order Number:</strong> {order["orderNumber"]} &nbsp;
+   <span class="badge badge-green">&#8377;{order["total"]:,.2f}</span></p>
+<p style="margin:16px 0 6px"><strong>Items</strong></p>
+<ul style="margin:0 0 16px;padding-left:20px;font-size:13px">{rows}</ul>
+<p style="margin:16px 0 6px"><strong>Customer</strong></p>
+<p style="line-height:1.8;font-size:13px">{_addr(a)}</p>""")
+    send_async(settings.ADMIN_NOTIFICATION_EMAIL, f"New Order {order['orderNumber']} — ₹{order['total']:,.2f}", html)
+
+
+def contact_form_submission(name: str, email: str, phone: str, message: str) -> None:
+    """Relays a Contact Us form submission to the business inbox. Every field
+    is public-form input — escaped before embedding in HTML."""
+    safe_name, safe_email, safe_phone, safe_message = _esc(name), _esc(email), _esc(phone), _esc(message)
+    html = _wrap(f"""
+<h2>New Contact Form Submission &#9993;</h2>
+<p style="margin:16px 0 6px"><strong>From</strong></p>
+<p style="line-height:1.8;font-size:13px">
+  {safe_name}<br>
+  <a href="mailto:{safe_email}">{safe_email}</a><br>
+  {safe_phone or "&mdash;"}
+</p>
+<p style="margin:16px 0 6px"><strong>Message</strong></p>
+<p style="line-height:1.6;font-size:13px;white-space:pre-wrap">{safe_message}</p>""")
+    send_async(settings.ADMIN_NOTIFICATION_EMAIL, f"Contact Form — {safe_name}", html)

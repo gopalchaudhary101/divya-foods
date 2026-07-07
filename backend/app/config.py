@@ -56,6 +56,10 @@ class Settings(BaseSettings):
     SMTP_USERNAME: str = ""
     SMTP_PASSWORD: str = ""
     EMAIL_FROM: str = "salesdivyafoods@gmail.com"
+    # Where new-order alerts and contact-form submissions are sent. Defaults to
+    # the same shared business inbox as EMAIL_FROM — override if the owner
+    # wants operational alerts routed somewhere else.
+    ADMIN_NOTIFICATION_EMAIL: str = "salesdivyafoods@gmail.com"
 
     # Web Push (VAPID)
     VAPID_PUBLIC_KEY: str = ""
