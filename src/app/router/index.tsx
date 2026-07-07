@@ -14,6 +14,8 @@ const OrdersPage = lazy(() => import('@/pages/Orders'))
 const ProfilePage = lazy(() => import('@/pages/Profile'))
 const LoginPage = lazy(() => import('@/pages/Auth/Login'))
 const RegisterPage = lazy(() => import('@/pages/Auth/Register'))
+const ForgotPasswordPage = lazy(() => import('@/pages/Auth/ForgotPassword'))
+const ResetPasswordPage  = lazy(() => import('@/pages/Auth/ResetPassword'))
 const AdminDashboardPage  = lazy(() => import('@/pages/Admin/Dashboard'))
 const AdminProductsPage   = lazy(() => import('@/pages/Admin/Products'))
 const AdminAnalyticsPage  = lazy(() => import('@/pages/Admin/Analytics'))
@@ -83,6 +85,8 @@ const router = createBrowserRouter([
   },
   { path: ROUTES.AUTH.LOGIN, element: wrap(<LoginPage />) },
   { path: ROUTES.AUTH.REGISTER, element: wrap(<RegisterPage />) },
+  { path: ROUTES.AUTH.FORGOT_PASSWORD, element: wrap(<ForgotPasswordPage />) },
+  { path: ROUTES.AUTH.RESET_PASSWORD, element: wrap(<ResetPasswordPage />) },
   { path: ROUTES.ADMIN.DASHBOARD,  element: wrap(<AdminDashboardPage />) },
   { path: ROUTES.ADMIN.PRODUCTS,   element: wrap(<AdminProductsPage />) },
   { path: ROUTES.ADMIN.ANALYTICS,  element: wrap(<AdminAnalyticsPage />) },
