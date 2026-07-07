@@ -75,8 +75,8 @@ Add screenshots/GIFs here, e.g.:
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/gopalchaudhary101/divya-luxury-seafoods.git
-cd divya-luxury-seafoods
+git clone https://github.com/gopalchaudhary101/divya-foods.git
+cd divya-foods
 ```
 
 ### 2. Frontend setup
