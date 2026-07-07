@@ -27,6 +27,13 @@ const BundlesPage         = lazy(() => import('@/pages/Bundles'))
 const RecipesPage         = lazy(() => import('@/pages/Recipes'))
 const JapaneseGroceryPage = lazy(() => import('@/pages/JapaneseGrocery'))
 const AboutPage             = lazy(() => import('@/pages/About'))
+const ContactPage           = lazy(() => import('@/pages/Contact'))
+const PrivacyPolicyPage     = lazy(() => import('@/pages/Legal/PrivacyPolicy'))
+const TermsConditionsPage   = lazy(() => import('@/pages/Legal/TermsConditions'))
+const RefundPolicyPage      = lazy(() => import('@/pages/Legal/RefundPolicy'))
+const ShippingPolicyPage    = lazy(() => import('@/pages/Legal/ShippingPolicy'))
+const CancellationPolicyPage = lazy(() => import('@/pages/Legal/CancellationPolicy'))
+const CookiesPolicyPage     = lazy(() => import('@/pages/Legal/CookiesPolicy'))
 const AdminSettingsPage     = lazy(() => import('@/pages/Admin/Settings'))
 const NotFoundPage        = lazy(() => import('@/pages/NotFound'))
 const AdminOrdersPage     = lazy(() => import('@/pages/Admin/Orders'))
@@ -80,6 +87,13 @@ const router = createBrowserRouter([
       { path: ROUTES.RECIPES, element: wrap(<RecipesPage />) },
       { path: ROUTES.JAPANESE_GROCERY, element: wrap(<JapaneseGroceryPage />) },
       { path: ROUTES.ABOUT, element: wrap(<AboutPage />) },
+      { path: ROUTES.CONTACT, element: wrap(<ContactPage />) },
+      { path: ROUTES.PRIVACY_POLICY, element: wrap(<PrivacyPolicyPage />) },
+      { path: ROUTES.TERMS_CONDITIONS, element: wrap(<TermsConditionsPage />) },
+      { path: ROUTES.REFUND_POLICY, element: wrap(<RefundPolicyPage />) },
+      { path: ROUTES.SHIPPING_POLICY, element: wrap(<ShippingPolicyPage />) },
+      { path: ROUTES.CANCELLATION_POLICY, element: wrap(<CancellationPolicyPage />) },
+      { path: ROUTES.COOKIES_POLICY, element: wrap(<CookiesPolicyPage />) },
       { path: ROUTES.TRACK_ORDER, element: wrap(<TrackOrderPage />) },
       { path: ROUTES.BUSINESS_SOLUTIONS, element: wrap(<BusinessSolutionsPage />) },
       { path: ROUTES.BULK_ORDER, element: wrap(<BulkOrderPage />) },

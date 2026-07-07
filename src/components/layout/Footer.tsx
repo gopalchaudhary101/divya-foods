@@ -35,7 +35,7 @@ export default function Footer() {
       </div>
 
       {/* Main grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
 
         {/* ── Brand ───────────────────────────────────────── */}
         <div className="lg:col-span-1 flex flex-col gap-4">
@@ -87,6 +87,30 @@ export default function Footer() {
             <p>Min. order: ₹{CONFIG.DELIVERY.MIN_ORDER_AMOUNT}</p>
             <p>Delivery charge: ₹{CONFIG.DELIVERY.STANDARD_CHARGE}</p>
           </div>
+        </div>
+
+        {/* ── Legal ───────────────────────────────────────── */}
+        <div className="flex flex-col gap-3">
+          <p className="df-eyebrow mb-1">
+            Legal
+          </p>
+          {[
+            { label: 'Contact Us', to: ROUTES.CONTACT },
+            { label: 'Privacy Policy', to: ROUTES.PRIVACY_POLICY },
+            { label: 'Terms & Conditions', to: ROUTES.TERMS_CONDITIONS },
+            { label: 'Shipping Policy', to: ROUTES.SHIPPING_POLICY },
+            { label: 'Cancellation Policy', to: ROUTES.CANCELLATION_POLICY },
+            { label: 'Refund Policy', to: ROUTES.REFUND_POLICY },
+            { label: 'Cookies Policy', to: ROUTES.COOKIES_POLICY },
+          ].map(({ label, to }) => (
+            <Link
+              key={to}
+              to={to}
+              className="text-sm text-premium-muted hover:text-premium-gold transition-colors"
+            >
+              {label}
+            </Link>
+          ))}
         </div>
 
         {/* ── Contact ─────────────────────────────────────── */}
