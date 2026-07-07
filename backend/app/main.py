@@ -2,6 +2,7 @@ import re
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
@@ -60,6 +61,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Compresses any response over 1KB (JSON product listings, sitemap.xml) — same
+# effect as the gzip/brotli Vercel already applies to the frontend's own assets.
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
 
 @app.middleware("http")
 async def block_mongo_injection(request: Request, call_next):
@@ -71,6 +76,22 @@ async def block_mongo_injection(request: Request, call_next):
                 content={"detail": "Invalid characters in request parameters."},
             )
     return await call_next(request)
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    """
+    Same defense-in-depth headers already applied to the frontend at Vercel's
+    edge (see vercel.json) — added here too since this API is a separate
+    origin that browsers/tools can hit directly (e.g. /docs, /redoc).
+    """
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
+    return response
 
 # ─── Routers ──────────────────────────────────────────────────────────────────
 app.include_router(auth.router)

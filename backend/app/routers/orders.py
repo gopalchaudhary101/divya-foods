@@ -16,11 +16,12 @@ GET  /orders/guest/track         → look up a guest order by order number + ema
 """
 
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from pydantic import BaseModel, EmailStr
 from pymongo.database import Database
 
 from app.dependencies import get_db, get_current_user
+from app.limiter import limiter
 from app.services import order_service
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
@@ -49,7 +50,9 @@ class CancelRequest(BaseModel):
 
 
 @router.post("")
+@limiter.limit("10/minute")
 def initiate_order(
+    request: Request,
     body: OrderInitiateRequest,
     db: Database = Depends(get_db),
     current_user: dict = Depends(get_current_user),
@@ -58,7 +61,9 @@ def initiate_order(
 
 
 @router.post("/verify")
+@limiter.limit("20/minute")
 def verify_payment(
+    request: Request,
     body: PaymentVerifyRequest,
     db: Database = Depends(get_db),
     current_user: dict = Depends(get_current_user),
@@ -145,14 +150,16 @@ class GuestPaymentVerifyRequest(BaseModel):
 
 
 @router.post("/guest")
-def initiate_guest_order(body: GuestOrderInitiateRequest, db: Database = Depends(get_db)):
+@limiter.limit("10/minute")
+def initiate_guest_order(request: Request, body: GuestOrderInitiateRequest, db: Database = Depends(get_db)):
     guest_user = order_service.get_or_create_guest_user(db, body.name, body.email, body.phone)
     payload = body.model_dump(exclude={"name", "email", "phone"})
     return order_service.initiate_order(db, guest_user, payload)
 
 
 @router.post("/guest/verify")
-def verify_guest_payment(body: GuestPaymentVerifyRequest, db: Database = Depends(get_db)):
+@limiter.limit("20/minute")
+def verify_guest_payment(request: Request, body: GuestPaymentVerifyRequest, db: Database = Depends(get_db)):
     guest_user = db.users.find_one({"email": body.email.lower().strip()})
     if not guest_user:
         raise HTTPException(status_code=404, detail="Order not found.")
@@ -160,7 +167,9 @@ def verify_guest_payment(body: GuestPaymentVerifyRequest, db: Database = Depends
 
 
 @router.get("/guest/track")
+@limiter.limit("10/minute")
 def track_guest_order(
+    request: Request,
     order_number: str = Query(...),
     email: str = Query(...),
     db: Database = Depends(get_db),
