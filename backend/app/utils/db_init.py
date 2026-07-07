@@ -19,7 +19,11 @@ INDEX TYPES USED:
   COMPOUND        → covers queries that filter/sort on multiple fields together
 """
 
+import logging
+
 from pymongo.database import Database
+
+logger = logging.getLogger("app.database")
 
 
 def create_indexes(db: Database) -> None:
@@ -111,4 +115,4 @@ def create_indexes(db: Database) -> None:
     db.contact_submissions.create_index([("created_at", -1)])
     db.contact_submissions.create_index("email")
 
-    print("[DB] All indexes created successfully")
+    logger.info("All indexes created successfully")
