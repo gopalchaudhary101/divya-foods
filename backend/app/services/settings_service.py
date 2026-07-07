@@ -9,8 +9,8 @@ _SETTINGS_ID = "site_settings"
 
 _DEFAULTS = {
     "businessName": "Divya Luxury Seafoods",
-    "gstNumber": "GSTIN NOT YET ADDED",
-    "fssaiNumber": "FSSAI LICENSE NOT YET ADDED",
+    "gstNumber": "07CEZPJ6770F1ZU",
+    "fssaiNumber": "13323010000427",
 }
 
 # Image-upload limits — admin-only, not exposed via the public endpoint.

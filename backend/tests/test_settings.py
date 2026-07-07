@@ -21,13 +21,13 @@ def _customer_headers(client, db):
 
 # ─── Public endpoint ──────────────────────────────────────────────────────────
 
-def test_get_settings_returns_placeholders_by_default(client, db):
+def test_get_settings_returns_real_business_details_by_default(client, db):
     r = client.get("/settings")
     assert r.status_code == 200
     data = r.json()["data"]
     assert data["businessName"] == "Divya Luxury Seafoods"
-    assert data["gstNumber"] == "GSTIN NOT YET ADDED"
-    assert data["fssaiNumber"] == "FSSAI LICENSE NOT YET ADDED"
+    assert data["gstNumber"] == "07CEZPJ6770F1ZU"
+    assert data["fssaiNumber"] == "13323010000427"
 
 
 def test_get_settings_reflects_admin_update(client, db):
