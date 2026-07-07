@@ -103,9 +103,11 @@
       "assets\\products\\seafood\\surmai-seer-fish\\surmai-seer-fish-01.webp"
     ],
     "thumbnail": "assets\\products\\seafood\\surmai-seer-fish\\surmai-seer-fish-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "seafood/red-snapper-fillet": {
     "product_name": "Red Snapper Fish Fillet",
@@ -127,9 +129,11 @@
       "assets\\products\\seafood\\pomfret-white\\pomfret-white-01.webp"
     ],
     "thumbnail": "assets\\products\\seafood\\pomfret-white\\pomfret-white-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "seafood/octopus-whole": {
     "product_name": "Octopus Whole",
@@ -151,9 +155,11 @@
       "assets\\products\\seafood\\squid-tube\\squid-tube-01.webp"
     ],
     "thumbnail": "assets\\products\\seafood\\squid-tube\\squid-tube-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "seafood/squid-ring": {
     "product_name": "Squid Ring",
@@ -199,9 +205,11 @@
       "assets\\products\\seafood\\blue-crabs\\blue-crabs-01.webp"
     ],
     "thumbnail": "assets\\products\\seafood\\blue-crabs\\blue-crabs-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "seafood/mud-crabs": {
     "product_name": "Mud Crabs",
@@ -211,9 +219,11 @@
       "assets\\products\\seafood\\mud-crabs\\mud-crabs-01.webp"
     ],
     "thumbnail": "assets\\products\\seafood\\mud-crabs\\mud-crabs-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "seafood/lobster-whole": {
     "product_name": "Lobster Whole",
@@ -379,9 +389,11 @@
       "assets\\products\\seafood\\imitation-crab-sticks\\imitation-crab-sticks-01.webp"
     ],
     "thumbnail": "assets\\products\\seafood\\imitation-crab-sticks\\imitation-crab-sticks-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "seafood/tempura-prawns": {
     "product_name": "Tempura Prawns Battered",
@@ -871,9 +883,11 @@
       "assets\\products\\japanese\\miso-paste\\miso-paste-01.webp"
     ],
     "thumbnail": "assets\\products\\japanese\\miso-paste\\miso-paste-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "japanese/japanese-curry": {
     "product_name": "Japanese Curry Golden Vermont",
@@ -1699,9 +1713,11 @@
       "assets\\products\\gourmet\\beluga-caviar\\beluga-caviar-01.webp"
     ],
     "thumbnail": "assets\\products\\gourmet\\beluga-caviar\\beluga-caviar-thumb.webp",
-    "needs_custom_image": true,
-    "image_sources": [],
-    "license": "Placeholder — Needs replacement"
+    "needs_custom_image": false,
+    "image_sources": [
+      "own-photo"
+    ],
+    "license": "Own product photo — Divya Foods"
   },
   "gourmet/osectra-caviar": {
     "product_name": "Osectra Caviar Premium",
