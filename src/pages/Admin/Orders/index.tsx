@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { LayoutDashboard, Search, Download, CheckSquare, Square, ChevronLeft, ChevronRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 import axiosInstance from '@/services/api/axiosInstance'
-import type { ApiResponse, Order } from '@/types'
+import type { Order } from '@/types'
 import { Button } from '@/components/ui/Button'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { formatDate } from '@/utils/formatDate'
@@ -43,8 +43,8 @@ export default function AdminOrdersPage() {
       const params = new URLSearchParams({ page: String(page), limit: '20' })
       if (search) params.set('search', search)
       if (statusFilter) params.set('status', statusFilter)
-      const { data } = await axiosInstance.get<ApiResponse<PaginatedOrders>>(`/admin/orders?${params}`)
-      return data.data
+      const { data } = await axiosInstance.get<PaginatedOrders>(`/admin/orders?${params}`)
+      return data
     },
   })
 

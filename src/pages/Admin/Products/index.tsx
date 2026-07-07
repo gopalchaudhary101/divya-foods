@@ -603,8 +603,8 @@ export default function AdminProductsPage() {
       const params = new URLSearchParams({ page: String(page), limit: '20' })
       if (search)    params.set('search', search)
       if (catFilter) params.set('categoryId', catFilter)
-      const { data } = await axiosInstance.get<ApiResponse<PaginatedProducts>>(`/admin/products?${params}`)
-      return data.data
+      const { data } = await axiosInstance.get<PaginatedProducts>(`/admin/products?${params}`)
+      return data
     },
   })
 

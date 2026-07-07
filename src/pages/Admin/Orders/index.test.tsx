@@ -18,7 +18,7 @@ const order = {
 
 beforeEach(() => {
   mock.reset()
-  mock.onGet(/\/admin\/orders/).reply(200, { success: true, data: { data: [order], total: 1, page: 1, totalPages: 1 } })
+  mock.onGet(/\/admin\/orders/).reply(200, { data: [order], total: 1, page: 1, totalPages: 1 })
 })
 
 describe('AdminOrdersPage', () => {
@@ -81,7 +81,7 @@ describe('AdminOrdersPage', () => {
   })
 
   it('shows an empty state with no orders', async () => {
-    mock.onGet(/\/admin\/orders/).reply(200, { success: true, data: { data: [], total: 0, page: 1, totalPages: 0 } })
+    mock.onGet(/\/admin\/orders/).reply(200, { data: [], total: 0, page: 1, totalPages: 0 })
     renderWithProviders(<AdminOrdersPage />)
     expect(await screen.findByText('No orders found')).toBeInTheDocument()
   })

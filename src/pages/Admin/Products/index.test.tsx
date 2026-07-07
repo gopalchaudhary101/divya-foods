@@ -19,7 +19,7 @@ const product = {
 beforeEach(() => {
   mock.reset()
   mock.onGet('/admin/categories').reply(200, { success: true, data: [category] })
-  mock.onGet(/\/admin\/products/).reply(200, { success: true, data: { data: [product], total: 1, page: 1, totalPages: 1 } })
+  mock.onGet(/\/admin\/products/).reply(200, { data: [product], total: 1, page: 1, totalPages: 1 })
 })
 
 describe('AdminProductsPage', () => {
@@ -31,7 +31,7 @@ describe('AdminProductsPage', () => {
   })
 
   it('shows an empty state when there are no products', async () => {
-    mock.onGet(/\/admin\/products/).reply(200, { success: true, data: { data: [], total: 0, page: 1, totalPages: 0 } })
+    mock.onGet(/\/admin\/products/).reply(200, { data: [], total: 0, page: 1, totalPages: 0 })
     renderWithProviders(<AdminProductsPage />)
     expect(await screen.findByText('No products yet. Add your first one!')).toBeInTheDocument()
   })

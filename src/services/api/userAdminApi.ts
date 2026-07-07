@@ -13,6 +13,7 @@ export interface AdminUserSummary {
   role: UserRole
   isActive: boolean
   createdAt: string
+  orderCount: number
 }
 
 interface PaginatedUsers {

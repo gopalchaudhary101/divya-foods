@@ -27,6 +27,7 @@ export const ROUTES = {
     RESET_PASSWORD: '/auth/reset-password',
   },
   ADMIN: {
+    LOGIN: '/admin/login',
     DASHBOARD: '/admin',
     PRODUCTS: '/admin/products',
     ORDERS: '/admin/orders',

@@ -12,7 +12,7 @@ describe('authApi', () => {
   it('login posts credentials and returns the token payload', async () => {
     mock.onPost('/auth/login', { email: 'a@test.com', password: 'pw' }).reply(200, {
       access_token: 'tok', refresh_token: 'ref', token_type: 'bearer',
-      user: { id: 'u1', name: 'A', email: 'a@test.com', role: 'customer', createdAt: '' },
+      user: { id: 'u1', name: 'A', email: 'a@test.com', role: 'customer', created_at: '' },
     })
     const result = await authApi.login({ email: 'a@test.com', password: 'pw' })
     expect(result.access_token).toBe('tok')
@@ -22,7 +22,7 @@ describe('authApi', () => {
   it('register posts the signup payload', async () => {
     mock.onPost('/auth/register').reply(201, {
       access_token: 'tok', refresh_token: 'ref', token_type: 'bearer',
-      user: { id: 'u1', name: 'A', email: 'a@test.com', role: 'customer', createdAt: '' },
+      user: { id: 'u1', name: 'A', email: 'a@test.com', role: 'customer', created_at: '' },
     })
     const result = await authApi.register({ name: 'A', email: 'a@test.com', phone: '999', password: 'pw' })
     expect(result.user.name).toBe('A')
@@ -33,10 +33,14 @@ describe('authApi', () => {
     await expect(authApi.logout()).resolves.toBeUndefined()
   })
 
-  it('getMe unwraps the ApiResponse envelope', async () => {
-    mock.onGet('/auth/me').reply(200, { success: true, data: { id: 'u1', name: 'A' } })
+  it('getMe returns the raw user object and normalizes created_at to createdAt', async () => {
+    mock.onGet('/auth/me').reply(200, {
+      id: 'u1', name: 'A', email: 'a@test.com', role: 'customer', created_at: '2026-01-01T00:00:00Z',
+    })
     const user = await authApi.getMe()
-    expect(user).toEqual({ id: 'u1', name: 'A' })
+    expect(user).toEqual({
+      id: 'u1', name: 'A', email: 'a@test.com', role: 'customer', createdAt: '2026-01-01T00:00:00Z',
+    })
   })
 
   it('forgotPassword posts the email', async () => {

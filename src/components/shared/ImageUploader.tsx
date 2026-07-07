@@ -13,11 +13,13 @@
  *   - If Cloudinary is not configured on the server, shows the server error message
  *   - Shows upload progress per file (spinner overlay on thumbnail)
  *   - Allows removing individual images (X button)
+ *   - Drag thumbnails to reorder; the first image is always the cover
+ *   - "Set as cover" button promotes any image to the first position
  *   - Also shows a "Paste URL" input for adding images without uploading a file
  */
 
 import React, { useCallback, useId, useRef, useState } from 'react'
-import { Upload, X, Link2, Loader2, Image as ImageIcon, AlertCircle } from 'lucide-react'
+import { Upload, X, Link2, Loader2, Image as ImageIcon, AlertCircle, Star } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { uploadApi } from '@/services/api/uploadApi'
 
@@ -45,6 +47,7 @@ export function ImageUploader({
   const [pasteUrl, setPasteUrl] = useState('')
   const [pasteOpen, setPasteOpen] = useState(false)
   const [errors, setErrors] = useState<string[]>([])
+  const [dragIdx, setDragIdx] = useState<number | null>(null)
 
   const canAdd = value.length < maxImages && !disabled
 
@@ -139,6 +142,31 @@ export function ImageUploader({
     onChange(value.filter((_, idx) => idx !== i))
   }
 
+  // ── Reorder / set cover ─────────────────────────────────────────────────────
+
+  function moveImage(from: number, to: number) {
+    if (to < 0 || to >= value.length || from === to) return
+    const next = [...value]
+    const [moved] = next.splice(from, 1)
+    next.splice(to, 0, moved)
+    onChange(next)
+  }
+
+  function setAsCover(i: number) {
+    moveImage(i, 0)
+  }
+
+  function handleThumbDragStart(i: number) {
+    setDragIdx(i)
+  }
+
+  function handleThumbDrop(e: React.DragEvent, i: number) {
+    e.preventDefault()
+    e.stopPropagation()
+    if (dragIdx !== null) moveImage(dragIdx, i)
+    setDragIdx(null)
+  }
+
   return (
     <div className="space-y-3">
       {/* Error list */}
@@ -153,14 +181,27 @@ export function ImageUploader({
 
       {/* Thumbnail row */}
       {value.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="space-y-1.5">
+          {value.length > 1 && (
+            <p className="text-[11px] text-ocean-400">Drag to reorder · hover an image for cover / remove options</p>
+          )}
+          <div className="flex flex-wrap gap-2">
           {value.map((url, i) => (
             <div
               key={i}
-              className="relative w-20 h-20 rounded-xl overflow-hidden border-2 border-ocean-100 dark:border-ocean-700 bg-ocean-50 dark:bg-ocean-800 group"
+              draggable={!disabled && !uploading[i]}
+              onDragStart={() => handleThumbDragStart(i)}
+              onDragOver={e => e.preventDefault()}
+              onDrop={e => handleThumbDrop(e, i)}
+              onDragEnd={() => setDragIdx(null)}
+              className={[
+                'relative w-20 h-20 rounded-xl overflow-hidden border-2 bg-ocean-50 dark:bg-ocean-800 group',
+                dragIdx === i ? 'border-ocean-500 opacity-50' : 'border-ocean-100 dark:border-ocean-700',
+                !disabled && !uploading[i] ? 'cursor-grab active:cursor-grabbing' : '',
+              ].join(' ')}
             >
               {url ? (
-                <img src={url} alt={`Product image ${i + 1}`} className="w-full h-full object-cover" />
+                <img src={url} alt={`Product image ${i + 1}`} className="w-full h-full object-cover pointer-events-none" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <ImageIcon size={24} className="text-ocean-300" />
@@ -174,26 +215,42 @@ export function ImageUploader({
                 </div>
               )}
 
-              {/* Remove button (on hover) */}
               {!uploading[i] && !disabled && (
-                <button
-                  type="button"
-                  onClick={() => removeImage(i)}
-                  className="absolute top-1 right-1 p-0.5 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
-                  aria-label="Remove image"
-                >
-                  <X size={10} />
-                </button>
+                <>
+                  {/* Remove button (on hover) */}
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    className="absolute top-1 right-1 p-0.5 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                    aria-label="Remove image"
+                  >
+                    <X size={10} />
+                  </button>
+
+                  {/* Set as cover button (on hover, non-primary images only) */}
+                  {i !== 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setAsCover(i)}
+                      className="absolute top-1 left-1 p-0.5 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-amber-500"
+                      aria-label="Set as cover image"
+                      title="Set as cover image"
+                    >
+                      <Star size={10} />
+                    </button>
+                  )}
+                </>
               )}
 
               {/* Primary badge */}
               {i === 0 && (
                 <span className="absolute bottom-0 left-0 right-0 text-[9px] text-center bg-ocean-700/80 text-white py-0.5">
-                  Primary
+                  Cover
                 </span>
               )}
             </div>
           ))}
+          </div>
         </div>
       )}
 

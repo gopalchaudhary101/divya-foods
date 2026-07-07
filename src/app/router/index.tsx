@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { ROUTES } from '@/constants/routes'
 import RootLayout from '@/components/layout/RootLayout'
+import AdminLayout from '@/components/layout/AdminLayout'
 import { RequireRole } from '@/components/shared/RequireRole'
 
 // Lazy loading — each page is a separate JS chunk loaded on demand
@@ -41,6 +42,7 @@ const AdminBulkOrdersPage = lazy(() => import('@/pages/Admin/BulkOrders'))
 const AdminGiftCardsPage  = lazy(() => import('@/pages/Admin/GiftCards'))
 const AdminDriversPage    = lazy(() => import('@/pages/Admin/Drivers'))
 const AdminUsersPage      = lazy(() => import('@/pages/Admin/Users'))
+const AdminLoginPage      = lazy(() => import('@/pages/Admin/Login'))
 const DriverDashboardPage = lazy(() => import('@/pages/Driver'))
 
 const PageLoader: React.FC = () => (
@@ -87,21 +89,28 @@ const router = createBrowserRouter([
   { path: ROUTES.AUTH.REGISTER, element: wrap(<RegisterPage />) },
   { path: ROUTES.AUTH.FORGOT_PASSWORD, element: wrap(<ForgotPasswordPage />) },
   { path: ROUTES.AUTH.RESET_PASSWORD, element: wrap(<ResetPasswordPage />) },
-  { path: ROUTES.ADMIN.DASHBOARD,  element: wrap(<AdminDashboardPage />) },
-  { path: ROUTES.ADMIN.PRODUCTS,   element: wrap(<AdminProductsPage />) },
-  { path: ROUTES.ADMIN.ANALYTICS,  element: wrap(<AdminAnalyticsPage />) },
-  { path: ROUTES.ADMIN.COUPONS,    element: wrap(<AdminCouponsPage />) },
-  { path: ROUTES.ADMIN.ORDERS,    element: wrap(<AdminOrdersPage />) },
-  { path: ROUTES.ADMIN.BUNDLES,   element: wrap(<AdminBundlesPage />) },
-  { path: ROUTES.ADMIN.SETTINGS,  element: wrap(<AdminSettingsPage />) },
-  { path: ROUTES.ADMIN.INVENTORY, element: wrap(<AdminInventoryPage />) },
-  { path: ROUTES.ADMIN.BULK_ORDERS, element: wrap(<AdminBulkOrdersPage />) },
-  { path: ROUTES.ADMIN.GIFT_CARDS, element: wrap(<AdminGiftCardsPage />) },
-  { path: ROUTES.ADMIN.DRIVERS, element: wrap(<AdminDriversPage />) },
-  { path: ROUTES.ADMIN.USERS, element: wrap(<AdminUsersPage />) },
+  { path: ROUTES.ADMIN.LOGIN, element: wrap(<AdminLoginPage />) },
+  {
+    path: ROUTES.ADMIN.DASHBOARD,
+    element: wrap(<RequireRole roles={['admin', 'developer']}><AdminLayout /></RequireRole>),
+    children: [
+      { index: true, element: <AdminDashboardPage /> },
+      { path: 'products', element: <AdminProductsPage /> },
+      { path: 'analytics', element: <AdminAnalyticsPage /> },
+      { path: 'coupons', element: <AdminCouponsPage /> },
+      { path: 'orders', element: <AdminOrdersPage /> },
+      { path: 'bundles', element: <AdminBundlesPage /> },
+      { path: 'settings', element: <AdminSettingsPage /> },
+      { path: 'inventory', element: <AdminInventoryPage /> },
+      { path: 'bulk-orders', element: <AdminBulkOrdersPage /> },
+      { path: 'gift-cards', element: <AdminGiftCardsPage /> },
+      { path: 'drivers', element: <AdminDriversPage /> },
+      { path: 'users', element: <AdminUsersPage /> },
+    ],
+  },
   {
     path: ROUTES.DRIVER,
-    element: wrap(<RequireRole roles={['driver', 'admin']}><DriverDashboardPage /></RequireRole>),
+    element: wrap(<RequireRole roles={['driver', 'admin', 'developer']}><DriverDashboardPage /></RequireRole>),
   },
   { path: '*', element: wrap(<NotFoundPage />) },
 ])

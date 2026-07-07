@@ -145,6 +145,7 @@ export default function AdminUsersPage() {
                       <th className="px-4 py-3">Name</th>
                       <th className="px-4 py-3">Email</th>
                       <th className="px-4 py-3">Role</th>
+                      <th className="px-4 py-3">Orders</th>
                       <th className="px-4 py-3">Joined</th>
                       <th className="px-4 py-3">Change Role</th>
                     </tr>
@@ -159,6 +160,7 @@ export default function AdminUsersPage() {
                             {u.role}
                           </span>
                         </td>
+                        <td className="px-4 py-3 text-sm text-ocean-500">{u.orderCount}</td>
                         <td className="px-4 py-3 text-sm text-ocean-400">{formatDate(u.createdAt)}</td>
                         <td className="px-4 py-3">
                           <RoleCell target={u} isSelf={u.id === currentUser?.id} />

@@ -27,15 +27,16 @@ def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def _to_dict(doc: dict) -> dict:
+def _to_dict(doc: dict, order_count: int = 0) -> dict:
     return {
-        "id":        str(doc["_id"]),
-        "name":      doc["name"],
-        "email":     doc["email"],
-        "phone":     doc.get("phone"),
-        "role":      doc["role"],
-        "isActive":  doc.get("is_active", True),
-        "createdAt": doc["created_at"].isoformat(),
+        "id":         str(doc["_id"]),
+        "name":       doc["name"],
+        "email":      doc["email"],
+        "phone":      doc.get("phone"),
+        "role":       doc["role"],
+        "isActive":   doc.get("is_active", True),
+        "createdAt":  doc["created_at"].isoformat(),
+        "orderCount": order_count,
     }
 
 
@@ -53,9 +54,19 @@ def admin_list_users(db: Database, search: str = None, role_filter: str = None, 
     docs = list(
         db.users.find(query).sort([("created_at", -1)]).skip((page - 1) * limit).limit(limit)
     )
+
+    # Order counts per user — cheap to aggregate for a single page (max `limit` users)
+    order_counts = {
+        row["_id"]: row["count"]
+        for row in db.orders.aggregate([
+            {"$match": {"user_id": {"$in": [d["_id"] for d in docs]}}},
+            {"$group": {"_id": "$user_id", "count": {"$sum": 1}}},
+        ])
+    }
+
     return {
         "success":    True,
-        "data":       [_to_dict(d) for d in docs],
+        "data":       [_to_dict(d, order_counts.get(d["_id"], 0)) for d in docs],
         "total":      total,
         "page":       page,
         "totalPages": -(-total // limit),

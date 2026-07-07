@@ -730,8 +730,8 @@ export default function AdminDashboardPage() {
       const params = new URLSearchParams({ page: String(page), limit: '20' })
       if (search) params.set('search', search)
       if (statusFilter) params.set('status', statusFilter)
-      const { data } = await axiosInstance.get<ApiResponse<PaginatedOrders>>(`/admin/orders?${params}`)
-      return data.data
+      const { data } = await axiosInstance.get<PaginatedOrders>(`/admin/orders?${params}`)
+      return data
     },
   })
 

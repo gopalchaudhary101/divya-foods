@@ -31,7 +31,7 @@ const stats = {
 beforeEach(() => {
   mock.reset()
   mock.onGet('/admin/stats').reply(200, { success: true, data: stats })
-  mock.onGet(/\/admin\/orders/).reply(200, { success: true, data: { data: [order], total: 1, page: 1, totalPages: 1 } })
+  mock.onGet(/\/admin\/orders/).reply(200, { data: [order], total: 1, page: 1, totalPages: 1 })
   mock.onGet('/admin/settings').reply(200, {
     success: true,
     data: { businessName: 'Divya Luxury Seafoods', gstNumber: '', fssaiNumber: '', deliveryProviders: ['Porter', 'Dunzo'] },
@@ -92,7 +92,7 @@ describe('AdminDashboardPage', () => {
   })
 
   it('shows an empty state when there are no orders', async () => {
-    mock.onGet(/\/admin\/orders/).reply(200, { success: true, data: { data: [], total: 0, page: 1, totalPages: 0 } })
+    mock.onGet(/\/admin\/orders/).reply(200, { data: [], total: 0, page: 1, totalPages: 0 })
     renderWithProviders(<AdminDashboardPage />, { preloadedState: adminState })
     expect(await screen.findByText('No orders found')).toBeInTheDocument()
   })
