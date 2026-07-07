@@ -30,20 +30,20 @@ beforeEach(() => {
 
 describe('ProductsPage', () => {
   it('shows a loading skeleton, then renders products', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [product], total: 1, page: 1, totalPages: 1, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [product], total: 1, page: 1, limit: 20, totalPages: 1, success: true })
     renderWithProviders(<ProductsPage />)
     expect(await screen.findByText('Norwegian Salmon')).toBeInTheDocument()
     expect(screen.getByText('1 product found')).toBeInTheDocument()
   })
 
   it('shows an empty state with a clear-filters action', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, totalPages: 0, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 20, totalPages: 0, success: true })
     renderWithProviders(<ProductsPage />, { route: '/products?category=seafood' })
     expect(await screen.findByText('No products found')).toBeInTheDocument()
   })
 
   it('adds a product to the cart and shows a toast', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [product], total: 1, page: 1, totalPages: 1, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [product], total: 1, page: 1, limit: 20, totalPages: 1, success: true })
     const user = userEvent.setup()
     const { store } = renderWithProviders(<ProductsPage />)
 
@@ -54,7 +54,7 @@ describe('ProductsPage', () => {
   })
 
   it('filters by category from the sidebar', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, totalPages: 0, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 20, totalPages: 0, success: true })
     const user = userEvent.setup()
     renderWithProviders(<ProductsPage />)
 
@@ -67,7 +67,7 @@ describe('ProductsPage', () => {
   })
 
   it('filters to in-stock only via the checkbox', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, totalPages: 0, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 20, totalPages: 0, success: true })
     const user = userEvent.setup()
     renderWithProviders(<ProductsPage />)
 
@@ -78,7 +78,7 @@ describe('ProductsPage', () => {
   })
 
   it('changes sort order', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, totalPages: 0, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 20, totalPages: 0, success: true })
     const user = userEvent.setup()
     renderWithProviders(<ProductsPage />)
 
@@ -89,7 +89,7 @@ describe('ProductsPage', () => {
   })
 
   it('renders pagination and navigates pages', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [product], total: 30, page: 1, totalPages: 3, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [product], total: 30, page: 1, limit: 20, totalPages: 3, success: true })
     const user = userEvent.setup()
     renderWithProviders(<ProductsPage />)
 
@@ -102,7 +102,7 @@ describe('ProductsPage', () => {
   })
 
   it('clears all active filters', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, totalPages: 0, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 20, totalPages: 0, success: true })
     const user = userEvent.setup()
     renderWithProviders(<ProductsPage />, { route: '/products?category=seafood&inStock=true' })
 

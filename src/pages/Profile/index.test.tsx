@@ -119,7 +119,8 @@ describe('ProfilePage', () => {
       data: [{
         id: 'o1', orderNumber: 'DF-001', status: 'delivered', paymentStatus: 'paid', paymentMethod: 'razorpay',
         deliveryAddress: address, items: [], subtotal: 999, deliveryCharge: 0, discount: 0, total: 999,
-        trackingTimeline: [], createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z',
+        trackingTimeline: [], delivery: null, deliverySlot: null,
+        createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z',
       }],
       total: 1, page: 1, totalPages: 1,
     })

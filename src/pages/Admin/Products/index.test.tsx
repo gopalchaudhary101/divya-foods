@@ -58,7 +58,8 @@ describe('AdminProductsPage', () => {
     await user.click(screen.getByRole('button', { name: /Add Product/ }))
 
     await user.type(screen.getByPlaceholderText('e.g. Salmon Fillet 500g'), 'Tiger Prawns')
-    const categorySelect = screen.getAllByRole('combobox').at(-1)!
+    const comboboxes = screen.getAllByRole('combobox')
+    const categorySelect = comboboxes[comboboxes.length - 1]
     await user.selectOptions(categorySelect, 'c1')
     await user.type(screen.getByPlaceholderText('0.00'), '1200')
     await user.click(screen.getByRole('button', { name: 'Create Product' }))

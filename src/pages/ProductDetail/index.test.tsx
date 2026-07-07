@@ -9,9 +9,7 @@ import ProductDetailPage from './index'
 import { productApi } from '@/services/api/productApi'
 import { reviewApi } from '@/services/api/reviewApi'
 import { wishlistApi } from '@/services/api/wishlistApi'
-import { createTestStore, createTestQueryClient } from '@/test/testUtils'
-import type { PreloadedState } from '@reduxjs/toolkit'
-import type { RootState } from '@/store'
+import { createTestStore, createTestQueryClient, type PartialRootState } from '@/test/testUtils'
 
 vi.mock('@/services/api/productApi', () => ({
   productApi: { getBySlug: vi.fn() },
@@ -24,7 +22,7 @@ vi.mock('@/services/api/wishlistApi', () => ({
 }))
 vi.mock('react-hot-toast', () => ({ default: { success: vi.fn(), error: vi.fn() } }))
 
-function renderAtSlug(slug: string, preloadedState?: PreloadedState<RootState>) {
+function renderAtSlug(slug: string, preloadedState?: PartialRootState) {
   const store = createTestStore(preloadedState)
   const queryClient = createTestQueryClient()
   return render(
@@ -51,7 +49,7 @@ const product = {
 
 beforeEach(() => {
   vi.clearAllMocks()
-  vi.mocked(reviewApi.getByProduct).mockResolvedValue({ data: [], total: 0, page: 1, totalPages: 0 })
+  vi.mocked(reviewApi.getByProduct).mockResolvedValue({ data: [], total: 0, page: 1, limit: 10, totalPages: 0, success: true })
   vi.mocked(reviewApi.canReview).mockResolvedValue({ canReview: false, reason: 'no_purchase' })
 })
 

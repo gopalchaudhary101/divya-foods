@@ -21,7 +21,7 @@ beforeEach(() => vi.clearAllMocks())
 
 describe('JapaneseGroceryPage', () => {
   it('requests products scoped to the japanese-grocery category', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, totalPages: 0, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 20, totalPages: 0, success: true })
     renderWithProviders(<JapaneseGroceryPage />)
     expect(productApi.getList).toHaveBeenCalledWith(
       expect.objectContaining({ category: 'japanese-grocery' })
@@ -29,19 +29,19 @@ describe('JapaneseGroceryPage', () => {
   })
 
   it('renders products once loaded', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [product], total: 1, page: 1, totalPages: 1, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [product], total: 1, page: 1, limit: 20, totalPages: 1, success: true })
     renderWithProviders(<JapaneseGroceryPage />)
     expect(await screen.findByText('Miso Paste')).toBeInTheDocument()
   })
 
   it('shows a "coming soon" message when there are no products', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, totalPages: 0, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 20, totalPages: 0, success: true })
     renderWithProviders(<JapaneseGroceryPage />)
     expect(await screen.findByText('Japanese grocery products coming soon.')).toBeInTheDocument()
   })
 
   it('adds a product to the cart', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [product], total: 1, page: 1, totalPages: 1, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [product], total: 1, page: 1, limit: 20, totalPages: 1, success: true })
     const user = userEvent.setup()
     const { store } = renderWithProviders(<JapaneseGroceryPage />)
 
@@ -52,7 +52,7 @@ describe('JapaneseGroceryPage', () => {
   })
 
   it('expands a FAQ item on click', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, totalPages: 0, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 20, totalPages: 0, success: true })
     const user = userEvent.setup()
     renderWithProviders(<JapaneseGroceryPage />)
 
@@ -63,7 +63,7 @@ describe('JapaneseGroceryPage', () => {
   })
 
   it('includes FAQPage JSON-LD schema matching the visible FAQ content', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, totalPages: 0, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 20, totalPages: 0, success: true })
     renderWithProviders(<JapaneseGroceryPage />)
     await screen.findByText('How long do Japanese condiments keep once opened?')
 
@@ -80,7 +80,7 @@ describe('JapaneseGroceryPage', () => {
   })
 
   it('renders the ingredient guide', () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, totalPages: 0, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 20, totalPages: 0, success: true })
     renderWithProviders(<JapaneseGroceryPage />)
     expect(screen.getByText('Miso')).toBeInTheDocument()
     expect(screen.getByText('Mirin')).toBeInTheDocument()

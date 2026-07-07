@@ -20,7 +20,7 @@ describe('useReviews', () => {
   })
 
   it('fetches reviews for the given product and page', async () => {
-    vi.mocked(reviewApi.getByProduct).mockResolvedValue({ data: [], total: 0, page: 2, totalPages: 1 })
+    vi.mocked(reviewApi.getByProduct).mockResolvedValue({ data: [], total: 0, page: 2, limit: 10, totalPages: 1, success: true })
     const { Wrapper } = createHookWrapper()
     const { result } = renderHook(() => useReviews('p1', 2), { wrapper: Wrapper })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))

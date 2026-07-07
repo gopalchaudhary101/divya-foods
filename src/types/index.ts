@@ -171,6 +171,7 @@ export interface SiteSettings {
   businessName: string
   gstNumber: string
   fssaiNumber: string
+  deliveryProviders?: string[]
   // Image-upload limits — admin-only, not present on the public /settings response
   maxUploadSizeMB?: number
   maxImageDimension?: number

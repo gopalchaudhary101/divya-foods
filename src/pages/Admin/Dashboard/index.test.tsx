@@ -36,8 +36,8 @@ beforeEach(() => {
     success: true,
     data: { businessName: 'Divya Luxury Seafoods', gstNumber: '', fssaiNumber: '', deliveryProviders: ['Porter', 'Dunzo'] },
   })
-  global.URL.createObjectURL = vi.fn(() => 'blob:mock-url')
-  global.URL.revokeObjectURL = vi.fn()
+  globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url')
+  globalThis.URL.revokeObjectURL = vi.fn()
 })
 
 describe('AdminDashboardPage', () => {

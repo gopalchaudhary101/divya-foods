@@ -18,7 +18,7 @@ beforeEach(() => vi.clearAllMocks())
 
 describe('useProducts', () => {
   it('fetches the product list and passes filters through to the API', async () => {
-    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, totalPages: 0, success: true })
+    vi.mocked(productApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 20, totalPages: 0, success: true })
     const { Wrapper } = createHookWrapper()
     const { result } = renderHook(() => useProducts({ category: 'seafood' }), { wrapper: Wrapper })
 

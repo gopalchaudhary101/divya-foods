@@ -1,6 +1,6 @@
 import { type PropsWithChildren, type ReactElement } from 'react'
 import { render, type RenderOptions } from '@testing-library/react'
-import { configureStore, type PreloadedState } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
@@ -12,7 +12,9 @@ import wishlistReducer from '@/features/wishlist/wishlistSlice'
 import uiReducer from '@/store/slices/uiSlice'
 import type { RootState } from '@/store'
 
-export function createTestStore(preloadedState?: PreloadedState<RootState>) {
+export type PartialRootState = { [K in keyof RootState]?: RootState[K] }
+
+export function createTestStore(preloadedState?: PartialRootState) {
   return configureStore({
     reducer: {
       auth: authReducer,
@@ -20,7 +22,9 @@ export function createTestStore(preloadedState?: PreloadedState<RootState>) {
       wishlist: wishlistReducer,
       ui: uiReducer,
     },
-    preloadedState,
+    // Tests only ever pass a subset of slices; Redux merges partial preloaded
+    // state with each reducer's own initial state at runtime.
+    preloadedState: preloadedState as RootState | undefined,
   })
 }
 
@@ -34,7 +38,7 @@ export function createTestQueryClient() {
 }
 
 interface ExtraRenderOptions extends Omit<RenderOptions, 'wrapper'> {
-  preloadedState?: PreloadedState<RootState>
+  preloadedState?: PartialRootState
   route?: string
 }
 
@@ -60,7 +64,7 @@ export function renderWithProviders(
   return { store, queryClient, ...render(ui, { wrapper: Wrapper, ...renderOptions }) }
 }
 
-export function createHookWrapper(preloadedState?: PreloadedState<RootState>) {
+export function createHookWrapper(preloadedState?: PartialRootState) {
   const store = createTestStore(preloadedState)
   const queryClient = createTestQueryClient()
 

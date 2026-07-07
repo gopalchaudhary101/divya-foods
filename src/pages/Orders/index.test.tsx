@@ -48,7 +48,7 @@ const order = {
   },
   items: [{ productId: 'p1', name: 'Salmon', price: 999, quantity: 1, image: '' }],
   subtotal: 999, deliveryCharge: 0, discount: 0, total: 999,
-  trackingTimeline: [], delivery: null, createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z',
+  trackingTimeline: [], delivery: null, deliverySlot: null, createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z',
 }
 
 beforeEach(() => vi.clearAllMocks())
