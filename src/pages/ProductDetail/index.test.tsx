@@ -11,7 +11,7 @@ import { reviewApi } from '@/services/api/reviewApi'
 import { createTestStore, createTestQueryClient, type PartialRootState } from '@/test/testUtils'
 
 vi.mock('@/services/api/productApi', () => ({
-  productApi: { getBySlug: vi.fn() },
+  productApi: { getBySlug: vi.fn(), getRelated: vi.fn() },
 }))
 vi.mock('@/services/api/reviewApi', () => ({
   reviewApi: { getByProduct: vi.fn(), canReview: vi.fn(), create: vi.fn(), delete: vi.fn() },
@@ -50,6 +50,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   vi.mocked(reviewApi.getByProduct).mockResolvedValue({ data: [], total: 0, page: 1, limit: 10, totalPages: 0, success: true })
   vi.mocked(reviewApi.canReview).mockResolvedValue({ canReview: false, reason: 'no_purchase' })
+  vi.mocked(productApi.getRelated).mockResolvedValue([])
 })
 
 describe('ProductDetailPage', () => {
@@ -168,5 +169,42 @@ describe('ProductDetailPage', () => {
     await screen.findByRole('heading', { name: 'Norwegian Salmon' })
     expect(screen.getByRole('button', { name: 'Out of Stock' })).toBeDisabled()
     expect(screen.queryByRole('button', { name: 'Increase quantity' })).not.toBeInTheDocument()
+  })
+
+  it('does not show a related-products section when there are none', async () => {
+    vi.mocked(productApi.getBySlug).mockResolvedValue(product as never)
+    renderAtSlug('norwegian-salmon')
+
+    await screen.findByRole('heading', { name: 'Norwegian Salmon' })
+    expect(screen.queryByText('You May Also Like')).not.toBeInTheDocument()
+  })
+
+  it('shows related products and can add one to the cart', async () => {
+    vi.mocked(productApi.getBySlug).mockResolvedValue(product as never)
+    vi.mocked(productApi.getRelated).mockResolvedValue([
+      { ...product, id: 'p2', name: 'King Prawns', slug: 'king-prawns' },
+    ] as never)
+    const user = userEvent.setup()
+    const store = createTestStore()
+    const queryClient = createTestQueryClient()
+    render(
+      <HelmetProvider>
+        <Provider store={store}>
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter initialEntries={['/products/norwegian-salmon']}>
+              <Routes><Route path="/products/:slug" element={<ProductDetailPage />} /></Routes>
+            </MemoryRouter>
+          </QueryClientProvider>
+        </Provider>
+      </HelmetProvider>
+    )
+
+    await screen.findByRole('heading', { name: 'Norwegian Salmon' })
+    expect(await screen.findByText('You May Also Like')).toBeInTheDocument()
+    expect(screen.getByText('King Prawns')).toBeInTheDocument()
+
+    const addToCartButtons = screen.getAllByRole('button', { name: /Add to Cart/ })
+    await user.click(addToCartButtons[1]) // [0] is the main product's own button
+    expect(store.getState().cart.items.some(i => i.productId === 'p2')).toBe(true)
   })
 })

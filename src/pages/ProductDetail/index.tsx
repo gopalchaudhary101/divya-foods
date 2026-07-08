@@ -6,7 +6,8 @@ import {
   Truck, Shield, ChevronRight, Star, Pencil, Trash2, RefreshCw,
 } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useProduct } from '@/hooks/useProducts'
+import { useProduct, useRelatedProducts } from '@/hooks/useProducts'
+import { ProductCard } from '@/components/shared/ProductCard'
 import { useIsWishlisted, useToggleWishlist } from '@/hooks/useWishlist'
 import { useReviews, useCanReview, useDeleteReview } from '@/hooks/useReviews'
 import { WriteReviewModal } from '@/components/shared/WriteReviewModal'
@@ -100,6 +101,7 @@ export default function ProductDetailPage() {
   const reviews = reviewsData?.data ?? []
   const { data: eligibility } = useCanReview(product?.id ?? '')
   const deleteMutation = useDeleteReview(product?.id ?? '')
+  const { data: relatedProducts } = useRelatedProducts(product?.id ?? '')
 
   const discountPct =
     product?.originalPrice && product.originalPrice > product.price
@@ -119,6 +121,20 @@ export default function ProductDetailPage() {
       })
     )
     toast.success(`${product.name} added to cart!`)
+  }
+
+  function handleAddRelatedToCart(related: Product) {
+    dispatch(
+      addToCart({
+        productId: related.id,
+        name: related.name,
+        price: related.price,
+        quantity: 1,
+        image: related.images[0] ?? '',
+        maxQuantity: related.stockQuantity ?? 10,
+      })
+    )
+    toast.success(`${related.name} added to cart!`)
   }
 
   // ─── Loading ────────────────────────────────────────────────────────────────
@@ -548,6 +564,20 @@ export default function ProductDetailPage() {
             </div>
           )}
         </div>
+
+        {/* Related products — frequently bought together + same-category blend */}
+        {relatedProducts && relatedProducts.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-premium-navy/10 dark:border-ocean-800">
+            <h2 className="font-display text-xl font-semibold text-premium-navy dark:text-white mb-5">
+              You May Also Like
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+              {relatedProducts.map(p => (
+                <ProductCard key={p.id} product={p} onAddToCart={handleAddRelatedToCart} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {showReviewModal && product && (
