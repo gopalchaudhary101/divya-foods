@@ -207,6 +207,42 @@ def test_gift_card_refunded_on_cancellation_after_payment(client, db):
     assert listed[0]["balance"] == 200.0   # refunded in full
 
 
+def test_cancelling_twice_only_refunds_gift_card_once(client, db):
+    """Regression test for a race condition: two near-simultaneous cancel
+    requests for the same order must not both run the gift-card-refund side
+    effect — only the first should, otherwise a customer could double-click
+    their way to a free credited balance."""
+    pid = _setup_user_and_product(db, price=1200.0)
+    card = _issue_gift_card(client, db, value=200.0)
+    token = get_token(client, "user@test.com")
+
+    with _mock_rzp():
+        init = client.post("/orders", json={
+            "delivery_address": _ADDRESS,
+            "items": [{"productId": pid, "quantity": 1}],
+            "gift_card_code": card["code"],
+        }, headers=bearer(token))
+    order_id = init.json()["data"]["orderId"]
+    signature = _real_signature(_FAKE_RZP_ORDER_ID, _FAKE_RZP_PAYMENT_ID)
+
+    with patch("app.services.email_service.send_async"), _mock_rzp(captured_amount=100000):
+        client.post("/orders/verify", json={
+            "order_id":            order_id,
+            "razorpay_order_id":   _FAKE_RZP_ORDER_ID,
+            "razorpay_payment_id": _FAKE_RZP_PAYMENT_ID,
+            "razorpay_signature":  signature,
+        }, headers=bearer(token))
+        r1 = client.put(f"/orders/{order_id}/cancel", json={"reason": "First"}, headers=bearer(token))
+        r2 = client.put(f"/orders/{order_id}/cancel", json={"reason": "Second"}, headers=bearer(token))
+
+    assert r1.status_code == 200
+    assert r2.status_code == 400
+
+    hdrs = _admin_headers(client, db)
+    listed = client.get("/admin/gift-cards", headers=hdrs).json()["data"]
+    assert listed[0]["balance"] == 200.0   # refunded exactly once, not 400.0
+
+
 def test_gift_card_not_refunded_on_cancellation_before_payment(client, db):
     pid = _setup_user_and_product(db, price=1200.0)
     card = _issue_gift_card(client, db, value=200.0)

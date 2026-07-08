@@ -470,6 +470,28 @@ def test_cancel_restores_stock(client, db):
     assert after == before + 1   # 1 unit restored
 
 
+def test_cancelling_the_same_order_twice_only_restores_stock_once(client, db):
+    """Regression test for a race condition: two near-simultaneous cancel
+    requests for the same order (double-click, client retry, two tabs) must
+    not both run the stock-restore side effect — only the first should."""
+    uid    = insert_user(db)
+    cat_id = insert_category(db)
+    pid    = insert_product(db, cat_id, name="Limited Stock", price=500.0)
+    before = db.products.find_one({"_id": pid})["stock_quantity"]
+
+    oid = insert_order(db, uid, pid, status="pending")
+    token = get_token(client, "user@test.com")
+    with patch("app.services.email_service.send_async"):
+        r1 = client.put(f"/orders/{oid}/cancel", json={"reason": "Test"}, headers=bearer(token))
+        r2 = client.put(f"/orders/{oid}/cancel", json={"reason": "Test again"}, headers=bearer(token))
+
+    assert r1.status_code == 200
+    assert r2.status_code == 400
+
+    after = db.products.find_one({"_id": pid})["stock_quantity"]
+    assert after == before + 1   # restored exactly once, not twice
+
+
 # ─── Invoices ───────────────────────────────────────────────────────────────────
 
 def test_download_own_invoice(client, db):

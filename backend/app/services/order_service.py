@@ -836,24 +836,17 @@ def cancel_order(db: Database, user_id: ObjectId, order_id: str, reason: str = "
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid order ID.")
 
-    doc = db.orders.find_one({"_id": oid, "user_id": user_id})
-    if not doc:
-        raise HTTPException(status_code=404, detail="Order not found.")
-    if doc["status"] not in CANCELLABLE_STATUSES:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Cannot cancel an order with status '{doc['status']}'. Contact support.",
-        )
-
+    # Atomic claim: gates the write on the exact status this call is allowed to
+    # act on, not just a prior read — a double-click, a client retry, or two
+    # tabs cancelling the same order near-simultaneously would otherwise both
+    # pass a plain check-then-act read and each run the stock-restore/gift-card
+    # -refund side effects below, restoring stock twice and crediting a gift
+    # card twice for one cancellation.
     now = _utcnow()
-    db.orders.update_one(
-        {"_id": oid},
+    doc = db.orders.find_one_and_update(
+        {"_id": oid, "user_id": user_id, "status": {"$in": list(CANCELLABLE_STATUSES)}},
         {
-            "$set": {
-                "status":         "cancelled",
-                "payment_status": "refunded" if doc["payment_status"] == "paid" else doc["payment_status"],
-                "updated_at":     now,
-            },
+            "$set": {"status": "cancelled", "updated_at": now},
             "$push": {
                 "tracking_timeline": {
                     "status":    "cancelled",
@@ -863,6 +856,20 @@ def cancel_order(db: Database, user_id: ObjectId, order_id: str, reason: str = "
             },
         },
     )
+    if not doc:
+        existing = db.orders.find_one({"_id": oid, "user_id": user_id})
+        if not existing:
+            raise HTTPException(status_code=404, detail="Order not found.")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot cancel an order with status '{existing['status']}'. Contact support.",
+        )
+    # `doc` is the pre-update snapshot find_one_and_update returns by default —
+    # exactly what the side effects below need (original items/payment_status),
+    # and having claimed it atomically above, no other call can run these too.
+
+    if doc["payment_status"] == "paid":
+        db.orders.update_one({"_id": oid}, {"$set": {"payment_status": "refunded"}})
 
     # Restore stock for each item (stock_quantity was decremented at checkout regardless
     # of payment status — see _reserve_stock in initiate_order)
@@ -984,6 +991,11 @@ def admin_update_status(
             detail=f"Cannot move order from '{current}' to '{new_status}'.",
         )
 
+    # Atomic claim: gate the write on the exact `current` status just read, not
+    # merely on it having passed the check above — two near-simultaneous admin
+    # actions (double-click, retry, two admin sessions) reading the same stale
+    # status could otherwise both pass validation and each run the stock-
+    # restore/gift-card-refund side effects below for one cancellation.
     now = _utcnow()
     update: dict = {
         "$set": {"status": new_status, "updated_at": now},
@@ -995,10 +1007,17 @@ def admin_update_status(
             }
         },
     }
+    claimed = db.orders.find_one_and_update({"_id": oid, "status": current}, update)
+    if not claimed:
+        raise HTTPException(
+            status_code=400,
+            detail="Order status changed concurrently by another request — refresh and try again.",
+        )
+    doc = claimed  # pre-update snapshot; same data already validated above, now guaranteed exclusive
 
     # Mark payment as refunded when admin cancels a paid order
     if new_status == "cancelled" and doc["payment_status"] == "paid":
-        update["$set"]["payment_status"] = "refunded"
+        db.orders.update_one({"_id": oid}, {"$set": {"payment_status": "refunded"}})
 
     # Restore stock on admin cancellation (stock_quantity was decremented at checkout
     # regardless of payment status — see _reserve_stock in initiate_order)
@@ -1020,9 +1039,8 @@ def admin_update_status(
         # Refund any gift card redemption that was already committed.
         if doc.get("gift_card_code") and doc.get("gift_card_committed"):
             gift_card_service.refund_redemption(db, doc["gift_card_code"], doc.get("gift_card_amount", 0.0))
-            update["$set"]["gift_card_committed"] = False
+            db.orders.update_one({"_id": oid}, {"$set": {"gift_card_committed": False}})
 
-    db.orders.update_one({"_id": oid}, update)
     updated    = db.orders.find_one({"_id": oid})
     order_dict = _order_to_dict(updated)
 
