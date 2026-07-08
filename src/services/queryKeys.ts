@@ -54,6 +54,11 @@ export const queryKeys = {
     detail: (id: string) => ['orders', 'detail', id] as const,
   },
 
+  // ─── Returns ──────────────────────────────────────────────────────────────
+  returns: {
+    forOrder: (orderId: string) => ['returns', 'for-order', orderId] as const,
+  },
+
   // ─── Reviews ──────────────────────────────────────────────────────────────
   reviews: {
     byProduct:  (productId: string) => ['reviews', productId] as const,

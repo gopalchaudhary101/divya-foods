@@ -7,6 +7,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import userEvent from '@testing-library/user-event'
 import OrdersPage from './index'
 import { orderApi } from '@/services/api/orderApi'
+import { returnApi } from '@/services/api/returnApi'
 import axiosInstance from '@/services/api/axiosInstance'
 import { createTestStore, createTestQueryClient } from '@/test/testUtils'
 
@@ -15,6 +16,9 @@ vi.mock('@/services/api/orderApi', () => ({
     getMyOrders: vi.fn(), getById: vi.fn(),
     downloadInvoice: vi.fn(), printInvoice: vi.fn(), emailInvoice: vi.fn(),
   },
+}))
+vi.mock('@/services/api/returnApi', () => ({
+  returnApi: { getForOrder: vi.fn(), request: vi.fn() },
 }))
 vi.mock('@/services/api/axiosInstance', () => ({
   default: { put: vi.fn() },
@@ -51,7 +55,10 @@ const order = {
   trackingTimeline: [], delivery: null, deliverySlot: null, createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z',
 }
 
-beforeEach(() => vi.clearAllMocks())
+beforeEach(() => {
+  vi.clearAllMocks()
+  vi.mocked(returnApi.getForOrder).mockResolvedValue(null)
+})
 
 describe('OrdersPage — list view', () => {
   it('shows an empty state when there are no orders', async () => {
@@ -179,5 +186,70 @@ describe('OrdersPage — detail view', () => {
     await user.click(screen.getByRole('button', { name: /Email Invoice/ }))
 
     await waitFor(() => expect(orderApi.emailInvoice).toHaveBeenCalledWith('o1'))
+  })
+})
+
+describe('OrdersPage — return/refund request', () => {
+  const deliveredOrder = {
+    ...order,
+    status: 'delivered',
+    trackingTimeline: [{ status: 'delivered', timestamp: new Date().toISOString(), note: '' }],
+  }
+
+  it('does not show a return option before delivery', async () => {
+    vi.mocked(orderApi.getById).mockResolvedValue(order) // status: 'confirmed'
+    renderAtRoute('/orders/o1')
+    await screen.findByText('DF-000123')
+    expect(screen.queryByText('Request a return or refund')).not.toBeInTheDocument()
+  })
+
+  it('shows a "Request a return or refund" button within the return window', async () => {
+    vi.mocked(orderApi.getById).mockResolvedValue(deliveredOrder)
+    renderAtRoute('/orders/o1')
+    expect(await screen.findByText('Request a return or refund')).toBeInTheDocument()
+  })
+
+  it('shows an expired message once the 24-hour window has passed', async () => {
+    vi.mocked(orderApi.getById).mockResolvedValue({
+      ...deliveredOrder,
+      trackingTimeline: [{ status: 'delivered', timestamp: new Date(Date.now() - 30 * 3_600_000).toISOString(), note: '' }],
+    })
+    renderAtRoute('/orders/o1')
+    expect(await screen.findByText(/24-hour return window.*has passed/)).toBeInTheDocument()
+    expect(screen.queryByText('Request a return or refund')).not.toBeInTheDocument()
+  })
+
+  it('shows the existing return status instead of the request button', async () => {
+    vi.mocked(orderApi.getById).mockResolvedValue(deliveredOrder)
+    vi.mocked(returnApi.getForOrder).mockResolvedValue({
+      id: 'r1', orderId: 'o1', orderNumber: 'DF-000123', userId: 'u1',
+      reason: 'damaged_or_spoiled', note: null,
+      items: [{ productId: 'p1', name: 'Salmon', price: 999, quantity: 1 }],
+      refundAmount: 999, status: 'requested', adminNote: null, razorpayRefundId: null,
+      requestedAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z', resolvedAt: null,
+    })
+    renderAtRoute('/orders/o1')
+    expect(await screen.findByText('Return Requested')).toBeInTheDocument()
+    expect(screen.queryByText('Request a return or refund')).not.toBeInTheDocument()
+  })
+
+  it('submits a return request for a selected item', async () => {
+    vi.mocked(orderApi.getById).mockResolvedValue(deliveredOrder)
+    vi.mocked(returnApi.request).mockResolvedValue({
+      id: 'r1', orderId: 'o1', orderNumber: 'DF-000123', userId: 'u1',
+      reason: 'damaged_or_spoiled', note: '', items: [], refundAmount: 999,
+      status: 'requested', adminNote: null, razorpayRefundId: null,
+      requestedAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z', resolvedAt: null,
+    })
+    const user = userEvent.setup()
+    renderAtRoute('/orders/o1')
+
+    await user.click(await screen.findByText('Request a return or refund'))
+    await user.click(screen.getByRole('checkbox'))
+    await user.click(screen.getByRole('button', { name: 'Submit Request' }))
+
+    await waitFor(() => expect(returnApi.request).toHaveBeenCalledWith(
+      'o1', 'damaged_or_spoiled', '', [{ productId: 'p1', quantity: 1 }],
+    ))
   })
 })
