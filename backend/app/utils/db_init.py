@@ -71,6 +71,10 @@ def create_indexes(db: Database) -> None:
     # Razorpay webhook lookup — every payment.captured/failed/refund event looks
     # up the order by razorpay_order_id, independent of the customer's browser
     db.orders.create_index("razorpay_order_id", sparse=True)
+    # "Frequently bought together" (product_service.get_related) — runs on
+    # every product-detail page view, so this multikey index on the embedded
+    # items array matters more than the daily/periodic queries above.
+    db.orders.create_index([("items.product_id", 1), ("payment_status", 1)])
 
     # ── carts ─────────────────────────────────────────────────────────────────
     # Bug fix: this index used to target `db.cart` (singular) — a collection

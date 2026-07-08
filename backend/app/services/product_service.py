@@ -1084,10 +1084,34 @@ def admin_get_categories(db: Database) -> dict:
 
 # ─── Public queries ───────────────────────────────────────────────────────────
 
+def _get_co_purchased_ids(db: Database, oid: ObjectId, limit: int) -> list:
+    """
+    Product IDs that most often appear in the same order as `oid`, ranked by
+    how many distinct paid orders they co-occurred in — a real "customers who
+    bought this also bought that" signal. Only paid orders count; an item
+    sitting in the same abandoned/failed cart as another isn't a purchase
+    signal, just coincidence.
+    """
+    pipeline = [
+        {"$match": {"payment_status": "paid", "items.product_id": oid}},
+        {"$unwind": "$items"},
+        {"$match": {"items.product_id": {"$ne": oid}}},
+        {"$group": {"_id": "$items.product_id", "orders": {"$sum": 1}}},
+        {"$sort": {"orders": -1}},
+        {"$limit": limit},
+    ]
+    return [row["_id"] for row in db.orders.aggregate(pipeline)]
+
+
 def get_related(db: Database, product_id: str, limit: int = 6) -> dict:
     """
-    Products in the same category as product_id, excluding that product.
-    Falls back to newest products if no related found.
+    Recommendations for a product page, blending three signals in priority
+    order, deduplicated and capped at `limit` total:
+      1. Frequently bought together — real behavioral signal from paid orders.
+      2. Same category (content-based).
+      3. Newest products site-wide — last-resort fallback.
+    A product with no purchase history yet (e.g. brand new) falls straight
+    through to (2) then (3), exactly as before this signal was added.
     """
     try:
         oid = ObjectId(product_id)
@@ -1098,22 +1122,41 @@ def get_related(db: Database, product_id: str, limit: int = 6) -> dict:
     if not source:
         return {"success": True, "data": []}
 
-    docs = list(
-        db.products.find(
-            {"category_id": source["category_id"], "_id": {"$ne": oid}, "in_stock": True, "is_published": {"$ne": False}}
-        )
-        .sort([("rating", -1)])
-        .limit(limit)
-    )
+    seen = {oid}
+    docs = []
 
+    # 1. Frequently bought together
+    co_ids = _get_co_purchased_ids(db, oid, limit)
+    if co_ids:
+        co_docs_by_id = {
+            d["_id"]: d for d in db.products.find(
+                {"_id": {"$in": co_ids}, "in_stock": True, "is_published": {"$ne": False}}
+            )
+        }
+        for pid in co_ids:  # preserve co-purchase frequency order, not $in's arbitrary order
+            if pid in co_docs_by_id:
+                docs.append(co_docs_by_id[pid])
+                seen.add(pid)
+
+    # 2. Same category, topping up whatever slots are left
     if len(docs) < limit:
-        # Top up with newest products from any category
-        existing_ids = {d["_id"] for d in docs} | {oid}
+        category_docs = list(
+            db.products.find(
+                {"category_id": source["category_id"], "_id": {"$nin": list(seen)}, "in_stock": True, "is_published": {"$ne": False}}
+            )
+            .sort([("rating", -1)])
+            .limit(limit - len(docs))
+        )
+        docs.extend(category_docs)
+        seen.update(d["_id"] for d in category_docs)
+
+    # 3. Newest site-wide, last-resort fallback
+    if len(docs) < limit:
         extras = list(
-            db.products.find({"_id": {"$nin": list(existing_ids)}, "in_stock": True, "is_published": {"$ne": False}})
+            db.products.find({"_id": {"$nin": list(seen)}, "in_stock": True, "is_published": {"$ne": False}})
             .sort([("created_at", -1)])
             .limit(limit - len(docs))
         )
         docs.extend(extras)
 
-    return {"success": True, "data": [_to_list_item(d) for d in docs]}
+    return {"success": True, "data": [_to_list_item(d) for d in docs[:limit]]}
