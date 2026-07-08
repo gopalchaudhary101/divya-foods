@@ -11,7 +11,7 @@ from app.database import connect_to_mongo, close_mongo_connection, ping_database
 from app.limiter import limiter
 from app.routers import (
     auth, products, categories, orders, cart,
-    wishlist, users, coupons, banners, reviews, admin,
+    users, coupons, banners, reviews, admin,
 )
 from app.routers import notifications, chat, upload, referrals, bundles
 from app.routers import loyalty, flash_sales, qa, subscriptions, settings as settings_router
@@ -99,7 +99,6 @@ app.include_router(products.router)
 app.include_router(categories.router)
 app.include_router(orders.router)
 app.include_router(cart.router)
-app.include_router(wishlist.router)
 app.include_router(users.router)
 app.include_router(coupons.router)
 app.include_router(banners.router)
