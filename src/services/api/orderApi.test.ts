@@ -53,9 +53,15 @@ describe('orderApi', () => {
   })
 
   it('getMyOrders passes the page as a query string', async () => {
-    mock.onGet('/orders?page=2').reply(200, { success: true, data: { data: [], total: 0, page: 2, totalPages: 0 } })
+    // Real backend shape: total/page/totalPages are siblings of data, not nested
+    // inside it — regression coverage for a bug where getMyOrders() read .data off
+    // the bare order array (always undefined), silently emptying "My Orders" for
+    // every customer regardless of how many orders they actually had.
+    mock.onGet('/orders?page=2').reply(200, { success: true, data: [{ id: 'o1' }], total: 1, page: 2, totalPages: 1 })
     const result = await orderApi.getMyOrders(2)
     expect(result.page).toBe(2)
+    expect(result.data).toEqual([{ id: 'o1' }])
+    expect(result.total).toBe(1)
   })
 
   it('getById fetches the order-scoped URL', async () => {

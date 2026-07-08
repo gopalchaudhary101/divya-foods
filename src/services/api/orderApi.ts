@@ -246,8 +246,13 @@ export const orderApi = {
   },
 
   getMyOrders: async (page = 1): Promise<PaginatedOrders> => {
-    const { data } = await axiosInstance.get<ApiResponse<PaginatedOrders>>(`/orders?page=${page}`)
-    return data.data
+    // Backend's get_my_orders puts total/page/totalPages as siblings of data,
+    // not nested inside it (same shape as adminBulkOrderApi.list/adminReturnApi.list) —
+    // NOT the {success, data: T} envelope ApiResponse<T> implies. Pre-existing bug:
+    // `data.data` here read .data off the bare order array, always undefined, so
+    // "My Orders" silently showed empty for every customer regardless of real order count.
+    const { data } = await axiosInstance.get<{ success: boolean } & PaginatedOrders>(`/orders?page=${page}`)
+    return data
   },
 
   getById: async (orderId: string): Promise<Order> => {
