@@ -12,8 +12,10 @@ Orders:
 Returns:
   GET  /admin/returns              → all return requests with filters + pagination (status, search)
   GET  /admin/returns/{id}         → single return request detail
-  PUT  /admin/returns/{id}/approve → approve + trigger a real Razorpay refund
-  PUT  /admin/returns/{id}/reject  → reject with a note explaining why
+  PUT  /admin/returns/{id}/approve        → approve + trigger a real Razorpay refund
+  PUT  /admin/returns/{id}/approve-manual → approve + record a refund completed
+                                             outside Razorpay (COD, or as a fallback)
+  PUT  /admin/returns/{id}/reject         → reject with a note explaining why
 
 Products:
   GET    /admin/products            → paginated list with search / category filter
@@ -514,6 +516,11 @@ class ReturnResolveRequest(BaseModel):
     note: Optional[str] = ""
 
 
+class ReturnManualApproveRequest(BaseModel):
+    reference: str
+    note: Optional[str] = ""
+
+
 @router.get("/returns")
 def admin_list_returns(
     page: int = Query(1, ge=1),
@@ -543,6 +550,16 @@ def admin_approve_return(
     _admin: dict = Depends(require_admin),
 ):
     return return_service.admin_approve_return(db, return_id, body.note or "")
+
+
+@router.put("/returns/{return_id}/approve-manual")
+def admin_approve_return_manual(
+    return_id: str,
+    body: ReturnManualApproveRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return return_service.admin_approve_return_manual(db, return_id, body.reference, body.note or "")
 
 
 @router.put("/returns/{return_id}/reject")
