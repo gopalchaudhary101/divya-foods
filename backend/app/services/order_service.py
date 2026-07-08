@@ -9,6 +9,7 @@ Flow:
 
 import hashlib
 import hmac
+import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -592,8 +593,20 @@ def _fail_pending_order(db: Database, oid: ObjectId, reason: str) -> None:
         db.orders.update_one({"_id": oid}, {"$set": {"stock_quantity_restored": True}})
 
 
-def _refund_order(db: Database, oid: ObjectId, refund_id: str, amount_paise: int, full: bool) -> None:
-    """Records a Razorpay refund against an order. Idempotent per refund_id."""
+def _refund_order(
+    db: Database, oid: ObjectId, refund_id: str, amount_paise: int, full: bool,
+    method: str = "razorpay", reference: str = "",
+) -> None:
+    """
+    Records a refund against an order. Idempotent per refund_id.
+
+    method="razorpay" (default) — an actual Razorpay refund, either confirmed
+    by the refund.* webhook or just triggered synchronously by
+    admin_initiate_refund. method="manual" — a refund completed outside
+    Razorpay entirely (bank transfer, UPI, cash — typically a COD order that
+    can't be auto-refunded), recorded here purely for bookkeeping; this
+    function never moves money itself either way.
+    """
     doc = db.orders.find_one({"_id": oid})
     if not doc:
         return
@@ -601,6 +614,12 @@ def _refund_order(db: Database, oid: ObjectId, refund_id: str, amount_paise: int
         return  # already recorded this exact refund
 
     now = _utcnow()
+    note_suffix = f" (ref: {reference})" if reference else ""
+    timeline_note = (
+        f"Refund of ₹{amount_paise / 100:.2f} processed via Razorpay"
+        if method == "razorpay"
+        else f"Refund of ₹{amount_paise / 100:.2f} recorded (manual refund){note_suffix}"
+    )
     db.orders.update_one(
         {"_id": oid},
         {
@@ -613,19 +632,21 @@ def _refund_order(db: Database, oid: ObjectId, refund_id: str, amount_paise: int
                     "refund_id": refund_id,
                     "amount": amount_paise / 100,
                     "full": full,
+                    "method": method,
+                    "reference": reference or None,
                     "created_at": now,
                 },
                 "tracking_timeline": {
                     "status": "refunded" if full else "partially_refunded",
                     "timestamp": now,
-                    "note": f"Refund of ₹{amount_paise / 100:.2f} processed via Razorpay",
+                    "note": timeline_note,
                 },
             },
         },
     )
 
     customer_email = _get_customer_email(db, doc["user_id"])
-    email_service.refund_processed(_order_to_dict(doc), customer_email, amount_paise / 100, full)
+    email_service.refund_processed(_order_to_dict(doc), customer_email, amount_paise / 100, full, method)
 
     # In-app + push notification, matching admin_update_status's pattern
     scope = "full" if full else "partial"
@@ -682,6 +703,36 @@ def admin_initiate_refund(db: Database, order_id: str, amount: float, note: str 
     _refund_order(db, oid, refund["id"], refund.get("amount", amount_paise), full)
 
     return {"success": True, "razorpayRefundId": refund["id"], "amount": amount, "full": full}
+
+
+# ─── Admin: record a refund completed outside Razorpay ────────────────────────
+# For orders where an automatic Razorpay refund isn't possible — most commonly
+# COD, but also usable as a fallback for any order — the admin has already
+# returned the money by some other means (bank transfer, UPI, cash) and this
+# just records that it happened, the same way _refund_order records a
+# Razorpay refund this function itself never initiated.
+
+def admin_record_manual_refund(db: Database, order_id: str, amount: float, reference: str, note: str = "") -> dict:
+    try:
+        oid = ObjectId(order_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid order ID.")
+
+    doc = db.orders.find_one({"_id": oid})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Order not found.")
+    if not reference or not reference.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="A reference (bank transfer UTR, receipt number, etc.) is required for a manual refund.",
+        )
+
+    amount_paise = int(round(amount * 100))
+    full = amount_paise >= int(round(doc["total"] * 100))
+    refund_id = f"manual-{uuid.uuid4().hex[:16]}"
+    _refund_order(db, oid, refund_id, amount_paise, full, method="manual", reference=reference.strip())
+
+    return {"success": True, "razorpayRefundId": None, "amount": amount, "full": full}
 
 
 # ─── Razorpay webhooks ─────────────────────────────────────────────────────────

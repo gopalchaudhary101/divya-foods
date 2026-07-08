@@ -247,10 +247,12 @@ def test_admin_approve_return_triggers_refund(client, db):
     data = r.json()["data"]
     assert data["status"] == "refunded"
     assert data["razorpayRefundId"] == "rfnd_test_1"
+    assert data["refundMethod"] == "razorpay"
 
     order = db.orders.find_one({"_id": oid})
     assert order["payment_status"] == "refunded"
     assert order["refunds"][0]["refund_id"] == "rfnd_test_1"
+    assert order["refunds"][0]["method"] == "razorpay"
 
 
 def test_admin_approve_return_fails_for_cod_order(client, db):
@@ -268,6 +270,77 @@ def test_admin_approve_return_fails_for_cod_order(client, db):
     r = client.put(f"/admin/returns/{return_id}/approve", json={"note": "ok"}, headers=bearer(admin_token))
     assert r.status_code == 400
     assert "manual refund" in r.json()["detail"].lower()
+
+
+# ─── Admin: approve-manual (COD / fallback refund flow) ────────────────────────
+
+def test_admin_approve_return_manual_success(client, db):
+    uid, pid, oid = _setup_delivered_order(db, price=999.0)
+    db.orders.update_one({"_id": oid}, {"$set": {"payment_method": "cod", "razorpay_payment_id": None}})
+    token = get_token(client, "user@test.com")
+    with patch("app.services.email_service.send_async"):
+        r = client.post(f"/orders/{oid}/return-request", json=_return_body(pid), headers=bearer(token))
+    return_id = r.json()["data"]["id"]
+    assert r.json()["data"]["orderPaymentMethod"] == "cod"
+
+    insert_user(db, email="admin@test.com", role="admin", name="Admin")
+    admin_token = get_token(client, "admin@test.com")
+
+    with patch("app.services.email_service.send_async"):
+        r = client.put(
+            f"/admin/returns/{return_id}/approve-manual",
+            json={"reference": "Bank transfer UTR123456", "note": "Refunded via bank transfer"},
+            headers=bearer(admin_token),
+        )
+    assert r.status_code == 200
+    data = r.json()["data"]
+    assert data["status"] == "refunded"
+    assert data["refundMethod"] == "manual"
+    assert data["refundReference"] == "Bank transfer UTR123456"
+    assert data["razorpayRefundId"] is None
+
+    order = db.orders.find_one({"_id": oid})
+    assert order["payment_status"] == "refunded"
+    assert order["refunds"][0]["method"] == "manual"
+    assert order["refunds"][0]["reference"] == "Bank transfer UTR123456"
+
+
+def test_admin_approve_return_manual_requires_reference(client, db):
+    uid, pid, oid = _setup_delivered_order(db)
+    token = get_token(client, "user@test.com")
+    with patch("app.services.email_service.send_async"):
+        r = client.post(f"/orders/{oid}/return-request", json=_return_body(pid), headers=bearer(token))
+    return_id = r.json()["data"]["id"]
+
+    insert_user(db, email="admin@test.com", role="admin", name="Admin")
+    admin_token = get_token(client, "admin@test.com")
+
+    r = client.put(
+        f"/admin/returns/{return_id}/approve-manual",
+        json={"reference": "  ", "note": "ok"},
+        headers=bearer(admin_token),
+    )
+    assert r.status_code == 400
+
+
+def test_admin_approve_return_manual_already_resolved_fails(client, db):
+    uid, pid, oid = _setup_delivered_order(db)
+    token = get_token(client, "user@test.com")
+    with patch("app.services.email_service.send_async"):
+        r = client.post(f"/orders/{oid}/return-request", json=_return_body(pid), headers=bearer(token))
+    return_id = r.json()["data"]["id"]
+    db.returns.update_one({"_id": ObjectId(return_id)}, {"$set": {"status": "rejected"}})
+
+    insert_user(db, email="admin@test.com", role="admin", name="Admin")
+    admin_token = get_token(client, "admin@test.com")
+
+    r = client.put(
+        f"/admin/returns/{return_id}/approve-manual",
+        json={"reference": "ref-1"},
+        headers=bearer(admin_token),
+    )
+    assert r.status_code == 400
+    assert "already" in r.json()["detail"].lower()
 
 
 def test_admin_approve_already_resolved_return_fails(client, db):

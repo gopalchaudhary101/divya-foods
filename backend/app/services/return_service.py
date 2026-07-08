@@ -5,8 +5,11 @@ Flow:
   1. Customer requests a return within 24h of delivery (matches the published
      Refund Policy at /refund-policy) on specific items from a delivered,
      paid order.
-  2. Admin reviews: approve (triggers a real Razorpay refund via
-     order_service.admin_initiate_refund) or reject (with a note explaining why).
+  2. Admin reviews: approve — either a real Razorpay refund
+     (order_service.admin_initiate_refund, requires the order to have a
+     captured Razorpay payment) or a manual refund the admin already
+     completed some other way (order_service.admin_record_manual_refund,
+     for COD orders or as a fallback) — or reject (with a note explaining why).
 
 Deliberately separate from product_service.admin_record_return, which is
 inventory-only bookkeeping (restocking shelf quantity) with no connection to
@@ -49,6 +52,9 @@ def _return_to_dict(doc: dict) -> dict:
         "status":           doc["status"],
         "adminNote":        doc.get("admin_note"),
         "razorpayRefundId": doc.get("razorpay_refund_id"),
+        "orderPaymentMethod": doc.get("order_payment_method"),
+        "refundMethod":     doc.get("refund_method"),
+        "refundReference":  doc.get("refund_reference"),
         "requestedAt":      doc["requested_at"].isoformat(),
         "updatedAt":        doc["updated_at"].isoformat(),
         "resolvedAt":       doc["resolved_at"].isoformat() if doc.get("resolved_at") else None,
@@ -128,6 +134,7 @@ def create_return_request(
     result = db.returns.insert_one({
         "order_id":          oid,
         "order_number":      order["order_number"],
+        "order_payment_method": order["payment_method"],
         "user_id":           user_id,
         "reason":            reason,
         "note":              note or None,
@@ -136,6 +143,8 @@ def create_return_request(
         "status":            "requested",
         "admin_note":        None,
         "razorpay_refund_id": None,
+        "refund_method":     None,
+        "refund_reference":  None,
         "requested_at":      now,
         "updated_at":        now,
         "resolved_at":       None,
@@ -220,6 +229,7 @@ def admin_approve_return(db: Database, return_id: str, note: str = "") -> dict:
             "status":             "refunded",
             "admin_note":         note or None,
             "razorpay_refund_id": refund_result["razorpayRefundId"],
+            "refund_method":      "razorpay",
             "updated_at":         now,
             "resolved_at":        now,
         }},
@@ -227,6 +237,41 @@ def admin_approve_return(db: Database, return_id: str, note: str = "") -> dict:
     updated = db.returns.find_one({"_id": oid})
     # refund_processed email + in-app/push notification already sent by
     # order_service.admin_initiate_refund -> _refund_order — nothing more to send here.
+    return {"success": True, "data": _return_to_dict(updated)}
+
+
+def admin_approve_return_manual(db: Database, return_id: str, reference: str, note: str = "") -> dict:
+    """
+    For orders an automatic Razorpay refund can't reach (most commonly COD) —
+    the admin has already refunded the customer some other way (bank transfer,
+    UPI, cash) and this records it, same shape as admin_approve_return but via
+    order_service.admin_record_manual_refund instead of the Razorpay API call.
+    """
+    try:
+        oid = ObjectId(return_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid return ID.")
+    doc = db.returns.find_one({"_id": oid})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Return request not found.")
+    if doc["status"] != "requested":
+        raise HTTPException(status_code=400, detail=f"Cannot approve a return that is already '{doc['status']}'.")
+
+    order_service.admin_record_manual_refund(db, str(doc["order_id"]), doc["refund_amount"], reference, note)
+
+    now = _utcnow()
+    db.returns.update_one(
+        {"_id": oid},
+        {"$set": {
+            "status":            "refunded",
+            "admin_note":        note or None,
+            "refund_method":     "manual",
+            "refund_reference":  reference.strip(),
+            "updated_at":        now,
+            "resolved_at":       now,
+        }},
+    )
+    updated = db.returns.find_one({"_id": oid})
     return {"success": True, "data": _return_to_dict(updated)}
 
 

@@ -318,19 +318,26 @@ def password_reset(customer_email: str, reset_token: str) -> None:
 
 # ─── Refunds ──────────────────────────────────────────────────────────────────
 
-def refund_processed(order: dict, customer_email: str, amount: float, full: bool) -> None:
-    """Sent when Razorpay actually confirms a refund (webhook), not merely when
-    a cancellation is requested — order_cancelled() covers the request itself."""
+def refund_processed(order: dict, customer_email: str, amount: float, full: bool, method: str = "razorpay") -> None:
+    """Sent when a refund actually happens — Razorpay confirms it (webhook or an
+    admin-triggered API call) or an admin records a manual one (bank transfer,
+    UPI, cash — typically for a COD order Razorpay can't auto-refund). Not sent
+    merely when a cancellation/return is *requested* — order_cancelled() and
+    return_request_received() cover the request itself."""
     a = order.get("deliveryAddress", {})
     scope = "full" if full else "partial"
+    if method == "razorpay":
+        detail_html = f"""&#128176; <strong>&#8377;{amount:,.2f}</strong> has been refunded to your original payment method.<br>
+  &#9200; It typically takes <strong>5&ndash;7 business days</strong> to reflect in your account."""
+    else:
+        detail_html = f"""&#128176; <strong>&#8377;{amount:,.2f}</strong> has been refunded to you directly by our team (bank transfer/UPI/cash)."""
     html = _wrap(f"""
 <h2>Refund Processed &#128176;</h2>
 <p style="color:#6B7280;margin:0 0 18px">Hi {a.get("full_name","there")}, a {scope} refund for your order has been processed.</p>
 <p><strong>Order Number:</strong> {order["orderNumber"]} &nbsp;
    <span class="badge badge-blue">Refunded</span></p>
 <div class="refund-box">
-  &#128176; <strong>&#8377;{amount:,.2f}</strong> has been refunded to your original payment method.<br>
-  &#9200; It typically takes <strong>5&ndash;7 business days</strong> to reflect in your account.
+  {detail_html}
 </div>
 <div class="info-box">
   &#128172; Questions about this refund? Call <strong>+91&nbsp;9999123242</strong> or reply to this email.
