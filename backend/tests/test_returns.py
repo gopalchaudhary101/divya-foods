@@ -8,6 +8,7 @@ list/detail/approve/reject, and the Razorpay-refund integration on approval.
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
+import pytest
 from bson import ObjectId
 
 from tests.conftest import (
@@ -157,7 +158,75 @@ def test_return_request_blocks_duplicate_active_request(client, db):
         assert r1.status_code == 200
         r2 = client.post(f"/orders/{oid}/return-request", json=_return_body(pid), headers=bearer(token))
     assert r2.status_code == 400
-    assert "already in progress" in r2.json()["detail"].lower()
+    assert "remain eligible" in r2.json()["detail"].lower()
+
+
+def test_return_request_blocks_reclaiming_already_refunded_quantity(client, db):
+    """Regression test for a duplicate-refund bug: once a return for an item
+    is refunded, a customer must not be able to file a second return for
+    those same already-refunded units and get paid twice.
+
+    Uses a multi-item order specifically so the *partial* refund of one item
+    leaves the order's overall payment_status as "paid" (the pre-existing
+    "order has no completed payment to refund" check would otherwise mask
+    this bug for a single-item full refund, since that already flips
+    payment_status to "refunded" and blocks re-requesting for an unrelated
+    reason) — this is the realistic case where the bug actually mattered.
+    """
+    uid, pid, oid = _setup_delivered_order(db, price=999.0)
+    cat_id = insert_category(db, name="Cat2", slug="cat2")
+    pid2 = insert_product(db, cat_id, name="Prawns", price=500.0)
+    db.orders.update_one(
+        {"_id": oid},
+        {
+            "$push": {"items": {"product_id": pid2, "name": "Prawns", "price": 500.0, "quantity": 1, "image": ""}},
+            "$set": {"total": 999.0 + 500.0},
+        },
+    )
+    token = get_token(client, "user@test.com")
+
+    with patch("app.services.email_service.send_async"):
+        r1 = client.post(f"/orders/{oid}/return-request", json=_return_body(pid), headers=bearer(token))
+    return_id = r1.json()["data"]["id"]
+
+    db.orders.update_one({"_id": oid}, {"$set": {"razorpay_payment_id": "pay_test_abc"}})
+    insert_user(db, email="admin@test.com", role="admin", name="Admin")
+    admin_token = get_token(client, "admin@test.com")
+    with patch("app.services.email_service.send_async"), _mock_rzp_refund(amount_paise=99900):
+        r_approve = client.put(
+            f"/admin/returns/{return_id}/approve", json={"note": "approved"}, headers=bearer(admin_token),
+        )
+    assert r_approve.json()["data"]["status"] == "refunded"
+    order_after = db.orders.find_one({"_id": oid})
+    assert order_after["payment_status"] == "paid"  # partial refund — order-level status untouched
+
+    # Same customer tries to return the same (already-refunded) salmon again.
+    with patch("app.services.email_service.send_async"):
+        r2 = client.post(f"/orders/{oid}/return-request", json=_return_body(pid), headers=bearer(token))
+    assert r2.status_code == 400
+    assert "remain eligible" in r2.json()["detail"].lower()
+
+
+def test_return_request_allowed_again_after_rejection_frees_quantity(client, db):
+    """A rejected return must free its quantity back up — rejection isn't a
+    refund, so it shouldn't permanently block a legitimate future request."""
+    uid, pid, oid = _setup_delivered_order(db)
+    token = get_token(client, "user@test.com")
+
+    with patch("app.services.email_service.send_async"):
+        r1 = client.post(f"/orders/{oid}/return-request", json=_return_body(pid), headers=bearer(token))
+    return_id = r1.json()["data"]["id"]
+
+    insert_user(db, email="admin@test.com", role="admin", name="Admin")
+    admin_token = get_token(client, "admin@test.com")
+    with patch("app.services.email_service.send_async"):
+        client.put(
+            f"/admin/returns/{return_id}/reject", json={"note": "Not eligible"}, headers=bearer(admin_token),
+        )
+
+    with patch("app.services.email_service.send_async"):
+        r2 = client.post(f"/orders/{oid}/return-request", json=_return_body(pid), headers=bearer(token))
+    assert r2.status_code == 200
 
 
 def test_return_request_requires_ownership(client, db):
@@ -253,6 +322,59 @@ def test_admin_approve_return_triggers_refund(client, db):
     assert order["payment_status"] == "refunded"
     assert order["refunds"][0]["refund_id"] == "rfnd_test_1"
     assert order["refunds"][0]["method"] == "razorpay"
+
+
+def test_admin_cannot_approve_the_same_return_twice_in_a_row(client, db):
+    """Regression test for a race condition: two approve calls on the same
+    return (a double-click, a retry, two admin tabs) must not both succeed —
+    only the first should trigger a real refund."""
+    uid, pid, oid = _setup_delivered_order(db, price=999.0)
+    token = get_token(client, "user@test.com")
+    with patch("app.services.email_service.send_async"):
+        r = client.post(f"/orders/{oid}/return-request", json=_return_body(pid), headers=bearer(token))
+    return_id = r.json()["data"]["id"]
+
+    db.orders.update_one({"_id": oid}, {"$set": {"razorpay_payment_id": "pay_test_abc"}})
+    insert_user(db, email="admin@test.com", role="admin", name="Admin")
+    admin_token = get_token(client, "admin@test.com")
+
+    with patch("app.services.email_service.send_async"), _mock_rzp_refund(amount_paise=99900):
+        r1 = client.put(f"/admin/returns/{return_id}/approve", json={"note": "ok"}, headers=bearer(admin_token))
+        r2 = client.put(f"/admin/returns/{return_id}/approve", json={"note": "ok"}, headers=bearer(admin_token))
+
+    assert r1.status_code == 200
+    assert r2.status_code == 400
+    # Only one real refund was ever recorded against the order, not two.
+    order = db.orders.find_one({"_id": oid})
+    assert len(order["refunds"]) == 1
+
+
+def test_admin_approve_releases_claim_on_refund_failure_so_retry_can_succeed(client, db):
+    """If the Razorpay call fails, the return must not be stuck unresolvable
+    forever — the processing lock should release so a retry can go through."""
+    uid, pid, oid = _setup_delivered_order(db, price=999.0)
+    token = get_token(client, "user@test.com")
+    with patch("app.services.email_service.send_async"):
+        r = client.post(f"/orders/{oid}/return-request", json=_return_body(pid), headers=bearer(token))
+    return_id = r.json()["data"]["id"]
+
+    db.orders.update_one({"_id": oid}, {"$set": {"razorpay_payment_id": "pay_test_abc"}})
+    insert_user(db, email="admin@test.com", role="admin", name="Admin")
+    admin_token = get_token(client, "admin@test.com")
+
+    failing_client = MagicMock()
+    failing_client.payment.refund.side_effect = Exception("Razorpay API error")
+    with patch("app.services.order_service.razorpay.Client", return_value=failing_client):
+        # TestClient(raise_server_exceptions=True) re-raises unhandled exceptions
+        # rather than turning them into a 500 response — exactly what we want to
+        # provoke here to exercise the release-on-failure path.
+        with pytest.raises(Exception, match="Razorpay API error"):
+            client.put(f"/admin/returns/{return_id}/approve", json={"note": "ok"}, headers=bearer(admin_token))
+
+    with patch("app.services.email_service.send_async"), _mock_rzp_refund(amount_paise=99900):
+        r2 = client.put(f"/admin/returns/{return_id}/approve", json={"note": "ok"}, headers=bearer(admin_token))
+    assert r2.status_code == 200
+    assert r2.json()["data"]["status"] == "refunded"
 
 
 def test_admin_approve_return_fails_for_cod_order(client, db):

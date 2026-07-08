@@ -29,7 +29,11 @@ from app.utils import push_service
 
 RETURN_WINDOW_HOURS = 24
 RETURN_REASONS = {"wrong_item", "damaged_or_spoiled", "missing_item", "other"}
-_ACTIVE_STATUSES = {"requested", "approved"}
+# Everything except "rejected" ties up quantity against the order — a pending
+# request blocks a second request for the same units, and a refunded one
+# obviously shouldn't be claimable again. Only a rejection frees the quantity
+# back up for a fresh request.
+_QUANTITY_CONSUMING_STATUSES = {"requested", "approved", "refunded"}
 
 
 def _utcnow() -> datetime:
@@ -104,11 +108,20 @@ def create_return_request(
             detail=f"Returns must be requested within {RETURN_WINDOW_HOURS} hours of delivery.",
         )
 
-    if db.returns.find_one({"order_id": oid, "status": {"$in": list(_ACTIVE_STATUSES)}}):
-        raise HTTPException(status_code=400, detail="A return request is already in progress for this order.")
-
     if not items:
         raise HTTPException(status_code=400, detail="Select at least one item to return.")
+
+    # Cumulative-quantity guard: sum how much of each product this order has
+    # already claimed across every non-rejected prior return request (pending,
+    # or already refunded) — not just whether one is currently in progress.
+    # Without this, once a return is resolved (status leaves "requested") a
+    # customer could file another return for the *same already-refunded*
+    # units and, if approved again, be paid twice for one item.
+    already_claimed: dict = {}
+    for prior in db.returns.find({"order_id": oid, "status": {"$in": list(_QUANTITY_CONSUMING_STATUSES)}}):
+        for it in prior.get("items", []):
+            key = str(it["product_id"])
+            already_claimed[key] = already_claimed.get(key, 0) + it["quantity"]
 
     order_items_by_id = {str(i["product_id"]): i for i in order["items"]}
     return_items = []
@@ -119,10 +132,11 @@ def create_return_request(
         matched = order_items_by_id.get(str(pid))
         if not matched:
             raise HTTPException(status_code=400, detail=f"Product {pid} was not part of this order.")
-        if not isinstance(qty, int) or qty < 1 or qty > matched["quantity"]:
+        remaining = matched["quantity"] - already_claimed.get(str(pid), 0)
+        if not isinstance(qty, int) or qty < 1 or qty > remaining:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid quantity for {matched['name']} — must be between 1 and {matched['quantity']}.",
+                detail=f"Invalid quantity for {matched['name']} — only {max(remaining, 0)} unit(s) of {matched['quantity']} ordered remain eligible for return.",
             )
         return_items.append({
             "product_id": matched["product_id"], "name": matched["name"],
@@ -145,6 +159,7 @@ def create_return_request(
         "razorpay_refund_id": None,
         "refund_method":     None,
         "refund_reference":  None,
+        "processing_started_at": None,  # atomic-claim lock — see admin_approve_return*
         "requested_at":      now,
         "updated_at":        now,
         "resolved_at":       None,
@@ -209,18 +224,52 @@ def admin_get_return(db: Database, return_id: str) -> dict:
 
 # ─── Admin: approve / reject ──────────────────────────────────────────────────
 
+def _claim_return_for_processing(db: Database, oid: ObjectId) -> dict:
+    """
+    Atomically transitions a return from "requested" to "being processed"
+    without changing its externally-visible `status` (still "requested" until
+    the final resolution write) — gated on the internal processing_started_at
+    lock instead. Prevents two near-simultaneous approve/reject calls (a
+    double-click, a client retry, two admin sessions) on the same return from
+    both proceeding, which previously could trigger two real refunds for one
+    return. Missing the field (documents created before this fix) is treated
+    the same as None by Mongo's query semantics, so no migration is needed.
+
+    Raises 404/400 and returns nothing if the claim fails; otherwise returns
+    the pre-claim document to act on.
+    """
+    claimed = db.returns.find_one_and_update(
+        {"_id": oid, "status": "requested", "processing_started_at": None},
+        {"$set": {"processing_started_at": _utcnow()}},
+    )
+    if claimed:
+        return claimed
+    existing = db.returns.find_one({"_id": oid})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Return request not found.")
+    if existing["status"] != "requested":
+        raise HTTPException(status_code=400, detail=f"Cannot resolve a return that is already '{existing['status']}'.")
+    raise HTTPException(status_code=400, detail="This return is already being processed by another request.")
+
+
+def _release_return_claim(db: Database, oid: ObjectId) -> None:
+    """Releases the processing lock after a failed refund/side-effect so the
+    admin can retry, instead of leaving the return stuck unresolvable."""
+    db.returns.update_one({"_id": oid}, {"$set": {"processing_started_at": None}})
+
+
 def admin_approve_return(db: Database, return_id: str, note: str = "") -> dict:
     try:
         oid = ObjectId(return_id)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid return ID.")
-    doc = db.returns.find_one({"_id": oid})
-    if not doc:
-        raise HTTPException(status_code=404, detail="Return request not found.")
-    if doc["status"] != "requested":
-        raise HTTPException(status_code=400, detail=f"Cannot approve a return that is already '{doc['status']}'.")
+    doc = _claim_return_for_processing(db, oid)
 
-    refund_result = order_service.admin_initiate_refund(db, str(doc["order_id"]), doc["refund_amount"], note)
+    try:
+        refund_result = order_service.admin_initiate_refund(db, str(doc["order_id"]), doc["refund_amount"], note)
+    except Exception:
+        _release_return_claim(db, oid)
+        raise
 
     now = _utcnow()
     db.returns.update_one(
@@ -251,13 +300,13 @@ def admin_approve_return_manual(db: Database, return_id: str, reference: str, no
         oid = ObjectId(return_id)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid return ID.")
-    doc = db.returns.find_one({"_id": oid})
-    if not doc:
-        raise HTTPException(status_code=404, detail="Return request not found.")
-    if doc["status"] != "requested":
-        raise HTTPException(status_code=400, detail=f"Cannot approve a return that is already '{doc['status']}'.")
+    doc = _claim_return_for_processing(db, oid)
 
-    order_service.admin_record_manual_refund(db, str(doc["order_id"]), doc["refund_amount"], reference, note)
+    try:
+        order_service.admin_record_manual_refund(db, str(doc["order_id"]), doc["refund_amount"], reference, note)
+    except Exception:
+        _release_return_claim(db, oid)
+        raise
 
     now = _utcnow()
     db.returns.update_one(
@@ -283,11 +332,7 @@ def admin_reject_return(db: Database, return_id: str, note: str) -> dict:
         oid = ObjectId(return_id)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid return ID.")
-    doc = db.returns.find_one({"_id": oid})
-    if not doc:
-        raise HTTPException(status_code=404, detail="Return request not found.")
-    if doc["status"] != "requested":
-        raise HTTPException(status_code=400, detail=f"Cannot reject a return that is already '{doc['status']}'.")
+    doc = _claim_return_for_processing(db, oid)
 
     now = _utcnow()
     db.returns.update_one(
