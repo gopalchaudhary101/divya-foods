@@ -72,8 +72,14 @@ def create_indexes(db: Database) -> None:
     # up the order by razorpay_order_id, independent of the customer's browser
     db.orders.create_index("razorpay_order_id", sparse=True)
 
-    # ── cart ──────────────────────────────────────────────────────────────────
-    db.cart.create_index("user_id", unique=True)   # one cart per user
+    # ── carts ─────────────────────────────────────────────────────────────────
+    # Bug fix: this index used to target `db.cart` (singular) — a collection
+    # nothing in the app ever reads or writes. The real collection every
+    # cart.py route uses is `db.carts` (plural), which had no indexes at all.
+    db.carts.create_index("user_id", unique=True)   # one cart per user
+    # Abandoned-cart reminder job's scan query (cart_service.py): non-empty
+    # items, stale updated_at, not yet reminded.
+    db.carts.create_index([("reminder_sent_at", 1), ("updated_at", 1)])
 
     # ── addresses ─────────────────────────────────────────────────────────────
     db.addresses.create_index("user_id")

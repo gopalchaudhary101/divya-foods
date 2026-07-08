@@ -377,6 +377,34 @@ def return_rejected(ret: dict, customer_email: str, note: str) -> None:
     send_async(customer_email, f"Return Request Update — {ret['orderNumber']} | Divya Luxury Seafoods", html)
 
 
+# ─── Cart ─────────────────────────────────────────────────────────────────────
+
+def abandoned_cart_reminder(items: list, customer_name: str, customer_email: str) -> None:
+    """Sent once per abandonment by cart_service's scheduled job — items are
+    the cart's own item dicts (productId/name/price/quantity), not an order."""
+    rows = "".join(
+        f'<li>{it["quantity"]}&times; {_esc(it["name"])} — &#8377;{it["price"] * it["quantity"]:,.2f}</li>'
+        for it in items
+    )
+    total = sum(it["price"] * it["quantity"] for it in items)
+    html = _wrap(f"""
+<h2>You left something in your cart &#128717;</h2>
+<p style="color:#6B7280;margin:0 0 18px">Hi {_esc(customer_name) or "there"}, your cart is still waiting for you.</p>
+<ul style="margin:0 0 16px;padding-left:20px;font-size:13px">{rows}</ul>
+<p style="font-weight:600">Cart total: &#8377;{total:,.2f}</p>
+<p style="text-align:center;margin:24px 0">
+  <a href="{SITE_URL}/cart"
+     style="background:#042C53;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
+    Complete Your Order
+  </a>
+</p>
+<div class="info-box">
+  &#128666; Free delivery on orders above &#8377;999 across Delhi NCR, Gurgaon &amp; Noida.<br>
+  &#128172; Questions? Call <strong>+91&nbsp;9999123242</strong> or reply to this email.
+</div>""")
+    send_async(customer_email, "You left something in your cart — Divya Luxury Seafoods", html)
+
+
 # ─── Admin-facing notifications ───────────────────────────────────────────────
 
 def admin_new_order_notification(order: dict) -> None:

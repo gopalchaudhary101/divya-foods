@@ -9,6 +9,8 @@ from slowapi import _rate_limit_exceeded_handler
 from app.config import settings
 from app.database import connect_to_mongo, close_mongo_connection, ping_database
 from app.limiter import limiter
+from app.services import cart_service
+from app.utils import scheduler
 from app.routers import (
     auth, products, categories, orders, cart,
     users, coupons, banners, reviews, admin,
@@ -33,7 +35,10 @@ async def lifespan(app: FastAPI):
     This replaces the deprecated @app.on_event("startup") pattern.
     """
     connect_to_mongo()
+    scheduler.add_interval_job(cart_service.run_abandoned_cart_job, minutes=30, job_id="abandoned_cart_reminders")
+    scheduler.start()
     yield
+    scheduler.shutdown()
     close_mongo_connection()
 
 

@@ -70,7 +70,7 @@ def _cart_response(cart_doc: dict) -> dict:
 def _get_or_create_cart(db: Database, user_id: ObjectId) -> dict:
     cart = db.carts.find_one({"user_id": user_id})
     if not cart:
-        cart = {"user_id": user_id, "items": [], "updated_at": _utcnow()}
+        cart = {"user_id": user_id, "items": [], "updated_at": _utcnow(), "reminder_sent_at": None}
         db.carts.insert_one(cart)
     return cart
 
@@ -101,7 +101,7 @@ def sync_cart(
     items = [item.model_dump() for item in body.items]
     db.carts.update_one(
         {"user_id": current_user["_id"]},
-        {"$set": {"items": items, "updated_at": _utcnow()}},
+        {"$set": {"items": items, "updated_at": _utcnow(), "reminder_sent_at": None}},
         upsert=True,
     )
     return {"success": True, "message": "Cart synced."}
@@ -128,7 +128,7 @@ def add_item(
 
     db.carts.update_one(
         {"user_id": current_user["_id"]},
-        {"$set": {"items": items, "updated_at": _utcnow()}},
+        {"$set": {"items": items, "updated_at": _utcnow(), "reminder_sent_at": None}},
     )
     updated = db.carts.find_one({"user_id": current_user["_id"]})
     return _cart_response(updated)
@@ -154,7 +154,7 @@ def update_item_quantity(
 
     db.carts.update_one(
         {"user_id": current_user["_id"]},
-        {"$set": {"items": items, "updated_at": _utcnow()}},
+        {"$set": {"items": items, "updated_at": _utcnow(), "reminder_sent_at": None}},
     )
     updated = db.carts.find_one({"user_id": current_user["_id"]})
     return _cart_response(updated)
@@ -172,7 +172,7 @@ def remove_item(
 
     db.carts.update_one(
         {"user_id": current_user["_id"]},
-        {"$set": {"items": items, "updated_at": _utcnow()}},
+        {"$set": {"items": items, "updated_at": _utcnow(), "reminder_sent_at": None}},
     )
     updated = db.carts.find_one({"user_id": current_user["_id"]})
     return _cart_response(updated)
