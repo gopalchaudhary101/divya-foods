@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import MockAdapter from 'axios-mock-adapter'
@@ -13,6 +13,7 @@ const returnRequest = {
   reason: 'damaged_or_spoiled', note: 'Fish arrived warm', status: 'requested',
   items: [{ productId: 'p1', name: 'Salmon Fillet', price: 999, quantity: 1 }],
   refundAmount: 999, adminNote: null, razorpayRefundId: null,
+  orderPaymentMethod: 'razorpay', refundMethod: null, refundReference: null,
   requestedAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z', resolvedAt: null,
 }
 
@@ -120,5 +121,55 @@ describe('AdminReturnsPage', () => {
     await screen.findByText(/Salmon Fillet/)
     expect(screen.queryByRole('button', { name: 'Reject' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Approve/ })).not.toBeInTheDocument()
+  })
+
+  it('shows the refund method and reference for a resolved manual refund', async () => {
+    mock.onGet(/\/admin\/returns/).reply(200, {
+      data: [{ ...returnRequest, status: 'refunded', refundMethod: 'manual', refundReference: 'UTR123456' }],
+      total: 1, page: 1, totalPages: 1,
+    })
+    const user = userEvent.setup()
+    renderWithProviders(<AdminReturnsPage />)
+
+    await user.click(await screen.findByText('DF-001'))
+    expect(await screen.findByText(/manual.*UTR123456/)).toBeInTheDocument()
+  })
+
+  it('does not offer a Razorpay approve button for a COD order', async () => {
+    mock.onGet(/\/admin\/returns/).reply(200, {
+      data: [{ ...returnRequest, orderPaymentMethod: 'cod' }], total: 1, page: 1, totalPages: 1,
+    })
+    const user = userEvent.setup()
+    renderWithProviders(<AdminReturnsPage />)
+
+    await user.click(await screen.findByText('DF-001'))
+    await screen.findByText(/Salmon Fillet/)
+    expect(screen.queryByRole('button', { name: /Approve & Refund via Razorpay/ })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Record Manual Refund' })).toBeInTheDocument()
+  })
+
+  it('records a manual refund with a reference', async () => {
+    mock.onGet(/\/admin\/returns/).reply(200, {
+      data: [{ ...returnRequest, orderPaymentMethod: 'cod' }], total: 1, page: 1, totalPages: 1,
+    })
+    mock.onPut('/admin/returns/r1/approve-manual').reply(200, {
+      success: true, data: { ...returnRequest, status: 'refunded', refundMethod: 'manual', refundReference: 'UTR123456' },
+    })
+    const user = userEvent.setup()
+    renderWithProviders(<AdminReturnsPage />)
+
+    await user.click(await screen.findByText('DF-001'))
+    await user.click(screen.getByRole('button', { name: 'Record Manual Refund' }))
+
+    const confirmButton = screen.getByRole('button', { name: 'Confirm Manual Refund' })
+    expect(confirmButton).toBeDisabled()
+
+    await user.type(screen.getByPlaceholderText(/Bank transfer UTR/), 'UTR123456')
+    expect(confirmButton).not.toBeDisabled()
+    await user.click(confirmButton)
+
+    await waitFor(() => expect(mock.history.put[0].data).toBe(
+      JSON.stringify({ reference: 'UTR123456', note: '' })
+    ))
   })
 })

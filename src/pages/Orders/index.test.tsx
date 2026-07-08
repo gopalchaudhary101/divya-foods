@@ -226,6 +226,7 @@ describe('OrdersPage — return/refund request', () => {
       reason: 'damaged_or_spoiled', note: null,
       items: [{ productId: 'p1', name: 'Salmon', price: 999, quantity: 1 }],
       refundAmount: 999, status: 'requested', adminNote: null, razorpayRefundId: null,
+      orderPaymentMethod: 'razorpay', refundMethod: null, refundReference: null,
       requestedAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z', resolvedAt: null,
     })
     renderAtRoute('/orders/o1')
@@ -239,6 +240,7 @@ describe('OrdersPage — return/refund request', () => {
       id: 'r1', orderId: 'o1', orderNumber: 'DF-000123', userId: 'u1',
       reason: 'damaged_or_spoiled', note: '', items: [], refundAmount: 999,
       status: 'requested', adminNote: null, razorpayRefundId: null,
+      orderPaymentMethod: 'razorpay', refundMethod: null, refundReference: null,
       requestedAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z', resolvedAt: null,
     })
     const user = userEvent.setup()

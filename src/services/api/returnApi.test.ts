@@ -60,6 +60,15 @@ describe('adminReturnApi', () => {
     expect(result.status).toBe('refunded')
   })
 
+  it('approveManual puts a reference and optional note', async () => {
+    mock.onPut('/admin/returns/r1/approve-manual').reply((config) => {
+      expect(JSON.parse(config.data)).toEqual({ reference: 'UTR123456', note: 'Bank transfer' })
+      return [200, { success: true, data: { id: 'r1', status: 'refunded', refundMethod: 'manual' } }]
+    })
+    const result = await adminReturnApi.approveManual('r1', 'UTR123456', 'Bank transfer')
+    expect(result.refundMethod).toBe('manual')
+  })
+
   it('reject puts the required note', async () => {
     mock.onPut('/admin/returns/r1/reject').reply((config) => {
       expect(JSON.parse(config.data)).toEqual({ note: 'Not eligible' })
