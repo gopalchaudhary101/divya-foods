@@ -40,6 +40,17 @@ jobs:
           JWT_SECRET_KEY: ci-test-secret-key-only-not-for-production-use
         run: pytest -q
 
+      - name: Dependency vulnerability scan (report only)
+        # continue-on-error: known CVEs currently exist (fastapi/starlette are
+        # 27 minor versions behind, among others) that need a dedicated,
+        # tested upgrade pass rather than silently failing every build until
+        # then. This still surfaces results in the step's log/annotations —
+        # it just doesn't block merges yet.
+        continue-on-error: true
+        run: |
+          pip install pip-audit -q
+          pip-audit -r requirements.txt
+
   frontend:
     name: Frontend checks
     runs-on: ubuntu-latest
@@ -56,3 +67,10 @@ jobs:
       - run: npm run lint
       - run: npm run test
       - run: npm run build
+
+      - name: Dependency vulnerability scan (report only)
+        # continue-on-error: esbuild/vite currently carry a known dev-server-only
+        # advisory with no non-breaking fix (only resolved by a Vite 5->8 major
+        # bump). Report it without blocking merges until that upgrade is planned.
+        continue-on-error: true
+        run: npm audit --audit-level=high
