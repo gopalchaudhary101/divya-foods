@@ -60,6 +60,20 @@ export function useProductSearch(query: string) {
 }
 
 /**
+ * "You may also like" — frequently-bought-together (from paid orders) blended
+ * with same-category, on the product detail page. Disabled until the product
+ * itself has loaded (needs its id).
+ */
+export function useRelatedProducts(productId: string) {
+  return useQuery({
+    queryKey: queryKeys.products.related(productId),
+    queryFn: () => productApi.getRelated(productId),
+    enabled: Boolean(productId),
+    staleTime: 1000 * 60 * 10,
+  })
+}
+
+/**
  * All active categories — used in navbar, homepage grid, filter sidebar.
  * staleTime is 30 minutes because categories change very rarely.
  */

@@ -21,6 +21,7 @@ export const queryKeys = {
     featured: () => ['products', 'featured'] as const,
     bestSellers: () => ['products', 'best-sellers'] as const,
     search: (query: string) => ['products', 'search', query] as const,
+    related: (id: string) => ['products', 'related', id] as const,
   },
 
   // ─── Categories ───────────────────────────────────────────────────────────
