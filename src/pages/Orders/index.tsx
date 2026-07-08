@@ -2,11 +2,12 @@ import React, { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link, useParams, useLocation } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Package, ChevronRight, CheckCircle, Clock, Truck, XCircle, AlertTriangle, Star, Download, Printer, Mail } from 'lucide-react'
+import { Package, ChevronRight, CheckCircle, Clock, Truck, XCircle, AlertTriangle, Star, Download, Printer, Mail, RotateCcw } from 'lucide-react'
 import { WriteReviewModal } from '@/components/shared/WriteReviewModal'
 import { DeliveryStatusStepper } from '@/components/shared/DeliveryStatusStepper'
 import toast from 'react-hot-toast'
 import { orderApi, type Order } from '@/services/api/orderApi'
+import { returnApi, type ReturnReason, type ReturnStatus } from '@/services/api/returnApi'
 import { queryKeys } from '@/services/queryKeys'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { formatDate } from '@/utils/formatDate'
@@ -49,6 +50,24 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
+// ─── Return/refund helpers ────────────────────────────────────────────────────
+
+const RETURN_WINDOW_HOURS = 24
+
+const RETURN_REASON_LABELS: Record<ReturnReason, string> = {
+  wrong_item: 'Wrong item delivered',
+  damaged_or_spoiled: 'Damaged or spoiled on arrival',
+  missing_item: 'Item missing from delivery',
+  other: 'Other',
+}
+
+const RETURN_STATUS_CONFIG: Record<ReturnStatus, { label: string; color: string }> = {
+  requested: { label: 'Return Requested', color: 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20' },
+  approved:  { label: 'Return Approved',  color: 'text-premium-teal bg-premium-teal/10' },
+  rejected:  { label: 'Return Rejected',  color: 'text-red-500 bg-red-50 dark:bg-red-900/20' },
+  refunded:  { label: 'Refunded',         color: 'text-green-600 bg-green-50 dark:bg-green-900/20' },
+}
+
 // ─── Order Detail page (/orders/:id) ─────────────────────────────────────────
 
 function OrderDetail({ orderId }: { orderId: string }) {
@@ -59,10 +78,40 @@ function OrderDetail({ orderId }: { orderId: string }) {
   const [cancelReason, setCancelReason] = useState('')
   const [reviewTarget, setReviewTarget] = useState<{ productId: string; productName: string } | null>(null)
   const [invoiceAction, setInvoiceAction] = useState<'download' | 'print' | 'email' | null>(null)
+  const [showReturnForm, setShowReturnForm] = useState(false)
+  const [returnReason, setReturnReason] = useState<ReturnReason>('damaged_or_spoiled')
+  const [returnNote, setReturnNote] = useState('')
+  const [returnItems, setReturnItems] = useState<Record<string, number>>({})
 
   const { data: order, isLoading, isError } = useQuery({
     queryKey: queryKeys.orders.detail(orderId),
     queryFn: () => orderApi.getById(orderId),
+  })
+
+  const { data: existingReturn } = useQuery({
+    queryKey: queryKeys.returns.forOrder(orderId),
+    queryFn: () => returnApi.getForOrder(orderId),
+    enabled: order?.status === 'delivered',
+  })
+
+  const returnMutation = useMutation({
+    mutationFn: () => returnApi.request(
+      orderId,
+      returnReason,
+      returnNote,
+      Object.entries(returnItems)
+        .filter(([, quantity]) => quantity > 0)
+        .map(([productId, quantity]) => ({ productId, quantity })),
+    ),
+    onSuccess: () => {
+      toast.success('Return request submitted — we\'ll review it shortly')
+      queryClient.invalidateQueries({ queryKey: queryKeys.returns.forOrder(orderId) })
+      setShowReturnForm(false)
+    },
+    onError: (err: unknown) => {
+      const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      toast.error(msg ?? 'Could not submit return request. Please try again.')
+    },
   })
 
   const cancelMutation = useMutation({
@@ -368,6 +417,115 @@ function OrderDetail({ orderId }: { orderId: string }) {
           )}
         </div>
       )}
+
+      {/* Return/refund section — only for delivered orders */}
+      {order.status === 'delivered' && (() => {
+        const deliveredEvent = [...order.trackingTimeline].reverse().find(e => e.status === 'delivered')
+        const hoursSinceDelivery = deliveredEvent
+          ? (Date.now() - new Date(deliveredEvent.timestamp).getTime()) / 3_600_000
+          : Infinity
+        const windowExpired = hoursSinceDelivery > RETURN_WINDOW_HOURS
+
+        return (
+          <div className="bg-white dark:bg-ocean-900 border border-premium-navy/10 dark:border-ocean-800 rounded-2xl p-5 mb-4">
+            {existingReturn ? (
+              <div>
+                <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+                  <h3 className="font-semibold text-premium-navy dark:text-white">Return Request</h3>
+                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${RETURN_STATUS_CONFIG[existingReturn.status].color}`}>
+                    {RETURN_STATUS_CONFIG[existingReturn.status].label}
+                  </span>
+                </div>
+                <p className="text-sm text-premium-navy/70 dark:text-ocean-300">
+                  {existingReturn.items.map(i => `${i.quantity}× ${i.name}`).join(', ')} · Refund amount: {formatCurrency(existingReturn.refundAmount)}
+                </p>
+                {existingReturn.status === 'rejected' && existingReturn.adminNote && (
+                  <p className="text-xs text-red-500 mt-2"><strong>Reason:</strong> {existingReturn.adminNote}</p>
+                )}
+              </div>
+            ) : windowExpired ? (
+              <p className="text-sm text-premium-navy/50 flex items-center gap-2">
+                <AlertTriangle size={14} className="shrink-0" /> The {RETURN_WINDOW_HOURS}-hour return window for this order has passed.
+              </p>
+            ) : !showReturnForm ? (
+              <button
+                onClick={() => setShowReturnForm(true)}
+                className="flex items-center gap-2 text-sm text-premium-teal hover:text-premium-navy dark:hover:text-white font-medium transition-colors"
+              >
+                <RotateCcw size={16} /> Request a return or refund
+              </button>
+            ) : (
+              <div>
+                <p className="text-sm font-semibold text-premium-navy dark:text-white mb-3">Select items to return</p>
+                <div className="space-y-2 mb-3">
+                  {order.items.map(item => {
+                    const checked = item.productId in returnItems
+                    return (
+                      <div key={item.productId} className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={e => setReturnItems(prev => {
+                            const next = { ...prev }
+                            if (e.target.checked) next[item.productId] = item.quantity
+                            else delete next[item.productId]
+                            return next
+                          })}
+                        />
+                        <span className="flex-1 text-sm text-premium-navy dark:text-white">{item.name}</span>
+                        {checked && (
+                          <input
+                            type="number"
+                            min={1}
+                            max={item.quantity}
+                            value={returnItems[item.productId]}
+                            onChange={e => setReturnItems(prev => ({
+                              ...prev,
+                              [item.productId]: Math.min(item.quantity, Math.max(1, Number(e.target.value) || 1)),
+                            }))}
+                            className="df-input w-16 text-sm py-1"
+                          />
+                        )}
+                        <span className="text-xs text-premium-navy/40 w-16 text-right">of {item.quantity}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+                <select
+                  value={returnReason}
+                  onChange={e => setReturnReason(e.target.value as ReturnReason)}
+                  className="df-input w-full mb-3"
+                >
+                  {(Object.entries(RETURN_REASON_LABELS) as [ReturnReason, string][]).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
+                <textarea
+                  value={returnNote}
+                  onChange={e => setReturnNote(e.target.value)}
+                  placeholder="Additional details (optional)"
+                  rows={2}
+                  className="df-input w-full mb-3 resize-none"
+                />
+                <div className="flex gap-3">
+                  <Button variant="premiumOutline" size="sm" onClick={() => setShowReturnForm(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="premium"
+                    size="sm"
+                    loading={returnMutation.isPending}
+                    disabled={Object.keys(returnItems).length === 0}
+                    onClick={() => returnMutation.mutate()}
+                  >
+                    Submit Request
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })()}
 
       <div className="flex gap-3 flex-wrap">
         <Link to={ROUTES.ORDERS}

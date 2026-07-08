@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import {
   LayoutDashboard, Package, ShoppingBag, Users, Tag, Boxes,
-  Truck, Gift, ClipboardList, Settings, BarChart3, LogOut, Menu, X,
+  Truck, Gift, ClipboardList, Settings, BarChart3, LogOut, Menu, X, RotateCcw,
 } from 'lucide-react'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { ROUTES } from '@/constants/routes'
@@ -17,6 +17,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: ROUTES.ADMIN.DASHBOARD,   label: 'Dashboard',   icon: <LayoutDashboard size={18} /> },
   { to: ROUTES.ADMIN.PRODUCTS,    label: 'Products',    icon: <Package size={18} /> },
   { to: ROUTES.ADMIN.ORDERS,      label: 'Orders',      icon: <ShoppingBag size={18} /> },
+  { to: ROUTES.ADMIN.RETURNS,     label: 'Returns',     icon: <RotateCcw size={18} /> },
   { to: ROUTES.ADMIN.INVENTORY,   label: 'Inventory',    icon: <Boxes size={18} /> },
   { to: ROUTES.ADMIN.BULK_ORDERS, label: 'Bulk Orders', icon: <ClipboardList size={18} /> },
   { to: ROUTES.ADMIN.COUPONS,     label: 'Coupons',     icon: <Tag size={18} /> },

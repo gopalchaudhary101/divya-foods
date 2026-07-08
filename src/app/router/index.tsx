@@ -37,6 +37,7 @@ const CookiesPolicyPage     = lazy(() => import('@/pages/Legal/CookiesPolicy'))
 const AdminSettingsPage     = lazy(() => import('@/pages/Admin/Settings'))
 const NotFoundPage        = lazy(() => import('@/pages/NotFound'))
 const AdminOrdersPage     = lazy(() => import('@/pages/Admin/Orders'))
+const AdminReturnsPage    = lazy(() => import('@/pages/Admin/Returns'))
 const AdminBundlesPage    = lazy(() => import('@/pages/Admin/Bundles'))
 const AdminInventoryPage  = lazy(() => import('@/pages/Admin/Inventory'))
 const LoyaltyPage         = lazy(() => import('@/pages/Loyalty'))
@@ -113,6 +114,7 @@ const router = createBrowserRouter([
       { path: 'analytics', element: <AdminAnalyticsPage /> },
       { path: 'coupons', element: <AdminCouponsPage /> },
       { path: 'orders', element: <AdminOrdersPage /> },
+      { path: 'returns', element: <AdminReturnsPage /> },
       { path: 'bundles', element: <AdminBundlesPage /> },
       { path: 'settings', element: <AdminSettingsPage /> },
       { path: 'inventory', element: <AdminInventoryPage /> },
