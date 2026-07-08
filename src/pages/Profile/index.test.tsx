@@ -9,7 +9,7 @@ import { orderApi } from '@/services/api/orderApi'
 import axiosInstance from '@/services/api/axiosInstance'
 
 vi.mock('@/services/api/userApi', () => ({
-  userApi: { getAddresses: vi.fn(), updateProfile: vi.fn(), addAddress: vi.fn(), updateAddress: vi.fn(), deleteAddress: vi.fn() },
+  userApi: { getAddresses: vi.fn(), updateProfile: vi.fn(), addAddress: vi.fn(), updateAddress: vi.fn(), deleteAddress: vi.fn(), uploadAvatar: vi.fn() },
 }))
 vi.mock('@/services/api/orderApi', () => ({
   orderApi: { getMyOrders: vi.fn() },
@@ -165,5 +165,25 @@ describe('ProfilePage', () => {
     await user.click(screen.getByRole('button', { name: /Sign Out/ }))
 
     await waitFor(() => expect(store.getState().auth.isAuthenticated).toBe(false))
+  })
+
+  it('shows initials when no avatar is set', () => {
+    renderWithProviders(<ProfilePage />, { preloadedState: authedState })
+    expect(screen.getByText('PS')).toBeInTheDocument() // Priya Sharma
+  })
+
+  it('uploads a new avatar and updates the displayed picture', async () => {
+    vi.mocked(userApi.uploadAvatar).mockResolvedValue({
+      id: 'u1', name: 'Priya Sharma', email: 'priya@test.com', role: 'customer',
+      avatar: 'https://cdn.example.com/avatar.jpg', createdAt: '2026-01-01T00:00:00Z',
+    })
+    const user = userEvent.setup()
+    const { store } = renderWithProviders(<ProfilePage />, { preloadedState: authedState })
+
+    const file = new File(['fake-image-bytes'], 'avatar.jpg', { type: 'image/jpeg' })
+    await user.upload(screen.getByLabelText('Change profile picture'), file)
+
+    await waitFor(() => expect(userApi.uploadAvatar).toHaveBeenCalledWith(file))
+    await waitFor(() => expect(store.getState().auth.user?.avatar).toBe('https://cdn.example.com/avatar.jpg'))
   })
 })

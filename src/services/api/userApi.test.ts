@@ -23,13 +23,13 @@ describe('userApi', () => {
     expect(user.name).toBe('New Name')
   })
 
-  it('uploadAvatar sends multipart form data and returns the URL', async () => {
+  it('uploadAvatar sends multipart form data and returns the updated user', async () => {
     mock.onPost('/users/avatar').reply((config) => {
       expect(config.data).toBeInstanceOf(FormData)
-      return [200, { success: true, data: { url: 'https://cdn/avatar.jpg' } }]
+      return [200, { success: true, data: { id: 'u1', name: 'A', avatar: 'https://cdn/avatar.jpg' } }]
     })
-    const url = await userApi.uploadAvatar(new File(['x'], 'avatar.jpg'))
-    expect(url).toBe('https://cdn/avatar.jpg')
+    const user = await userApi.uploadAvatar(new File(['x'], 'avatar.jpg'))
+    expect(user.avatar).toBe('https://cdn/avatar.jpg')
   })
 
   it('getAddresses unwraps the list', async () => {

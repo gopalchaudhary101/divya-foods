@@ -72,6 +72,112 @@ def test_profile_requires_auth(client):
     assert r.status_code == 401
 
 
+# ─── Avatar upload ──────────────────────────────────────────────────────────────
+
+from io import BytesIO
+from unittest.mock import patch
+
+from PIL import Image
+
+
+def _make_jpeg(size=(20, 10), color="red") -> bytes:
+    buf = BytesIO()
+    Image.new("RGB", size, color).save(buf, format="JPEG")
+    return buf.getvalue()
+
+
+_TINY_JPEG = _make_jpeg()
+_FAKE_AVATAR_RESULT = {"secure_url": "https://res.cloudinary.com/demo/image/upload/v1/divyafoods/avatars/abc.jpg"}
+
+
+def _cloudinary_configured():
+    return (
+        patch("app.routers.users.settings.CLOUDINARY_CLOUD_NAME", "demo"),
+        patch("app.routers.users.settings.CLOUDINARY_API_KEY", "key"),
+        patch("app.routers.users.settings.CLOUDINARY_API_SECRET", "secret"),
+    )
+
+
+def test_upload_avatar_requires_auth(client):
+    r = client.post("/users/avatar", files={"file": ("test.jpg", _TINY_JPEG, "image/jpeg")})
+    assert r.status_code == 401
+
+
+def test_upload_avatar_returns_503_when_cloudinary_unconfigured(client, db):
+    insert_user(db)
+    hdrs = _headers(client)
+    with patch("app.routers.users.settings.CLOUDINARY_CLOUD_NAME", ""), \
+         patch("app.routers.users.settings.CLOUDINARY_API_KEY", ""), \
+         patch("app.routers.users.settings.CLOUDINARY_API_SECRET", ""):
+        r = client.post("/users/avatar", files={"file": ("test.jpg", _TINY_JPEG, "image/jpeg")}, headers=hdrs)
+    assert r.status_code == 503
+
+
+def test_upload_avatar_rejects_unsupported_mime_type(client, db):
+    insert_user(db)
+    hdrs = _headers(client)
+    with patch("app.routers.users.settings.CLOUDINARY_CLOUD_NAME", "demo"), \
+         patch("app.routers.users.settings.CLOUDINARY_API_KEY", "key"), \
+         patch("app.routers.users.settings.CLOUDINARY_API_SECRET", "secret"):
+        r = client.post("/users/avatar", files={"file": ("test.gif", b"GIF89a", "image/gif")}, headers=hdrs)
+    assert r.status_code == 400
+    assert "Unsupported file type" in r.json()["detail"]
+
+
+def test_upload_avatar_rejects_oversized_file(client, db):
+    insert_user(db)
+    hdrs = _headers(client)
+    oversized = b"0" * (5 * 1024 * 1024 + 1)
+    with patch("app.routers.users.settings.CLOUDINARY_CLOUD_NAME", "demo"), \
+         patch("app.routers.users.settings.CLOUDINARY_API_KEY", "key"), \
+         patch("app.routers.users.settings.CLOUDINARY_API_SECRET", "secret"):
+        r = client.post("/users/avatar", files={"file": ("big.jpg", oversized, "image/jpeg")}, headers=hdrs)
+    assert r.status_code == 400
+    assert "5MB" in r.json()["detail"]
+
+
+def test_upload_avatar_rejects_corrupted_file(client, db):
+    insert_user(db)
+    hdrs = _headers(client)
+    with patch("app.routers.users.settings.CLOUDINARY_CLOUD_NAME", "demo"), \
+         patch("app.routers.users.settings.CLOUDINARY_API_KEY", "key"), \
+         patch("app.routers.users.settings.CLOUDINARY_API_SECRET", "secret"):
+        r = client.post("/users/avatar", files={"file": ("fake.jpg", b"not a real image", "image/jpeg")}, headers=hdrs)
+    assert r.status_code == 400
+
+
+def test_upload_avatar_success_saves_to_profile(client, db):
+    insert_user(db)
+    hdrs = _headers(client)
+    with patch("app.routers.users.settings.CLOUDINARY_CLOUD_NAME", "demo"), \
+         patch("app.routers.users.settings.CLOUDINARY_API_KEY", "key"), \
+         patch("app.routers.users.settings.CLOUDINARY_API_SECRET", "secret"), \
+         patch("cloudinary.config"), \
+         patch("cloudinary.uploader.upload", return_value=_FAKE_AVATAR_RESULT) as mock_upload:
+        r = client.post("/users/avatar", files={"file": ("test.jpg", _TINY_JPEG, "image/jpeg")}, headers=hdrs)
+
+    assert r.status_code == 200
+    assert r.json()["data"]["avatar"] == _FAKE_AVATAR_RESULT["secure_url"]
+    # Always uploads to the same per-user public_id, so re-uploading overwrites
+    # instead of accumulating orphaned images.
+    assert mock_upload.call_args.kwargs["overwrite"] is True
+
+    profile = client.get("/users/profile", headers=hdrs).json()["data"]
+    assert profile["avatar"] == _FAKE_AVATAR_RESULT["secure_url"]
+
+
+def test_upload_avatar_failure_returns_500(client, db):
+    insert_user(db)
+    hdrs = _headers(client)
+    with patch("app.routers.users.settings.CLOUDINARY_CLOUD_NAME", "demo"), \
+         patch("app.routers.users.settings.CLOUDINARY_API_KEY", "key"), \
+         patch("app.routers.users.settings.CLOUDINARY_API_SECRET", "secret"), \
+         patch("cloudinary.config"), \
+         patch("cloudinary.uploader.upload", side_effect=Exception("network error")):
+        r = client.post("/users/avatar", files={"file": ("test.jpg", _TINY_JPEG, "image/jpeg")}, headers=hdrs)
+    assert r.status_code == 500
+
+
 # ─── Addresses ─────────────────────────────────────────────────────────────────
 
 def test_create_and_list_address(client, db):
