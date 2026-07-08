@@ -319,6 +319,49 @@ def test_admin_update_order_status_valid(client, db):
     assert r.json()["data"]["status"] == "confirmed"
 
 
+def test_admin_concurrent_status_updates_only_one_succeeds(client, db):
+    """Regression test for a race condition: two admin requests transitioning
+    the same order (double-click, retry, two admin sessions) must not both
+    succeed — the second must see the order already moved and reject."""
+    hdrs   = _admin_headers(client, db)
+    uid    = insert_user(db, email="cust@test.com")
+    cat_id = insert_category(db)
+    pid    = insert_product(db, cat_id)
+    oid    = insert_order(db, uid, pid, status="pending")
+
+    with patch("app.services.email_service.send_async"):
+        r1 = client.put(f"/admin/orders/{oid}/status", json={"status": "confirmed"}, headers=hdrs)
+        r2 = client.put(f"/admin/orders/{oid}/status", json={"status": "confirmed"}, headers=hdrs)
+
+    assert r1.status_code == 200
+    assert r2.status_code == 400
+
+    order = db.orders.find_one({"_id": oid})
+    # Exactly one "confirmed" tracking-timeline entry, not two.
+    assert sum(1 for e in order["tracking_timeline"] if e["status"] == "confirmed") == 1
+
+
+def test_admin_concurrent_cancellations_only_restore_stock_once(client, db):
+    """Same race, via the admin cancellation path specifically — stock must
+    only be restored once even if two admin cancel requests race."""
+    hdrs   = _admin_headers(client, db)
+    uid    = insert_user(db, email="cust@test.com")
+    cat_id = insert_category(db)
+    pid    = insert_product(db, cat_id, name="Stock Item", price=500.0)
+    before = db.products.find_one({"_id": pid})["stock_quantity"]
+    oid    = insert_order(db, uid, pid, status="confirmed")
+
+    with patch("app.services.email_service.send_async"):
+        r1 = client.put(f"/admin/orders/{oid}/status", json={"status": "cancelled", "note": "A"}, headers=hdrs)
+        r2 = client.put(f"/admin/orders/{oid}/status", json={"status": "cancelled", "note": "B"}, headers=hdrs)
+
+    assert r1.status_code == 200
+    assert r2.status_code == 400
+
+    after = db.products.find_one({"_id": pid})["stock_quantity"]
+    assert after == before + 1   # restored exactly once
+
+
 def test_admin_update_order_invalid_transition(client, db):
     hdrs   = _admin_headers(client, db)
     uid    = insert_user(db, email="cust@test.com")
