@@ -1,5 +1,11 @@
 from typing import List
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_INSECURE_JWT_DEFAULTS = {
+    "change-this-secret-key-in-production",
+    "dev-secret-key-replace-in-production-minimum-32-chars",
+}
 
 
 class Settings(BaseSettings):
@@ -68,6 +74,27 @@ class Settings(BaseSettings):
 
     # AI Chat
     ANTHROPIC_API_KEY: str = ""
+
+    @model_validator(mode="after")
+    def _reject_insecure_jwt_secret_in_production(self) -> "Settings":
+        """
+        DEBUG=False means this is a real deployment. Refuse to boot rather than
+        silently sign tokens with a known placeholder — anyone who has read the
+        source (or this file) could forge a valid JWT against a live deployment
+        that forgot to set JWT_SECRET_KEY.
+        """
+        if not self.DEBUG:
+            if self.JWT_SECRET_KEY in _INSECURE_JWT_DEFAULTS:
+                raise ValueError(
+                    "JWT_SECRET_KEY is still a placeholder default. Set a real "
+                    "secret (openssl rand -hex 32) in the production environment."
+                )
+            if len(self.JWT_SECRET_KEY) < 32:
+                raise ValueError(
+                    "JWT_SECRET_KEY is too short for production use (need >= 32 "
+                    "characters). Set a stronger secret (openssl rand -hex 32)."
+                )
+        return self
 
 
 settings = Settings()
