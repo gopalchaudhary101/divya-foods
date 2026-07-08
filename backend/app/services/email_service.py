@@ -460,3 +460,23 @@ def contact_form_submission(name: str, email: str, phone: str, message: str) -> 
 <p style="margin:16px 0 6px"><strong>Message</strong></p>
 <p style="line-height:1.6;font-size:13px;white-space:pre-wrap">{safe_message}</p>""")
     send_async(settings.ADMIN_NOTIFICATION_EMAIL, f"Contact Form — {safe_name}", html)
+
+
+def admin_low_stock_digest(products: list) -> None:
+    """Daily digest (product_service.run_low_stock_digest_job) of every
+    product at or below its own restock threshold — small operations don't
+    have a dashboard open all day to notice this on their own. `products` are
+    raw aggregation docs from product_service.get_low_stock_products, with
+    computed _available/_threshold fields (not the camelCase API shape)."""
+    count = len(products)
+    rows = "".join(
+        f'<li>{_esc(p["name"])} — {p["_available"]} left (threshold {p["_threshold"]})'
+        f'{" <strong>&mdash; OUT OF STOCK</strong>" if p["_available"] <= 0 else ""}</li>'
+        for p in products
+    )
+    html = _wrap(f"""
+<h2>Low Stock Alert &#128230;</h2>
+<p style="color:#6B7280;margin:0 0 18px">{count} product{'s' if count != 1 else ''} at or below their restock threshold:</p>
+<ul style="margin:0 0 16px;padding-left:20px;font-size:13px">{rows}</ul>
+<p style="font-size:13px;color:#6B7280">Review and reorder from the admin panel's Inventory section.</p>""")
+    send_async(settings.ADMIN_NOTIFICATION_EMAIL, f"Low Stock Alert — {count} product{'s' if count != 1 else ''}", html)

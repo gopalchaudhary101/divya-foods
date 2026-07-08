@@ -5,6 +5,7 @@ Converts MongoDB snake_case documents to camelCase dicts that match the
 frontend's TypeScript Product type exactly. No Pydantic alias magic needed.
 """
 
+import logging
 import math
 import re
 from datetime import datetime, timezone
@@ -13,6 +14,12 @@ from typing import Optional
 from bson import ObjectId
 from fastapi import HTTPException, status
 from pymongo.database import Database
+
+from app.database import get_database
+from app.services import email_service
+from app.utils import scheduler
+
+logger = logging.getLogger("app.product")
 
 
 # ─── Converters ──────────────────────────────────────────────────────────────
@@ -375,6 +382,51 @@ def _inventory_fields(doc: dict) -> dict:
         "availableStock":    available,
         "stockStatus":       stock_status,
     }
+
+
+def get_low_stock_products(db: Database, limit: Optional[int] = None) -> list:
+    """
+    Products whose available stock (stock_quantity - reserved_stock) has
+    dropped to or below their own low_stock_threshold (or the default of 10
+    if unset) — includes out-of-stock products too, since available<=0 is
+    always <= any non-negative threshold. Shared by the admin dashboard's
+    low-stock widget and the daily low-stock digest email below, so both
+    always agree on which products actually count as low stock.
+    """
+    pipeline = [
+        {"$addFields": {
+            "_available": {"$subtract": ["$stock_quantity", {"$ifNull": ["$reserved_stock", 0]}]},
+            "_threshold": {"$ifNull": ["$low_stock_threshold", _INVENTORY_DEFAULTS["low_stock_threshold"]]},
+        }},
+        {"$match": {"$expr": {"$lte": ["$_available", "$_threshold"]}}},
+        {"$sort": {"_available": 1}},
+    ]
+    if limit:
+        pipeline.append({"$limit": limit})
+    return list(db.products.aggregate(pipeline))
+
+
+def run_low_stock_digest_job() -> None:
+    """
+    Scheduler entry point (once daily) — resolves the live db handle at
+    execution time, matching how the request-time get_db() dependency works.
+
+    Cross-worker dedup: render.yaml runs 2 gunicorn workers, each running its
+    own copy of this scheduler with no coordination between them, so a plain
+    daily cron trigger would send the digest twice. scheduler.claim_daily_run
+    handles this the same way cart_service's abandoned-cart job handles it
+    (atomic Mongo claim) — just keyed by day instead of by document, since a
+    digest has no natural per-item lock to grab.
+    """
+    db = get_database()
+    if not scheduler.claim_daily_run(db, "low_stock_digest"):
+        return
+    try:
+        products = get_low_stock_products(db)
+        if products:
+            email_service.admin_low_stock_digest(products)
+    except Exception:  # noqa: BLE001
+        logger.exception("Low-stock digest job failed")
 
 
 def log_stock_movement(
