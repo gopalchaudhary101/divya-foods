@@ -627,6 +627,62 @@ def _refund_order(db: Database, oid: ObjectId, refund_id: str, amount_paise: int
     customer_email = _get_customer_email(db, doc["user_id"])
     email_service.refund_processed(_order_to_dict(doc), customer_email, amount_paise / 100, full)
 
+    # In-app + push notification, matching admin_update_status's pattern
+    scope = "full" if full else "partial"
+    db.notifications.insert_one({
+        "user_id":    doc["user_id"],
+        "type":       "order_update",
+        "title":      "Refund Processed \U0001F4B0",
+        "message":    f"A {scope} refund of ₹{amount_paise / 100:,.2f} was processed for order {doc['order_number']}.",
+        "is_read":    False,
+        "data":       {"order_id": str(oid), "order_number": doc.get("order_number", "")},
+        "created_at": now,
+    })
+    try:
+        push_service.send_push_to_user(
+            db, doc["user_id"], "Refund Processed",
+            f"₹{amount_paise / 100:,.2f} refunded for order {doc['order_number']}.",
+            url=f"/orders/{oid}",
+        )
+    except Exception:  # noqa: BLE001
+        pass
+
+
+# ─── Admin: initiate a refund directly (return-request approval) ─────────────
+# Unlike _refund_order above (which only *records* a refund Razorpay's webhook
+# already confirmed happened), this actually calls Razorpay's refund API —
+# used when an admin approves a customer's return request. Both paths funnel
+# through the same _refund_order recorder, so whichever confirmation arrives
+# (this synchronous call, or the webhook that follows it) is a safe no-op on
+# the other, exactly like the payment-capture flow.
+
+def admin_initiate_refund(db: Database, order_id: str, amount: float, note: str = "") -> dict:
+    try:
+        oid = ObjectId(order_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid order ID.")
+
+    doc = db.orders.find_one({"_id": oid})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Order not found.")
+    if doc["payment_method"] != "razorpay" or not doc.get("razorpay_payment_id"):
+        raise HTTPException(
+            status_code=400,
+            detail="This order has no Razorpay payment to refund automatically — process a manual refund instead.",
+        )
+
+    amount_paise = int(round(amount * 100))
+    rzp = _rzp_client()
+    refund_kwargs: dict = {"amount": amount_paise}
+    if note:
+        refund_kwargs["notes"] = {"reason": note}
+    refund = rzp.payment.refund(doc["razorpay_payment_id"], refund_kwargs)
+
+    full = amount_paise >= int(round(doc["total"] * 100))
+    _refund_order(db, oid, refund["id"], refund.get("amount", amount_paise), full)
+
+    return {"success": True, "razorpayRefundId": refund["id"], "amount": amount, "full": full}
+
 
 # ─── Razorpay webhooks ─────────────────────────────────────────────────────────
 # Authoritative, server-to-server confirmation independent of the customer's

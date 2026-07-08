@@ -8,6 +8,8 @@ GET  /orders/{order_id}          → single order detail
 PUT  /orders/{order_id}/cancel   → customer cancels own order
 GET  /orders/{order_id}/invoice  → download own order's invoice PDF
 POST /orders/{order_id}/invoice/email → email own order's invoice PDF to self
+POST /orders/{order_id}/return-request → request a return/refund (delivered orders only)
+GET  /orders/{order_id}/return-request → check the status of your return request
 
 Guest checkout (no account/login required):
 POST /orders/guest               → initiate order as a guest
@@ -22,9 +24,20 @@ from pymongo.database import Database
 
 from app.dependencies import get_db, get_current_user
 from app.limiter import limiter
-from app.services import order_service
+from app.services import order_service, return_service
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
+
+
+class ReturnItemRequest(BaseModel):
+    productId: str
+    quantity: int
+
+
+class ReturnRequestCreate(BaseModel):
+    reason: str
+    note: Optional[str] = ""
+    items: list[ReturnItemRequest]
 
 
 class OrderInitiateRequest(BaseModel):
@@ -121,6 +134,30 @@ def email_invoice(
     current_user: dict = Depends(get_current_user),
 ):
     return order_service.email_invoice(db, order_id, current_user["_id"])
+
+
+@router.post("/{order_id}/return-request")
+@limiter.limit("5/minute")
+def request_return(
+    request: Request,
+    order_id: str,
+    body: ReturnRequestCreate,
+    db: Database = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    items = [item.model_dump() for item in body.items]
+    return return_service.create_return_request(
+        db, current_user["_id"], order_id, body.reason, body.note or "", items
+    )
+
+
+@router.get("/{order_id}/return-request")
+def get_return_request(
+    order_id: str,
+    db: Database = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    return return_service.get_my_return_request(db, current_user["_id"], order_id)
 
 
 # ─── Guest checkout ─────────────────────────────────────────────────────────────

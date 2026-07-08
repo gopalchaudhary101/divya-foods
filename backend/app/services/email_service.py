@@ -338,6 +338,38 @@ def refund_processed(order: dict, customer_email: str, amount: float, full: bool
     send_async(customer_email, f"Refund Processed — {order['orderNumber']} | Divya Luxury Seafoods", html)
 
 
+def return_request_received(ret: dict, customer_email: str) -> None:
+    """Confirms a return/refund request was received — the actual refund email
+    (refund_processed) follows separately once an admin approves it."""
+    rows = "".join(f'<li>{it["quantity"]}&times; {_esc(it["name"])}</li>' for it in ret.get("items", []))
+    html = _wrap(f"""
+<h2>Return Request Received &#128203;</h2>
+<p style="color:#6B7280;margin:0 0 18px">We've received your return request for order
+   <strong>{ret["orderNumber"]}</strong> and will review it shortly.</p>
+<p style="margin:16px 0 6px"><strong>Items</strong></p>
+<ul style="margin:0 0 16px;padding-left:20px;font-size:13px">{rows}</ul>
+<p><strong>Requested refund amount:</strong> &#8377;{ret["refundAmount"]:,.2f}</p>
+<div class="info-box">
+  &#8987; We typically review return requests within 1&ndash;2 business days.<br>
+  &#128172; Questions? Call <strong>+91&nbsp;9999123242</strong> or reply to this email.
+</div>""")
+    send_async(customer_email, f"Return Request Received — {ret['orderNumber']} | Divya Luxury Seafoods", html)
+
+
+def return_rejected(ret: dict, customer_email: str, note: str) -> None:
+    safe_note = _esc(note)
+    html = _wrap(f"""
+<h2>Return Request Update</h2>
+<p style="color:#6B7280;margin:0 0 18px">Your return request for order
+   <strong>{ret["orderNumber"]}</strong> was not approved.</p>
+<p style="margin:16px 0 6px"><strong>Reason from our team</strong></p>
+<p style="font-size:13px;white-space:pre-wrap">{safe_note}</p>
+<div class="info-box">
+  &#128172; Questions? Call <strong>+91&nbsp;9999123242</strong> or reply to this email.
+</div>""")
+    send_async(customer_email, f"Return Request Update — {ret['orderNumber']} | Divya Luxury Seafoods", html)
+
+
 # ─── Admin-facing notifications ───────────────────────────────────────────────
 
 def admin_new_order_notification(order: dict) -> None:
@@ -354,6 +386,28 @@ def admin_new_order_notification(order: dict) -> None:
 <p style="margin:16px 0 6px"><strong>Customer</strong></p>
 <p style="line-height:1.8;font-size:13px">{_addr(a)}</p>""")
     send_async(settings.ADMIN_NOTIFICATION_EMAIL, f"New Order {order['orderNumber']} — ₹{order['total']:,.2f}", html)
+
+
+def admin_return_request_notification(ret: dict) -> None:
+    """Alerts the business owner's inbox when a customer requests a return —
+    same reasoning as admin_new_order_notification: no dashboard open all day."""
+    rows = "".join(f'<li>{it["quantity"]}&times; {_esc(it["name"])}</li>' for it in ret.get("items", []))
+    reason_labels = {
+        "wrong_item": "Wrong item delivered",
+        "damaged_or_spoiled": "Damaged or spoiled on arrival",
+        "missing_item": "Item missing from delivery",
+        "other": "Other",
+    }
+    html = _wrap(f"""
+<h2>New Return Request &#8617;</h2>
+<p><strong>Order Number:</strong> {ret["orderNumber"]} &nbsp;
+   <span class="badge badge-red">&#8377;{ret["refundAmount"]:,.2f}</span></p>
+<p><strong>Reason:</strong> {_esc(reason_labels.get(ret["reason"], ret["reason"]))}</p>
+{f'<p><strong>Customer note:</strong> {_esc(ret["note"])}</p>' if ret.get("note") else ""}
+<p style="margin:16px 0 6px"><strong>Items</strong></p>
+<ul style="margin:0 0 16px;padding-left:20px;font-size:13px">{rows}</ul>
+<p style="font-size:13px;color:#6B7280">Review in the admin panel under Returns.</p>""")
+    send_async(settings.ADMIN_NOTIFICATION_EMAIL, f"Return Request — {ret['orderNumber']}", html)
 
 
 def contact_form_submission(name: str, email: str, phone: str, message: str) -> None:
