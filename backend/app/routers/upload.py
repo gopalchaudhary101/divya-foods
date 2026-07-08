@@ -34,12 +34,13 @@ from io import BytesIO
 
 import cloudinary
 import cloudinary.uploader
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from PIL import Image, ImageOps, UnidentifiedImageError
 from pymongo.database import Database
 
 from app.config import settings
 from app.dependencies import get_db, require_admin
+from app.limiter import limiter
 from app.services import settings_service
 
 router = APIRouter(prefix="/upload", tags=["Upload"])
@@ -159,7 +160,9 @@ def _validate_and_upload(contents: bytes, content_type: str, upload_settings: di
 
 
 @router.post("/image", summary="Upload product image to Cloudinary CDN")
+@limiter.limit("20/minute")
 async def upload_image(
+    request: Request,
     file: UploadFile = File(...),
     db: Database = Depends(get_db),
     _admin: dict = Depends(require_admin),
@@ -179,7 +182,9 @@ async def upload_image(
 
 
 @router.post("/images", summary="Upload multiple product images to Cloudinary CDN")
+@limiter.limit("10/minute")
 async def upload_images(
+    request: Request,
     files: list[UploadFile] = File(...),
     db: Database = Depends(get_db),
     _admin: dict = Depends(require_admin),
