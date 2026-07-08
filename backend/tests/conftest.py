@@ -62,7 +62,7 @@ COLLECTIONS = [
     "users", "products", "categories", "orders", "carts", "coupons", "banners",
     "reviews", "addresses", "notifications", "push_subscriptions", "bundles",
     "qa", "subscriptions", "settings", "image_hashes", "stock_movements", "purchases",
-    "bulk_order_requests", "gift_cards", "returns",
+    "bulk_order_requests", "gift_cards", "returns", "scheduled_jobs",
 ]
 
 @pytest.fixture(autouse=True)

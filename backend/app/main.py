@@ -9,7 +9,7 @@ from slowapi import _rate_limit_exceeded_handler
 from app.config import settings
 from app.database import connect_to_mongo, close_mongo_connection, ping_database
 from app.limiter import limiter
-from app.services import cart_service
+from app.services import cart_service, product_service
 from app.utils import scheduler
 from app.routers import (
     auth, products, categories, orders, cart,
@@ -36,6 +36,7 @@ async def lifespan(app: FastAPI):
     """
     connect_to_mongo()
     scheduler.add_interval_job(cart_service.run_abandoned_cart_job, minutes=30, job_id="abandoned_cart_reminders")
+    scheduler.add_daily_job(product_service.run_low_stock_digest_job, hour=9, minute=0, job_id="low_stock_digest")
     scheduler.start()
     yield
     scheduler.shutdown()
