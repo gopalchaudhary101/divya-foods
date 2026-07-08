@@ -5,14 +5,20 @@ Wishlist is stored as `wishlist_product_ids: [str]` on the user document.
 Addresses are stored in the separate `addresses` collection, indexed by user_id.
 """
 
+from io import BytesIO
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+import cloudinary
+import cloudinary.uploader
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile, status
+from PIL import Image, ImageOps, UnidentifiedImageError
 from pydantic import BaseModel, Field
 from pymongo.database import Database
 from bson import ObjectId
 
+from app.config import settings
 from app.dependencies import get_db, get_current_user
+from app.limiter import limiter
 from app.models.base import utcnow
 from app.services.product_service import _to_list_item
 
@@ -48,6 +54,82 @@ def update_profile(
         update["date_of_birth"] = body.date_of_birth
 
     db.users.update_one({"_id": current_user["_id"]}, {"$set": update})
+    updated = db.users.find_one({"_id": current_user["_id"]})
+    from app.services.auth_service import _user_to_response
+    return {"success": True, "data": _user_to_response(updated)}
+
+
+_AVATAR_ALLOWED_MIMES = {"image/jpeg", "image/png", "image/webp"}
+_AVATAR_MAX_BYTES = 5 * 1024 * 1024  # 5MB
+
+
+@router.post("/avatar", summary="Upload a profile picture")
+@limiter.limit("10/minute")
+async def upload_avatar(
+    request: Request,
+    file: UploadFile = File(...),
+    db: Database = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Uploads a new avatar to Cloudinary and saves it on the caller's own
+    profile in one step. Deliberately simpler than app/routers/upload.py's
+    product-image pipeline (which is admin-only, batch-capable, dedups by
+    content hash, and respects admin-configurable size/format limits) — this
+    is always one small image for yourself. Reuploading always overwrites the
+    same Cloudinary public_id (the user's own id), so it never accumulates
+    orphaned images the way a fresh public_id per upload would.
+    """
+    if not all([settings.CLOUDINARY_CLOUD_NAME, settings.CLOUDINARY_API_KEY, settings.CLOUDINARY_API_SECRET]):
+        raise HTTPException(status_code=503, detail="Image upload is not configured.")
+
+    if file.content_type not in _AVATAR_ALLOWED_MIMES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file type '{file.content_type}'. Allowed: JPEG, PNG, WebP.",
+        )
+
+    contents = await file.read()
+    if len(contents) > _AVATAR_MAX_BYTES:
+        raise HTTPException(status_code=400, detail="Avatar image must be under 5MB.")
+
+    try:
+        probe = Image.open(BytesIO(contents))
+        probe.verify()
+    except Image.DecompressionBombError as exc:
+        raise HTTPException(status_code=400, detail="Image is too large to process safely.") from exc
+    except (UnidentifiedImageError, OSError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail="File is not a valid image or is corrupted.") from exc
+
+    # verify() leaves the file object unusable for further operations — reopen it.
+    img = Image.open(BytesIO(contents))
+    img = ImageOps.exif_transpose(img)  # bakes in correct rotation, drops the orientation tag
+    img.thumbnail((512, 512), Image.LANCZOS)
+    out = BytesIO()
+    img.convert("RGB").save(out, format="JPEG", quality=90, optimize=True)
+
+    try:
+        cloudinary.config(
+            cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+            api_key=settings.CLOUDINARY_API_KEY,
+            api_secret=settings.CLOUDINARY_API_SECRET,
+            secure=True,
+        )
+        result = cloudinary.uploader.upload(
+            BytesIO(out.getvalue()),
+            folder="divyafoods/avatars",
+            public_id=str(current_user["_id"]),
+            overwrite=True,
+            resource_type="image",
+            transformation=[{"width": 256, "height": 256, "crop": "fill", "gravity": "face"}],
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Avatar upload failed: {exc}") from exc
+
+    db.users.update_one(
+        {"_id": current_user["_id"]},
+        {"$set": {"avatar": result["secure_url"], "updated_at": utcnow()}},
+    )
     updated = db.users.find_one({"_id": current_user["_id"]})
     from app.services.auth_service import _user_to_response
     return {"success": True, "data": _user_to_response(updated)}

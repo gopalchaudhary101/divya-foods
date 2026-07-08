@@ -38,18 +38,20 @@ export const userApi = {
   },
 
   /**
-   * Upload a new avatar image to Cloudinary via the backend.
-   * Backend handles the Cloudinary upload and returns the URL.
+   * Upload a new avatar image to Cloudinary via the backend, which saves it
+   * to the caller's own profile in the same request — returns the full
+   * updated user (same shape as updateProfile) so callers can dispatch
+   * setCredentials directly instead of hand-merging just a URL.
    */
-  uploadAvatar: async (file: File): Promise<string> => {
+  uploadAvatar: async (file: File): Promise<User> => {
     const formData = new FormData()
     formData.append('file', file)
-    const { data } = await axiosInstance.post<ApiResponse<{ url: string }>>(
+    const { data } = await axiosInstance.post<ApiResponse<User>>(
       '/users/avatar',
       formData,
       { headers: { 'Content-Type': 'multipart/form-data' } }
     )
-    return data.data.url
+    return data.data
   },
 
   // ── Addresses ──────────────────────────────────────────────────────────────

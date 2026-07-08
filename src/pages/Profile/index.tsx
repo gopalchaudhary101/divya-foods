@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, Link } from 'react-router-dom'
 import {
   User, Phone, Mail, MapPin, Lock, LogOut, Plus, Pencil, Trash2,
-  Star, Package, ChevronRight, CheckCircle, Eye, EyeOff, Shield,
+  Star, Package, ChevronRight, CheckCircle, Eye, EyeOff, Shield, Camera,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '@/features/auth/hooks/useAuth'
@@ -22,13 +22,23 @@ import { useAppDispatch } from '@/hooks/useAppDispatch'
 import type { Address } from '@/types'
 import { ROUTES } from '@/constants/routes'
 
-// ─── Avatar initials ─────────────────────────────────────────────────────────
+// ─── Avatar (real image if set, initials fallback otherwise) ─────────────────
 
-function Avatar({ name, size = 'lg' }: { name: string; size?: 'sm' | 'lg' }) {
+function Avatar({ name, avatarUrl, size = 'lg' }: { name: string; avatarUrl?: string | null; size?: 'sm' | 'lg' }) {
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+  const sizeClasses = size === 'lg' ? 'w-20 h-20 text-2xl' : 'w-9 h-9 text-sm'
+  if (avatarUrl) {
+    return (
+      <img
+        src={avatarUrl}
+        alt={name}
+        className={`rounded-full object-cover select-none ${sizeClasses}`}
+      />
+    )
+  }
   return (
     <div className={`rounded-full bg-gradient-to-br from-premium-navy to-[#1B3A4B] flex items-center justify-center text-premium-gold font-bold select-none
-      ${size === 'lg' ? 'w-20 h-20 text-2xl' : 'w-9 h-9 text-sm'}`}>
+      ${sizeClasses}`}>
       {initials}
     </div>
   )
@@ -222,6 +232,21 @@ export default function ProfilePage() {
     onError: (err) => toast.error(getErrorMessage(err)),
   })
 
+  const uploadAvatarMut = useMutation({
+    mutationFn: (file: File) => userApi.uploadAvatar(file),
+    onSuccess: (updated) => {
+      dispatch(setCredentials({ user: updated, token: localStorage.getItem('access_token')! }))
+      toast.success('Profile picture updated')
+    },
+    onError: (err) => toast.error(getErrorMessage(err)),
+  })
+
+  function handleAvatarFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (file) uploadAvatarMut.mutate(file)
+    e.target.value = '' // allow re-selecting the same file next time
+  }
+
   const changePwdMut = useMutation({
     mutationFn: ({ currentPassword, newPassword }: { currentPassword: string; newPassword: string }) =>
       axiosInstance.post('/auth/change-password', { current_password: currentPassword, new_password: newPassword }),
@@ -301,7 +326,21 @@ export default function ProfilePage() {
         {/* ── Hero header ────────────────────────────────────────────── */}
         <div className="bg-gradient-to-br from-premium-navy to-[#060F16] px-4 pt-10 pb-16 text-white">
           <div className="max-w-2xl mx-auto flex items-center gap-5">
-            <Avatar name={user.name} />
+            <label className="relative shrink-0 cursor-pointer group" aria-label="Change profile picture">
+              <Avatar name={user.name} avatarUrl={user.avatar} />
+              <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-premium-gold text-premium-navy flex items-center justify-center border-2 border-premium-navy group-hover:bg-premium-gold-light transition-colors">
+                {uploadAvatarMut.isPending
+                  ? <span className="w-3 h-3 border-2 border-premium-navy border-t-transparent rounded-full animate-spin" />
+                  : <Camera size={12} />}
+              </span>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                onChange={handleAvatarFileChange}
+                disabled={uploadAvatarMut.isPending}
+              />
+            </label>
             <div className="flex-1 min-w-0">
               <h1 className="text-xl font-display font-bold truncate">{user.name}</h1>
               <p className="text-premium-muted text-sm mt-0.5 truncate">{user.email}</p>
