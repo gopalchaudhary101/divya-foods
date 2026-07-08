@@ -115,4 +115,11 @@ def create_indexes(db: Database) -> None:
     db.contact_submissions.create_index([("created_at", -1)])
     db.contact_submissions.create_index("email")
 
+    # ── returns ───────────────────────────────────────────────────────────────
+    db.returns.create_index("user_id")
+    db.returns.create_index("order_number")
+    db.returns.create_index([("requested_at", -1)])
+    # Duplicate-request guard: "is there already an active return for this order?"
+    db.returns.create_index([("order_id", 1), ("status", 1)])
+
     logger.info("All indexes created successfully")

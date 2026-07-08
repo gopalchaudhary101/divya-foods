@@ -9,6 +9,12 @@ Orders:
   GET  /admin/orders/{id}/invoice  → download any order's invoice PDF
   POST /admin/orders/{id}/invoice/email → email any order's invoice PDF to its customer
 
+Returns:
+  GET  /admin/returns              → all return requests with filters + pagination (status, search)
+  GET  /admin/returns/{id}         → single return request detail
+  PUT  /admin/returns/{id}/approve → approve + trigger a real Razorpay refund
+  PUT  /admin/returns/{id}/reject  → reject with a note explaining why
+
 Products:
   GET    /admin/products            → paginated list with search / category filter
   POST   /admin/products            → create product
@@ -68,7 +74,7 @@ from pymongo.database import Database
 from pydantic import BaseModel, EmailStr
 
 from app.dependencies import get_db, require_admin
-from app.services import order_service, product_service, analytics_service, banner_service, settings_service, marketing_service, driver_service, user_admin_service
+from app.services import order_service, product_service, analytics_service, banner_service, settings_service, marketing_service, driver_service, user_admin_service, return_service
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -500,6 +506,53 @@ def admin_email_invoice(
     _admin: dict = Depends(require_admin),
 ):
     return order_service.email_invoice(db, order_id, None)
+
+
+# ─── Returns ──────────────────────────────────────────────────────────────────
+
+class ReturnResolveRequest(BaseModel):
+    note: Optional[str] = ""
+
+
+@router.get("/returns")
+def admin_list_returns(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    status: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return return_service.admin_list_returns(db, page, limit, status, search)
+
+
+@router.get("/returns/{return_id}")
+def admin_get_return(
+    return_id: str,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return return_service.admin_get_return(db, return_id)
+
+
+@router.put("/returns/{return_id}/approve")
+def admin_approve_return(
+    return_id: str,
+    body: ReturnResolveRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return return_service.admin_approve_return(db, return_id, body.note or "")
+
+
+@router.put("/returns/{return_id}/reject")
+def admin_reject_return(
+    return_id: str,
+    body: ReturnResolveRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return return_service.admin_reject_return(db, return_id, body.note or "")
 
 
 # ─── Analytics ────────────────────────────────────────────────────────────────
