@@ -96,3 +96,29 @@ def test_sync_cart(client, db):
     assert r.status_code == 200
     r2 = client.get("/cart", headers=hdrs)
     assert r2.json()["data"]["items"][0]["quantity"] == 3
+
+
+# ─── Abandoned-cart reminder reset ─────────────────────────────────────────────
+# Every mutation must clear reminder_sent_at, so a customer who comes back and
+# abandons again after a reminder is eligible for a fresh one (cart_service.py).
+
+def test_adding_item_resets_reminder_sent_at(client, db):
+    hdrs, pid = _setup(client, db)
+    client.post("/cart/items", json=_item(pid, 1), headers=hdrs)
+    db.carts.update_one({}, {"$set": {"reminder_sent_at": "2026-01-01T00:00:00Z"}})
+
+    client.post("/cart/items", json=_item(pid, 1), headers=hdrs)
+
+    cart = db.carts.find_one({})
+    assert cart["reminder_sent_at"] is None
+
+
+def test_updating_quantity_resets_reminder_sent_at(client, db):
+    hdrs, pid = _setup(client, db)
+    client.post("/cart/items", json=_item(pid, 1), headers=hdrs)
+    db.carts.update_one({}, {"$set": {"reminder_sent_at": "2026-01-01T00:00:00Z"}})
+
+    client.put(f"/cart/items/{pid}", json={"quantity": 4}, headers=hdrs)
+
+    cart = db.carts.find_one({})
+    assert cart["reminder_sent_at"] is None
