@@ -29,6 +29,8 @@ const REASON_LABELS: Record<string, string> = {
 function DetailModal({ ret, onClose }: { ret: ReturnRequestRecord; onClose: () => void }) {
   const queryClient = useQueryClient()
   const [note, setNote] = useState('')
+  const [showManualForm, setShowManualForm] = useState(false)
+  const [manualReference, setManualReference] = useState('')
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin', 'returns'] })
 
@@ -42,6 +44,19 @@ function DetailModal({ ret, onClose }: { ret: ReturnRequestRecord; onClose: () =
     onError: (err: unknown) => {
       const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
       toast.error(msg ?? 'Failed to approve return')
+    },
+  })
+
+  const approveManualMutation = useMutation({
+    mutationFn: () => adminReturnApi.approveManual(ret.id, manualReference, note),
+    onSuccess: () => {
+      toast.success('Manual refund recorded')
+      invalidate()
+      onClose()
+    },
+    onError: (err: unknown) => {
+      const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      toast.error(msg ?? 'Failed to record manual refund')
     },
   })
 
@@ -59,6 +74,7 @@ function DetailModal({ ret, onClose }: { ret: ReturnRequestRecord; onClose: () =
   })
 
   const resolved = ret.status !== 'requested'
+  const isRazorpayOrder = ret.orderPaymentMethod === 'razorpay'
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
@@ -74,9 +90,12 @@ function DetailModal({ ret, onClose }: { ret: ReturnRequestRecord; onClose: () =
           <button onClick={onClose} className="text-ocean-400 hover:text-ocean-700"><X size={18} /></button>
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 flex items-center gap-2">
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${STATUS_COLORS[ret.status]}`}>
             {ret.status}
+          </span>
+          <span className="text-xs text-ocean-400">
+            Paid via <span className="font-medium uppercase">{ret.orderPaymentMethod ?? 'unknown'}</span>
           </span>
         </div>
 
@@ -106,6 +125,15 @@ function DetailModal({ ret, onClose }: { ret: ReturnRequestRecord; onClose: () =
           </div>
         )}
 
+        {resolved && ret.refundMethod && (
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-ocean-400 uppercase mb-1">Refund Method</p>
+            <p className="text-sm text-ocean-700 dark:text-ocean-200 capitalize">
+              {ret.refundMethod}{ret.refundReference && ` — ${ret.refundReference}`}
+            </p>
+          </div>
+        )}
+
         {!resolved && (
           <>
             <div className="mb-4">
@@ -120,7 +148,22 @@ function DetailModal({ ret, onClose }: { ret: ReturnRequestRecord; onClose: () =
                 placeholder="Explain your decision — sent to the customer if rejected"
               />
             </div>
-            <div className="flex gap-3">
+
+            {showManualForm && (
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-ocean-500 uppercase tracking-widest mb-1">
+                  Refund Reference
+                </label>
+                <input
+                  value={manualReference}
+                  onChange={e => setManualReference(e.target.value)}
+                  placeholder="Bank transfer UTR, receipt number, etc."
+                  className="input-field w-full"
+                />
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-3">
               <Button
                 variant="danger"
                 size="sm"
@@ -130,14 +173,33 @@ function DetailModal({ ret, onClose }: { ret: ReturnRequestRecord; onClose: () =
               >
                 Reject
               </Button>
-              <Button
-                variant="premium"
-                size="sm"
-                loading={approveMutation.isPending}
-                onClick={() => approveMutation.mutate()}
-              >
-                Approve &amp; Refund
-              </Button>
+
+              {isRazorpayOrder && !showManualForm && (
+                <Button
+                  variant="premium"
+                  size="sm"
+                  loading={approveMutation.isPending}
+                  onClick={() => approveMutation.mutate()}
+                >
+                  Approve &amp; Refund via Razorpay
+                </Button>
+              )}
+
+              {!showManualForm ? (
+                <Button variant="premiumOutline" size="sm" onClick={() => setShowManualForm(true)}>
+                  Record Manual Refund
+                </Button>
+              ) : (
+                <Button
+                  variant="premium"
+                  size="sm"
+                  loading={approveManualMutation.isPending}
+                  disabled={!manualReference.trim()}
+                  onClick={() => approveManualMutation.mutate()}
+                >
+                  Confirm Manual Refund
+                </Button>
+              )}
             </div>
           </>
         )}

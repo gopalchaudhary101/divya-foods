@@ -30,6 +30,11 @@ export interface ReturnRequestRecord {
   status: ReturnStatus
   adminNote: string | null
   razorpayRefundId: string | null
+  /** The order's payment method at request time — 'razorpay' orders can be
+   *  auto-refunded; anything else (e.g. 'cod') needs a manual refund record. */
+  orderPaymentMethod: string | null
+  refundMethod: 'razorpay' | 'manual' | null
+  refundReference: string | null
   requestedAt: string
   updatedAt: string
   resolvedAt: string | null
@@ -91,6 +96,16 @@ export const adminReturnApi = {
     const { data } = await axiosInstance.put<ApiResponse<ReturnRequestRecord>>(
       `/admin/returns/${id}/approve`,
       { note: note || '' },
+    )
+    return data.data
+  },
+
+  /** For orders that can't be auto-refunded via Razorpay (most commonly COD) —
+   *  records a refund the admin already completed some other way. */
+  approveManual: async (id: string, reference: string, note?: string): Promise<ReturnRequestRecord> => {
+    const { data } = await axiosInstance.put<ApiResponse<ReturnRequestRecord>>(
+      `/admin/returns/${id}/approve-manual`,
+      { reference, note: note || '' },
     )
     return data.data
   },
