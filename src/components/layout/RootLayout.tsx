@@ -4,10 +4,13 @@ import Navbar from './Navbar'
 import Footer from './Footer'
 import { CartDrawer } from '@/components/shared/CartDrawer'
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton'
+import { FishCursor } from '@/components/shared/FishCursor'
 import { useAppSelector } from '@/hooks/useAppSelector'
+import { useEntrySound } from '@/hooks/useEntrySound'
 
 export default function RootLayout() {
   const isDarkMode = useAppSelector((s) => s.ui.isDarkMode)
+  useEntrySound()
 
   // Sync dark mode class with HTML element on every render
   useEffect(() => {
@@ -29,6 +32,7 @@ export default function RootLayout() {
       </main>
       <Footer />
       <WhatsAppButton />
+      <FishCursor />
     </div>
   )
 }
