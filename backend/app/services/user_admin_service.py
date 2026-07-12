@@ -14,6 +14,7 @@ takes effect on the very next API call the affected user makes — no stale
 token window to worry about.
 """
 
+import re
 from datetime import datetime, timezone
 
 from bson import ObjectId
@@ -45,9 +46,10 @@ def admin_list_users(db: Database, search: str = None, role_filter: str = None, 
     if role_filter:
         query["role"] = role_filter
     if search:
+        safe_search = re.escape(search)
         query["$or"] = [
-            {"name":  {"$regex": search, "$options": "i"}},
-            {"email": {"$regex": search, "$options": "i"}},
+            {"name":  {"$regex": safe_search, "$options": "i"}},
+            {"email": {"$regex": safe_search, "$options": "i"}},
         ]
 
     total = db.users.count_documents(query)

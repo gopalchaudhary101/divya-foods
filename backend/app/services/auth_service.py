@@ -91,6 +91,7 @@ def register_user(db: Database, payload: UserCreate) -> TokenResponse:
         )
 
     now = utcnow()
+    verification_token = generate_reset_token()
     user_doc = {
         "name": payload.name.strip(),
         "email": payload.email.lower().strip(),
@@ -103,6 +104,8 @@ def register_user(db: Database, payload: UserCreate) -> TokenResponse:
         "refresh_token": None,
         "reset_token": None,
         "reset_token_expires": None,
+        "email_verification_token": verification_token,
+        "email_verification_token_expires": now + timedelta(hours=24),
         "created_at": now,
         "updated_at": now,
     }
@@ -125,6 +128,7 @@ def register_user(db: Database, payload: UserCreate) -> TokenResponse:
     )
 
     email_service.welcome(user_doc["name"], user_doc["email"])
+    email_service.verify_email_request(user_doc["name"], user_doc["email"], verification_token)
 
     return token_response
 
@@ -313,6 +317,38 @@ def reset_password(db: Database, token: str, new_password: str) -> None:
             "reset_token": None,
             "reset_token_expires": None,
             "refresh_token": None,   # force re-login on all devices
+            "updated_at": utcnow(),
+        }},
+    )
+
+
+# ─── Verify Email ─────────────────────────────────────────────────────────────
+
+def verify_email(db: Database, token: str) -> None:
+    """
+    Mark the account as email-verified using the one-time link sent at
+    registration. Purely informational — nothing in the app currently gates
+    on is_email_verified, so an invalid/expired token just means the account
+    stays unverified rather than blocking anything.
+    """
+    now = datetime.now(timezone.utc)
+    user_doc = db.users.find_one({
+        "email_verification_token": token,
+        "email_verification_token_expires": {"$gt": now},
+    })
+
+    if not user_doc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This verification link is invalid or has expired.",
+        )
+
+    db.users.update_one(
+        {"_id": user_doc["_id"]},
+        {"$set": {
+            "is_email_verified": True,
+            "email_verification_token": None,
+            "email_verification_token_expires": None,
             "updated_at": utcnow(),
         }},
     )

@@ -57,6 +57,28 @@ def test_unsubscribe_push(client, db):
     assert db.push_subscriptions.find_one({"endpoint": _PUSH_SUB["endpoint"]}) is None
 
 
+def test_cannot_unsubscribe_another_users_push_subscription(client, db):
+    """
+    Regression test: unsubscribe used to filter only by endpoint, so any
+    logged-in user who learned/guessed another user's push endpoint URL could
+    delete that victim's subscription. It must now also require the endpoint
+    to belong to the requesting user.
+    """
+    insert_user(db, email="victim@test.com")
+    victim_hdrs = _headers(client, email="victim@test.com")
+    client.post("/notifications/subscribe", json=_PUSH_SUB, headers=victim_hdrs)
+
+    insert_user(db, email="attacker@test.com")
+    attacker_hdrs = _headers(client, email="attacker@test.com")
+    r = client.request(
+        "DELETE", "/notifications/subscribe",
+        json={"endpoint": _PUSH_SUB["endpoint"]}, headers=attacker_hdrs,
+    )
+
+    assert r.status_code == 204   # still no-content — doesn't leak whether the endpoint exists
+    assert db.push_subscriptions.find_one({"endpoint": _PUSH_SUB["endpoint"]}) is not None   # victim's subscription survives
+
+
 # ─── In-app notifications ───────────────────────────────────────────────────────
 
 def test_list_notifications_empty(client, db):

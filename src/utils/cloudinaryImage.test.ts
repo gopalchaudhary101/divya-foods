@@ -42,4 +42,16 @@ describe('getProductImageSrcSet', () => {
   it('returns an empty string for non-Cloudinary URLs', () => {
     expect(getProductImageSrcSet('https://example.com/img.jpg')).toBe('')
   })
+
+  it('builds a two-size srcset for static bulk-imported product photos', () => {
+    const url = '/assets/products/seafood/blue-crabs/blue-crabs-01.webp'
+    const srcSet = getProductImageSrcSet(url)
+    expect(srcSet).toBe(
+      '/assets/products/seafood/blue-crabs/blue-crabs-thumb.webp 300w, /assets/products/seafood/blue-crabs/blue-crabs-01.webp 1200w',
+    )
+  })
+
+  it('returns an empty string for a static path that is not the numbered master image', () => {
+    expect(getProductImageSrcSet('/assets/products/seafood/blue-crabs/blue-crabs-thumb.webp')).toBe('')
+  })
 })

@@ -85,6 +85,8 @@ def save_subscription(db: Database, user_id, endpoint: str, keys: dict, user_age
     )
 
 
-def remove_subscription(db: Database, endpoint: str) -> None:
-    """Remove a specific push subscription."""
-    db.push_subscriptions.delete_one({"endpoint": endpoint})
+def remove_subscription(db: Database, user_id, endpoint: str) -> None:
+    """Remove a specific push subscription — scoped to the owning user so one
+    account can't unsubscribe another user's device by guessing/reusing an
+    endpoint URL."""
+    db.push_subscriptions.delete_one({"endpoint": endpoint, "user_id": user_id})

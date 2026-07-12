@@ -62,9 +62,9 @@ def subscribe_push(
 def unsubscribe_push(
     body: UnsubscribeRequest,
     db: Database = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    current_user: dict = Depends(get_current_user),
 ):
-    push_service.remove_subscription(db, body.endpoint)
+    push_service.remove_subscription(db, current_user["_id"], body.endpoint)
 
 
 # ─── In-app notification endpoints ───────────────────────────────────────────

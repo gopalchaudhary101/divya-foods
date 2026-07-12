@@ -53,6 +53,7 @@ git push -u origin main
 | `ALLOWED_ORIGINS` | `["https://YOUR-APP.vercel.app","https://www.divyafoods.com"]` — fill in after Step 3 |
 | `RAZORPAY_KEY_ID` | From Razorpay Dashboard → Settings → API Keys (use a **test mode** key while developing) |
 | `RAZORPAY_KEY_SECRET` | From Razorpay Dashboard → Settings → API Keys (test mode secret) |
+| `RAZORPAY_WEBHOOK_SECRET` | See "Razorpay webhook setup" below — **required**, not optional (see note) |
 | `SMTP_PASSWORD` | Gmail App Password (see note below) |
 | `CLOUDINARY_CLOUD_NAME` | From your Cloudinary dashboard |
 | `CLOUDINARY_API_KEY` | From your Cloudinary dashboard |
@@ -62,6 +63,21 @@ git push -u origin main
 6. Under **Settings → Networking**, generate a public domain if one isn't assigned yet
 7. Note your backend URL, e.g. `https://divya-foods-api-production-9380.up.railway.app`
 8. Confirm it works: visit `https://YOUR-RAILWAY-URL/health`
+
+### Razorpay webhook setup
+The app confirms payment two ways: the customer's browser calling `/orders/verify`
+right after checkout, **and** Razorpay calling `/webhooks/razorpay` directly on
+its own servers. The webhook is the safety net — it's what finalizes an order
+if the customer closes the tab, loses connection, or their browser never
+completes the round trip. Without `RAZORPAY_WEBHOOK_SECRET` set, the handler
+correctly refuses to process anything (fails closed, so this is not a security
+gap) — but that also means the safety net silently doesn't exist.
+
+1. Razorpay Dashboard → **Settings → Webhooks → Add New Webhook**
+2. Webhook URL: `https://YOUR-RAILWAY-URL/webhooks/razorpay`
+3. Select events: `payment.captured`, `payment.failed`, `refund.created`, `refund.processed`
+4. Save — Razorpay shows a signing secret **once**. Copy it immediately.
+5. Railway → your backend service → Variables → add `RAZORPAY_WEBHOOK_SECRET` with that value
 
 ### Gmail App Password setup
 1. Enable 2-Factor Authentication on salesdivyafoods@gmail.com
@@ -113,6 +129,22 @@ git push -u origin main
 
 ### Root domain redirect (optional)
 In your registrar, also add an A record for `@` (bare domain) pointing to `76.76.21.21` (Vercel's IP).
+
+---
+
+## Step 6 — Confirm database backups are actually on
+
+This app moves real money through real orders — an unrecoverable database
+loss isn't just an inconvenience, it's lost customer orders and payment
+history. Atlas's **M0 free tier has no continuous backup at all**; only paid
+tiers (M10+) include Cloud Backup with point-in-time recovery.
+
+1. Atlas Dashboard → your cluster → confirm the tier. If it's M0, upgrade
+   before taking real payments — an M0 cluster losing data has no way back.
+2. On a paid tier: **Backup** tab → confirm Cloud Backup is enabled and note
+   the retention window.
+3. Do one manual restore drill (Atlas → Backup → restore a snapshot to a
+   temporary cluster) before launch — an untested backup is not a backup.
 
 ---
 

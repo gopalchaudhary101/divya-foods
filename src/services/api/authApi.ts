@@ -92,4 +92,11 @@ export const authApi = {
   resetPassword: async (token: string, newPassword: string): Promise<void> => {
     await axiosInstance.post('/auth/reset-password', { token, new_password: newPassword })
   },
+
+  /**
+   * Confirm an account's email using the link sent at registration.
+   */
+  verifyEmail: async (token: string): Promise<void> => {
+    await axiosInstance.post('/auth/verify-email', { token })
+  },
 }

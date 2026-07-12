@@ -21,3 +21,4 @@ slowapi==0.1.9
 apscheduler==3.11.3
 pytest==9.1.1
 httpx==0.27.0
+sentry-sdk[fastapi]==2.64.0

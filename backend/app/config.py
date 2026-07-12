@@ -75,6 +75,10 @@ class Settings(BaseSettings):
     # AI Chat
     ANTHROPIC_API_KEY: str = ""
 
+    # Error tracking — blank disables it entirely, same pattern as the other
+    # optional integrations above
+    SENTRY_DSN: str = ""
+
     @model_validator(mode="after")
     def _reject_insecure_jwt_secret_in_production(self) -> "Settings":
         """

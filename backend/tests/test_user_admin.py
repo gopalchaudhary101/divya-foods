@@ -37,6 +37,26 @@ def test_admin_searches_users_by_name_or_email(client, db):
     assert r.json()["data"][0]["email"] == "priya@test.com"
 
 
+def test_admin_search_with_regex_metacharacters_does_not_error_or_match_everything(client, db):
+    """
+    Regression test: search used to be interpolated straight into a Mongo
+    $regex with no escaping. A search term like '.*' would match every user
+    (regex wildcard) instead of being treated as a literal string, and a
+    pathological pattern could cause catastrophic backtracking. re.escape()
+    now neutralizes metacharacters before they reach the query.
+    """
+    insert_user(db, email="priya@test.com", role="customer", name="Priya Sharma")
+    insert_user(db, email="rahul@test.com", role="customer", name="Rahul Verma")
+    hdrs = _admin_headers(client, db)
+
+    r = client.get("/admin/users", params={"search": ".*"}, headers=hdrs)
+    assert r.status_code == 200
+    assert r.json()["total"] == 0   # literal ".*" isn't anyone's name/email — must not match everyone
+
+    r2 = client.get("/admin/users", params={"search": "(a+)+$"}, headers=hdrs)
+    assert r2.status_code == 200   # must not hang or error on a catastrophic-backtracking pattern
+
+
 def test_admin_filters_users_by_role(client, db):
     insert_user(db, email="c1@test.com", role="customer")
     insert_user(db, email="drv@test.com", role="driver", name="Driver")

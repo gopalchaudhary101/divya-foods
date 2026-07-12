@@ -10,10 +10,11 @@ We keep at most the last 12 messages to limit token spend.
 
 from typing import List, Literal
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
 from app.config import settings
+from app.limiter import limiter
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -58,7 +59,8 @@ class ChatRequest(BaseModel):
 
 
 @router.post("")
-def chat(body: ChatRequest):
+@limiter.limit("15/minute")
+def chat(request: Request, body: ChatRequest):
     # Graceful fallback when API key is not configured
     if not settings.ANTHROPIC_API_KEY:
         return {

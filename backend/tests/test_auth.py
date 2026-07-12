@@ -165,3 +165,89 @@ def test_reset_password_token_cannot_be_reused(client, db):
 
     r2 = client.post("/auth/reset-password", json={"token": token, "new_password": "SecondNew123!"})
     assert r2.status_code == 400
+
+
+# ─── Verify Email ─────────────────────────────────────────────────────────────
+
+def test_register_creates_unverified_account_with_verification_token(client, db):
+    """
+    Registration doesn't block on verification (new accounts can order right
+    away) but should always leave a verification token in place so the
+    customer has a way to confirm their email afterward.
+    """
+    client.post("/auth/register", json={
+        "name": "New User", "email": "newuser@test.com",
+        "password": "Test1234!", "phone": "9999999999",
+    })
+    user_doc = db.users.find_one({"email": "newuser@test.com"})
+    assert user_doc["is_email_verified"] is False
+    assert user_doc["email_verification_token"]
+    assert user_doc["email_verification_token_expires"] is not None
+
+
+def test_verify_email_success(client, db):
+    client.post("/auth/register", json={
+        "name": "Verify Me", "email": "verifyme@test.com",
+        "password": "Test1234!", "phone": "9999999999",
+    })
+    token = db.users.find_one({"email": "verifyme@test.com"})["email_verification_token"]
+
+    r = client.post("/auth/verify-email", json={"token": token})
+    assert r.status_code == 200
+
+    user_doc = db.users.find_one({"email": "verifyme@test.com"})
+    assert user_doc["is_email_verified"] is True
+    assert user_doc["email_verification_token"] is None
+    assert user_doc["email_verification_token_expires"] is None
+
+
+def test_verify_email_invalid_token(client, db):
+    r = client.post("/auth/verify-email", json={"token": "not-a-real-token"})
+    assert r.status_code == 400
+
+
+def test_verify_email_expired_token(client, db):
+    from datetime import datetime, timedelta, timezone
+    user_id = insert_user(db, email="expiredverify@test.com")
+    db.users.update_one(
+        {"_id": user_id},
+        {"$set": {
+            "email_verification_token": "expired-verify-token",
+            "email_verification_token_expires": datetime.now(timezone.utc) - timedelta(hours=1),
+        }},
+    )
+    r = client.post("/auth/verify-email", json={"token": "expired-verify-token"})
+    assert r.status_code == 400
+
+
+def test_verify_email_token_cannot_be_reused(client, db):
+    client.post("/auth/register", json={
+        "name": "Reuse Verify", "email": "reuseverify@test.com",
+        "password": "Test1234!", "phone": "9999999999",
+    })
+    token = db.users.find_one({"email": "reuseverify@test.com"})["email_verification_token"]
+
+    r1 = client.post("/auth/verify-email", json={"token": token})
+    assert r1.status_code == 200
+
+    r2 = client.post("/auth/verify-email", json={"token": token})
+    assert r2.status_code == 400
+
+
+def test_unverified_account_can_still_place_orders(client, db):
+    """The whole point of this design: verification is informational only."""
+    from tests.conftest import insert_category, insert_product
+
+    client.post("/auth/register", json={
+        "name": "Shop Anyway", "email": "shopanyway@test.com",
+        "password": "Test1234!", "phone": "9999999999",
+    })
+    user_doc = db.users.find_one({"email": "shopanyway@test.com"})
+    assert user_doc["is_email_verified"] is False
+
+    token = client.post("/auth/login", json={
+        "email": "shopanyway@test.com", "password": "Test1234!",
+    }).json()["access_token"]
+
+    r = client.get("/orders", headers=bearer(token))
+    assert r.status_code == 200   # not blocked by lack of verification

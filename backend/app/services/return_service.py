@@ -17,6 +17,7 @@ order status, refunds, or the customer — an admin may still use that
 separately once the physical goods are received back.
 """
 
+import re
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -197,7 +198,7 @@ def admin_list_returns(
     if status_filter:
         query["status"] = status_filter
     if search:
-        query["order_number"] = {"$regex": search, "$options": "i"}
+        query["order_number"] = {"$regex": re.escape(search), "$options": "i"}
 
     skip = (page - 1) * limit
     total = db.returns.count_documents(query)

@@ -780,10 +780,14 @@ def admin_list_products(
 ) -> dict:
     query: dict = {}
     if search:
+        # re.escape neutralizes regex metacharacters in admin-supplied input —
+        # otherwise a pathological pattern (e.g. "(a+)+$") could cause
+        # catastrophic backtracking against the products collection.
+        safe_search = re.escape(search)
         query["$or"] = [
-            {"name":        {"$regex": search, "$options": "i"}},
-            {"slug":        {"$regex": search, "$options": "i"}},
-            {"description": {"$regex": search, "$options": "i"}},
+            {"name":        {"$regex": safe_search, "$options": "i"}},
+            {"slug":        {"$regex": safe_search, "$options": "i"}},
+            {"description": {"$regex": safe_search, "$options": "i"}},
         ]
     if category_id:
         try:
@@ -797,7 +801,9 @@ def admin_list_products(
     if stock_status:
         # stockStatus is computed (not stored), so filtering it needs an aggregation
         # that derives available_stock/threshold before matching, unlike the plain
-        # find() path below used when no stock-status filter is requested.
+        # find() path below used when no stock-status filter is requested. $facet
+        # does the count and the skip/limit in the same aggregation, in MongoDB —
+        # not by pulling every matching row into Python and slicing it there.
         pipeline = [
             {"$match": query},
             {"$addFields": {
@@ -817,10 +823,15 @@ def admin_list_products(
             }},
             {"$match": {"_status": stock_status}},
             {"$sort": {"created_at": -1}},
+            {"$facet": {
+                "data": [{"$skip": skip}, {"$limit": limit}],
+                "totalCount": [{"$count": "count"}],
+            }},
         ]
-        all_matches = list(db.products.aggregate(pipeline))
-        total = len(all_matches)
-        docs = all_matches[skip: skip + limit]
+        result = list(db.products.aggregate(pipeline))
+        facet = result[0] if result else {"data": [], "totalCount": []}
+        docs = facet["data"]
+        total = facet["totalCount"][0]["count"] if facet["totalCount"] else 0
     else:
         total = db.products.count_documents(query)
         docs  = list(db.products.find(query).sort([("created_at", -1)]).skip(skip).limit(limit))

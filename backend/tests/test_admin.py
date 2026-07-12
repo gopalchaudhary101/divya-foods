@@ -170,6 +170,22 @@ def test_admin_list_products_search(client, db):
     assert r.json()["data"][0]["name"] == "Atlantic Salmon"
 
 
+def test_admin_list_products_search_with_regex_metacharacters_is_treated_literally(client, db):
+    """Regression test — see product_service.admin_list_products: search terms
+    are re.escape()'d before reaching the Mongo $regex, so '.*' is a literal
+    substring search, not a wildcard that matches every product."""
+    hdrs   = _admin_headers(client, db)
+    cat_id = str(insert_category(db))
+    client.post("/admin/products", json={"name": "Atlantic Salmon", "categoryId": cat_id, "price": 999.0}, headers=hdrs)
+
+    r = client.get("/admin/products?search=.*", headers=hdrs)
+    assert r.status_code == 200
+    assert r.json()["total"] == 0
+
+    r2 = client.get("/admin/products?search=(a+)+$", headers=hdrs)
+    assert r2.status_code == 200
+
+
 # ─── Bulk product actions ─────────────────────────────────────────────────────
 
 def test_admin_bulk_update_products(client, db):
@@ -651,6 +667,36 @@ def test_admin_filters_products_by_stock_status(client, db):
     assert r.status_code == 200
     assert r.json()["total"] == 1
     assert r.json()["data"][0]["name"] == "Rare Fish"
+
+
+def test_admin_stock_status_filter_paginates_correctly(client, db):
+    """
+    Regression test: pagination for the stockStatus filter used to load every
+    matching row into Python before slicing it there. Now it's a $facet doing
+    skip/limit and the count inside the same aggregation — this pins down
+    that total/page/data still behave exactly like plain pagination.
+    """
+    hdrs   = _admin_headers(client, db)
+    cat_id = str(insert_category(db))
+    for i in range(5):
+        client.post("/admin/products", json={
+            "name": f"Out Of Stock {i}", "categoryId": cat_id, "price": 100.0, "stockQuantity": 0,
+        }, headers=hdrs)
+
+    r1 = client.get("/admin/products?stockStatus=out_of_stock&page=1&limit=2", headers=hdrs)
+    assert r1.status_code == 200
+    body1 = r1.json()
+    assert body1["total"] == 5
+    assert body1["totalPages"] == 3
+    assert len(body1["data"]) == 2
+
+    r2 = client.get("/admin/products?stockStatus=out_of_stock&page=3&limit=2", headers=hdrs)
+    body2 = r2.json()
+    assert len(body2["data"]) == 1   # last page has the remainder
+    # No product appears on both pages
+    page1_names = {p["name"] for p in body1["data"]}
+    page2_names = {p["name"] for p in body2["data"]}
+    assert page1_names.isdisjoint(page2_names)
 
 
 def test_admin_stock_adjustment_add_and_remove(client, db):

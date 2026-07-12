@@ -9,6 +9,7 @@ Flow:
 
 import hashlib
 import hmac
+import re
 import uuid
 from datetime import datetime, timezone
 from typing import Optional
@@ -61,9 +62,16 @@ def _generate_order_number(db: Database) -> str:
 # cancelled, the existing unconditional stock_quantity restore below handles that
 # (unchanged from before) since the reservation was already released at payment time.
 
-def _reserve_stock(db: Database, order_items: list[dict], order_id: str) -> None:
+def _reserve_stock(db: Database, order_items: list[dict], order_id: str) -> list[dict]:
     """Decrements stock_quantity + increments reserved_stock, atomically per item.
-    Availability must already have been checked by the caller."""
+    The caller's pre-check is only a soft guard (TOCTOU) — this atomic conditional
+    update is what actually prevents overselling. Returns the items that could NOT
+    be reserved (a concurrent order already took the remaining stock); any items
+    that WERE reserved in this same call are rolled back before returning, so the
+    caller can treat a non-empty result as "the whole order failed, nothing was
+    reserved" and must not proceed to a confirmed/paid order."""
+    reserved: list[dict] = []
+    failed: list[dict] = []
     for item in order_items:
         pid, qty = item["product_id"], item["quantity"]
         result = db.products.update_one(
@@ -71,11 +79,28 @@ def _reserve_stock(db: Database, order_items: list[dict], order_id: str) -> None
             {"$inc": {"stock_quantity": -qty, "reserved_stock": qty}, "$set": {"updated_at": _utcnow()}},
         )
         if result.matched_count:
+            reserved.append(item)
             product = db.products.find_one({"_id": pid}, {"stock_quantity": 1})
             product_service.log_stock_movement(
                 db, pid, "order_placed", -qty, product["stock_quantity"],
                 reference_type="order", reference_id=str(order_id),
             )
+        else:
+            failed.append(item)
+    if failed:
+        # Undo exactly what this call just did for the other items — restore
+        # stock_quantity AND clear reserved_stock. This is deliberately NOT
+        # _release_reserved_stock(), which only clears reserved_stock and
+        # assumes stock_quantity restoration happens elsewhere (payment-verified
+        # / cancel paths); here nothing else will ever restore stock_quantity
+        # for a reservation that's being undone within this same call.
+        for item in reserved:
+            db.products.update_one(
+                {"_id": item["product_id"]},
+                {"$inc": {"stock_quantity": item["quantity"], "reserved_stock": -item["quantity"]},
+                 "$set": {"updated_at": _utcnow()}},
+            )
+    return failed
 
 
 def _release_reserved_stock(db: Database, order_items: list[dict]) -> None:
@@ -389,7 +414,20 @@ def initiate_order(db: Database, user: dict, body: dict) -> dict:
     result = db.orders.insert_one(doc)
     order_id = str(result.inserted_id)
 
-    _reserve_stock(db, order_items, order_id)
+    failed_items = _reserve_stock(db, order_items, order_id)
+    if failed_items:
+        # A concurrent order already took the remaining stock between our soft
+        # availability check above and this atomic reservation — this order can
+        # never be fulfilled. Nothing was actually reserved (see _reserve_stock),
+        # so just remove the order doc we optimistically inserted and fail loud
+        # rather than silently letting an oversold order reach payment/confirmation.
+        db.orders.delete_one({"_id": result.inserted_id})
+        names = ", ".join(i["name"] for i in failed_items)
+        raise HTTPException(
+            status_code=409,
+            detail=f"Sorry, '{names}' just sold out while you were checking out. Please update your cart and try again.",
+        )
+
     if fully_covered:
         # Payment is already settled — release the reservation immediately, same as verify_payment does.
         _release_reserved_stock(db, order_items)
@@ -922,10 +960,11 @@ def admin_list_orders(
         query["delivery.delivery_status"] = delivery_status_filter
     if search:
         # Search by order number or customer name in address
+        safe_search = re.escape(search)
         query["$or"] = [
-            {"order_number": {"$regex": search, "$options": "i"}},
-            {"delivery_address.full_name": {"$regex": search, "$options": "i"}},
-            {"delivery_address.phone": {"$regex": search, "$options": "i"}},
+            {"order_number": {"$regex": safe_search, "$options": "i"}},
+            {"delivery_address.full_name": {"$regex": safe_search, "$options": "i"}},
+            {"delivery_address.phone": {"$regex": safe_search, "$options": "i"}},
         ]
 
     skip  = (page - 1) * limit

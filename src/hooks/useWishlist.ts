@@ -66,6 +66,9 @@ export function useToggleWishlist() {
  * Works for both authenticated and unauthenticated users.
  */
 export function useIsWishlisted(productId: string): boolean {
-  const localIds = useAppSelector((s) => s.wishlist.productIds)
-  return localIds.includes(productId)
+  // Select the boolean itself, not the whole array — otherwise every product
+  // card re-renders whenever ANY item is (un)wishlisted, since the array
+  // reference changes for everyone even though only one card's membership
+  // actually flipped.
+  return useAppSelector((s) => s.wishlist.productIds.includes(productId))
 }

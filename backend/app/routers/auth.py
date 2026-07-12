@@ -23,6 +23,7 @@ from app.models.user import (
     RefreshTokenRequest,
     ForgotPasswordRequest,
     ResetPasswordRequest,
+    VerifyEmailRequest,
 )
 from app.models.base import utcnow
 from app.services import auth_service
@@ -57,7 +58,8 @@ def login(request: Request, payload: UserLogin, db: Database = Depends(get_db)):
     response_model=TokenResponse,
     summary="Rotate refresh token and issue a new access token",
 )
-def refresh(payload: RefreshTokenRequest, db: Database = Depends(get_db)):
+@limiter.limit("20/minute")
+def refresh(request: Request, payload: RefreshTokenRequest, db: Database = Depends(get_db)):
     return auth_service.refresh_access_token(db, payload.refresh_token)
 
 
@@ -66,7 +68,9 @@ def refresh(payload: RefreshTokenRequest, db: Database = Depends(get_db)):
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Invalidate the current refresh token (logout)",
 )
+@limiter.limit("20/minute")
 def logout(
+    request: Request,
     current_user: dict = Depends(get_current_user),
     db: Database = Depends(get_db),
 ):
@@ -78,7 +82,8 @@ def logout(
     response_model=UserResponse,
     summary="Get the currently authenticated user",
 )
-def get_me(current_user: dict = Depends(get_current_user)):
+@limiter.limit("30/minute")
+def get_me(request: Request, current_user: dict = Depends(get_current_user)):
     """
     Returns the logged-in user's profile.
     The `get_current_user` dependency validates the JWT and fetches from DB.
@@ -108,9 +113,21 @@ def forgot_password(request: Request, payload: ForgotPasswordRequest, db: Databa
     status_code=status.HTTP_200_OK,
     summary="Set a new password using a reset token",
 )
-def reset_password(payload: ResetPasswordRequest, db: Database = Depends(get_db)):
+@limiter.limit("10/minute")
+def reset_password(request: Request, payload: ResetPasswordRequest, db: Database = Depends(get_db)):
     auth_service.reset_password(db, payload.token, payload.new_password)
     return {"message": "Password updated successfully. Please log in with your new password."}
+
+
+@router.post(
+    "/verify-email",
+    status_code=status.HTTP_200_OK,
+    summary="Confirm an account's email using the link sent at registration",
+)
+@limiter.limit("10/minute")
+def verify_email(request: Request, payload: VerifyEmailRequest, db: Database = Depends(get_db)):
+    auth_service.verify_email(db, payload.token)
+    return {"message": "Email verified successfully."}
 
 
 class ChangePasswordRequest(BaseModel):
@@ -123,7 +140,9 @@ class ChangePasswordRequest(BaseModel):
     status_code=status.HTTP_200_OK,
     summary="Change password while logged in",
 )
+@limiter.limit("5/minute")
 def change_password(
+    request: Request,
     payload: ChangePasswordRequest,
     db: Database = Depends(get_db),
     current_user: dict = Depends(get_current_user),

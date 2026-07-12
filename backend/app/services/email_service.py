@@ -180,7 +180,7 @@ def order_confirmation(order: dict, customer_email: str) -> None:
     a = order.get("deliveryAddress", {})
     html = _wrap(f"""
 <h2>Order Confirmed! &#127881;</h2>
-<p style="color:#6B7280;margin:0 0 18px">Hi {a.get("full_name","there")}, thank you for your order.</p>
+<p style="color:#6B7280;margin:0 0 18px">Hi {_esc(a.get("full_name","there"))}, thank you for your order.</p>
 <p><strong>Order Number:</strong> {order["orderNumber"]} &nbsp;
    <span class="badge badge-green">Confirmed</span></p>
 <strong>Items Ordered</strong>
@@ -198,10 +198,10 @@ def order_confirmation(order: dict, customer_email: str) -> None:
 
 def order_shipped(order: dict, customer_email: str, note: str = "") -> None:
     a = order.get("deliveryAddress", {})
-    note_html = f'<div class="info-box">&#128230; {note}</div>' if note else ""
+    note_html = f'<div class="info-box">&#128230; {_esc(note)}</div>' if note else ""
     html = _wrap(f"""
 <h2>Your Order Has Shipped! &#128666;</h2>
-<p style="color:#6B7280;margin:0 0 18px">Hi {a.get("full_name","there")}, great news &mdash; your order is on its way.</p>
+<p style="color:#6B7280;margin:0 0 18px">Hi {_esc(a.get("full_name","there"))}, great news &mdash; your order is on its way.</p>
 <p><strong>Order Number:</strong> {order["orderNumber"]} &nbsp;
    <span class="badge badge-blue">Shipped</span></p>
 {note_html}
@@ -218,7 +218,7 @@ def order_delivered(order: dict, customer_email: str) -> None:
     a = order.get("deliveryAddress", {})
     html = _wrap(f"""
 <h2>Order Delivered! &#9989;</h2>
-<p style="color:#6B7280;margin:0 0 18px">Hi {a.get("full_name","there")}, your order has been delivered successfully.</p>
+<p style="color:#6B7280;margin:0 0 18px">Hi {_esc(a.get("full_name","there"))}, your order has been delivered successfully.</p>
 <p><strong>Order Number:</strong> {order["orderNumber"]} &nbsp;
    <span class="badge badge-green">Delivered</span></p>
 <div class="info-box">
@@ -237,10 +237,10 @@ def order_cancelled(order: dict, customer_email: str, reason: str = "") -> None:
             f'<div class="refund-box">&#128176; A refund of <strong>&#8377;{order["total"]:,.2f}</strong> '
             f'will be processed to your original payment method within <strong>5&ndash;7 business days</strong>.</div>'
         )
-    reason_html = f'<p style="color:#6B7280;font-size:13px;margin:8px 0"><em>Reason: {reason}</em></p>' if reason else ""
+    reason_html = f'<p style="color:#6B7280;font-size:13px;margin:8px 0"><em>Reason: {_esc(reason)}</em></p>' if reason else ""
     html = _wrap(f"""
 <h2>Order Cancelled</h2>
-<p style="color:#6B7280;margin:0 0 18px">Hi {a.get("full_name","there")}, your order has been cancelled as requested.</p>
+<p style="color:#6B7280;margin:0 0 18px">Hi {_esc(a.get("full_name","there"))}, your order has been cancelled as requested.</p>
 <p><strong>Order Number:</strong> {order["orderNumber"]} &nbsp;
    <span class="badge badge-red">Cancelled</span></p>
 {reason_html}
@@ -256,7 +256,7 @@ def order_processing(order: dict, customer_email: str) -> None:
     a = order.get("deliveryAddress", {})
     html = _wrap(f"""
 <h2>We're Packing Your Order &#128230;</h2>
-<p style="color:#6B7280;margin:0 0 18px">Hi {a.get("full_name","there")}, your order is now being packed and prepared for dispatch.</p>
+<p style="color:#6B7280;margin:0 0 18px">Hi {_esc(a.get("full_name","there"))}, your order is now being packed and prepared for dispatch.</p>
 <p><strong>Order Number:</strong> {order["orderNumber"]} &nbsp;
    <span class="badge badge-blue">Processing</span></p>
 {_items_table(order["items"], order["subtotal"], order["deliveryCharge"],
@@ -316,6 +316,31 @@ def password_reset(customer_email: str, reset_token: str) -> None:
     send_async(customer_email, "Reset Your Password — Divya Luxury Seafoods", html)
 
 
+def verify_email_request(name: str, customer_email: str, token: str) -> None:
+    """Sent right after registration. Purely informational — nothing in the
+    app blocks on verification, this just gives the customer a moment to
+    notice if they mistyped their email (no link ever arrives)."""
+    verify_url = f"{SITE_URL}/auth/verify-email?token={token}"
+    html = _wrap(f"""
+<h2>Verify Your Email &#128231;</h2>
+<p style="color:#6B7280;margin:0 0 18px">Hi {name}, one quick step — confirm this is your email address so we can reach you about your orders.</p>
+<p style="text-align:center;margin:28px 0">
+  <a href="{verify_url}"
+     style="background:#042C53;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
+    Verify Email
+  </a>
+</p>
+<div class="info-box">
+  &#9200; This link expires in <strong>24 hours</strong>.<br>
+  &#128176; You can shop and order right away either way — this is just so order confirmations reach you.
+</div>
+<p style="font-size:11px;color:#9CA3AF;margin-top:20px">
+  If the button above doesn't work, copy and paste this link into your browser:<br>
+  <a href="{verify_url}" style="color:#0C447C;word-break:break-all">{verify_url}</a>
+</p>""")
+    send_async(customer_email, "Verify Your Email — Divya Luxury Seafoods", html)
+
+
 # ─── Refunds ──────────────────────────────────────────────────────────────────
 
 def refund_processed(order: dict, customer_email: str, amount: float, full: bool, method: str = "razorpay") -> None:
@@ -333,7 +358,7 @@ def refund_processed(order: dict, customer_email: str, amount: float, full: bool
         detail_html = f"""&#128176; <strong>&#8377;{amount:,.2f}</strong> has been refunded to you directly by our team (bank transfer/UPI/cash)."""
     html = _wrap(f"""
 <h2>Refund Processed &#128176;</h2>
-<p style="color:#6B7280;margin:0 0 18px">Hi {a.get("full_name","there")}, a {scope} refund for your order has been processed.</p>
+<p style="color:#6B7280;margin:0 0 18px">Hi {_esc(a.get("full_name","there"))}, a {scope} refund for your order has been processed.</p>
 <p><strong>Order Number:</strong> {order["orderNumber"]} &nbsp;
    <span class="badge badge-blue">Refunded</span></p>
 <div class="refund-box">

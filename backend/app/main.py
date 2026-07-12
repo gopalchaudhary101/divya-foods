@@ -1,3 +1,4 @@
+import logging
 import re
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
@@ -7,6 +8,28 @@ from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
 from app.config import settings
+
+# Without this, Python's root logger has no handler until the "last resort"
+# stderr fallback kicks in at WARNING — every logger.info() in this codebase
+# (Mongo connect, scheduler start/stop, "email sent", etc.) would be invisible
+# in Railway/Fly logs, and logger.error()/exception() calls would print with
+# no timestamp or module name.
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
+# Only OUR OWN loggers (all named "app.*") get bumped to DEBUG in local dev —
+# the root stays at INFO so third-party libraries (pymongo, httpx, passlib...)
+# don't flood the console with wire-protocol/internals chatter.
+logging.getLogger("app").setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
+
+if settings.SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.fastapi import FastApiIntegration
+
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        environment="debug" if settings.DEBUG else "production",
+        integrations=[FastApiIntegration()],
+        traces_sample_rate=0.1,
+    )
 from app.database import connect_to_mongo, close_mongo_connection, ping_database
 from app.limiter import limiter
 from app.services import cart_service, product_service
@@ -51,8 +74,11 @@ app = FastAPI(
         "All endpoints follow REST conventions with structured JSON responses."
     ),
     version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc",
+    # Swagger/ReDoc hand out the full API schema (every route, every field name)
+    # as reconnaissance material — only serve them outside production.
+    docs_url="/docs" if settings.DEBUG else None,
+    redoc_url="/redoc" if settings.DEBUG else None,
+    openapi_url="/openapi.json" if settings.DEBUG else None,
     lifespan=lifespan,
 )
 
@@ -97,6 +123,28 @@ async def security_headers(request: Request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
     response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
+    # Only in production — /docs is disabled there anyway (see docs_url above),
+    # so this API only ever serves JSON and can be locked all the way down.
+    # Skipped when DEBUG=True so the local Swagger UI (which loads its own
+    # CDN-hosted JS/CSS) keeps working exactly as before in dev.
+    if not settings.DEBUG:
+        response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
+    return response
+
+
+# GET-only, public, no per-user variance, and rarely change — safe to let the
+# browser (and any future CDN) skip a round trip for a short window instead of
+# hitting MongoDB on literally every request from every visitor. Deliberately
+# a narrow allowlist: nothing personalized (orders/cart/users/admin/...) is
+# ever included here.
+_CACHEABLE_GET_PREFIXES = ("/categories", "/banners", "/products/featured", "/products/best-sellers", "/products")
+
+
+@app.middleware("http")
+async def cache_control_headers(request: Request, call_next):
+    response = await call_next(request)
+    if request.method == "GET" and request.url.path.startswith(_CACHEABLE_GET_PREFIXES):
+        response.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=300"
     return response
 
 # ─── Routers ──────────────────────────────────────────────────────────────────

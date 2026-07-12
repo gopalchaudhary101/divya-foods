@@ -7,11 +7,12 @@ PUT  /admin/bulk-orders/{id} → admin — update status / admin notes
 """
 
 from typing import Optional
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from pydantic import BaseModel, EmailStr
 from pymongo.database import Database
 
 from app.dependencies import get_db, require_admin
+from app.limiter import limiter
 from app.services import bulk_order_service
 
 router = APIRouter(tags=["Bulk Orders"])
@@ -37,7 +38,8 @@ class BulkOrderUpdateBody(BaseModel):
 
 
 @router.post("/bulk-orders")
-def submit_bulk_order_request(body: BulkOrderRequestBody, db: Database = Depends(get_db)):
+@limiter.limit("5/minute")
+def submit_bulk_order_request(request: Request, body: BulkOrderRequestBody, db: Database = Depends(get_db)):
     payload = body.model_dump()
     payload["items"] = [i.copy() if isinstance(i, dict) else i for i in payload["items"]]
     return bulk_order_service.create_request(db, payload)

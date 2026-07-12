@@ -96,6 +96,63 @@ def test_initiate_order_unauthenticated(client):
     assert r.status_code == 401
 
 
+def test_reserve_stock_rolls_back_partial_reservation_on_failure(db):
+    """
+    Unit-level regression test for _reserve_stock: if one item in a multi-item
+    order can't be reserved (a concurrent order already took the last unit),
+    any OTHER items in the same order that WERE successfully reserved must be
+    rolled back too — the whole order fails together, not partially.
+    """
+    from app.services.order_service import _reserve_stock
+
+    cat_id = insert_category(db)
+    plentiful_pid = insert_product(db, cat_id, name="Plentiful Salmon", price=500.0)
+    scarce_pid = insert_product(db, cat_id, name="Scarce Caviar", price=9000.0)
+    db.products.update_one({"_id": scarce_pid}, {"$set": {"stock_quantity": 0}})
+
+    order_items = [
+        {"product_id": plentiful_pid, "name": "Plentiful Salmon", "quantity": 1, "price": 500.0, "image": ""},
+        {"product_id": scarce_pid, "name": "Scarce Caviar", "quantity": 1, "price": 9000.0, "image": ""},
+    ]
+    failed = _reserve_stock(db, order_items, "fake-order-id")
+
+    assert len(failed) == 1
+    assert failed[0]["name"] == "Scarce Caviar"
+
+    # The plentiful item's reservation must have been rolled back, not left applied.
+    plentiful_after = db.products.find_one({"_id": plentiful_pid})
+    assert plentiful_after["stock_quantity"] == 50
+    assert plentiful_after.get("reserved_stock", 0) == 0
+
+
+def test_initiate_order_fails_cleanly_when_stock_sells_out_mid_checkout(client, db):
+    """
+    Regression test for the checkout-oversell bug: previously, if the atomic
+    stock reservation failed for an item (a concurrent order already took the
+    last unit between the soft availability check and the atomic decrement),
+    initiate_order silently ignored it and returned success anyway — letting
+    two customers both receive a confirmed/paid order for the same last unit.
+    Now it must fail loudly with a 409 and leave no order document behind.
+    """
+    pid = _setup_user_and_product(db)
+    token = get_token(client, "user@test.com")
+
+    with patch("app.services.order_service._reserve_stock") as mock_reserve:
+        mock_reserve.return_value = [{"product_id": ObjectId(pid), "name": "Salmon Fillet", "quantity": 1}]
+        with _mock_rzp():
+            r = client.post("/orders", json={
+                "delivery_address": _ADDRESS,
+                "items": [{"productId": pid, "quantity": 1}],
+            }, headers=bearer(token))
+
+    assert r.status_code == 409
+    assert "sold out" in r.json()["detail"].lower()
+    assert "Salmon Fillet" in r.json()["detail"]
+
+    # No dangling order document should remain for stock that was never secured.
+    assert db.orders.count_documents({}) == 0
+
+
 def test_initiate_order_with_unexpired_coupon(client, db):
     """
     Regression test: coupons with an expires_at date used to crash checkout with

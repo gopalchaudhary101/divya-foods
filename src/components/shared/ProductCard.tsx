@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { memo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Heart, ShoppingCart, Package } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -52,7 +52,7 @@ function ProductImage({ src, alt }: { src: string | null; alt: string }) {
   )
 }
 
-export function ProductCard({ product, onAddToCart }: ProductCardProps) {
+function ProductCardImpl({ product, onAddToCart }: ProductCardProps) {
   const isWishlisted = useIsWishlisted(product.id)
   const toggleWishlist = useToggleWishlist()
 
@@ -150,3 +150,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     </motion.div>
   )
 }
+
+// Grids render dozens of these — memoized so a re-render elsewhere on the
+// page (e.g. a sibling's own state change) doesn't re-render every card.
+export const ProductCard = memo(ProductCardImpl)
