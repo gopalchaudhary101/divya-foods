@@ -265,7 +265,7 @@ export default function ProductsPage() {
             )}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center flex-wrap gap-3">
             {/* Search bar */}
             <div className="relative">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-premium-navy/40 pointer-events-none" />
@@ -274,7 +274,7 @@ export default function ProductsPage() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Search products…"
-                className="pl-9 pr-4 py-2 text-sm border border-premium-navy/15 dark:border-ocean-700 rounded-xl dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-premium-gold w-44 sm:w-56"
+                className="pl-9 pr-4 py-2 text-sm border border-premium-navy/15 dark:border-ocean-700 rounded-xl dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-premium-gold w-32 sm:w-56"
               />
             </div>
 

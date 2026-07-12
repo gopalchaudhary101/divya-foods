@@ -81,12 +81,12 @@ export default function Navbar() {
         isScrolled ? 'shadow-lg backdrop-blur-md bg-premium-navy/95' : 'shadow-lg',
       ].join(' ')}
     >
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
 
         {/* ── Logo ─────────────────────────────────────────────── */}
         <Link
           to={ROUTES.HOME}
-          className="shrink-0 font-display text-xl font-semibold text-white hover:text-premium-gold transition-colors"
+          className="shrink-0 font-display text-base sm:text-xl font-semibold text-white hover:text-premium-gold transition-colors"
         >
           {CONFIG.APP_NAME}
         </Link>
@@ -110,14 +110,14 @@ export default function Navbar() {
         </div>
 
         {/* ── Right actions ────────────────────────────────────── */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-0.5 sm:gap-2">
 
           {/* Search */}
           <button
             onClick={openSearch}
             aria-label="Search products (Ctrl+K)"
             title="Search (Ctrl+K)"
-            className="flex items-center gap-2 p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
+            className="flex items-center gap-2 p-1.5 sm:p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
           >
             <Search size={18} />
             <span className="hidden lg:inline-flex items-center gap-1 text-xs text-premium-muted border border-premium-charcoal rounded px-1.5 py-0.5">
@@ -129,7 +129,7 @@ export default function Navbar() {
           <button
             onClick={() => dispatch(toggleDarkMode())}
             aria-label="Toggle dark mode"
-            className="p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
+            className="p-1.5 sm:p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
           >
             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
@@ -138,7 +138,7 @@ export default function Navbar() {
           <Link
             to={ROUTES.WISHLIST}
             aria-label={`Wishlist (${wishlistCount} items)`}
-            className="relative p-2.5 rounded-lg text-premium-muted hover:text-premium-teal hover:bg-premium-charcoal transition-colors"
+            className="relative p-1.5 sm:p-2.5 rounded-lg text-premium-muted hover:text-premium-teal hover:bg-premium-charcoal transition-colors"
           >
             <Heart size={18} />
             {wishlistCount > 0 && (
@@ -155,7 +155,7 @@ export default function Navbar() {
           <button
             onClick={() => dispatch(setCartOpen(true))}
             aria-label={`Cart (${cartCount} items)`}
-            className="relative p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
+            className="relative p-1.5 sm:p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
           >
             <ShoppingCart size={18} />
             {cartCount > 0 && (
@@ -248,7 +248,7 @@ export default function Navbar() {
             onClick={() => dispatch(toggleMobileMenu())}
             aria-label="Toggle navigation menu"
             aria-expanded={isMobileMenuOpen}
-            className="md:hidden p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
+            className="md:hidden p-1.5 sm:p-2.5 rounded-lg text-premium-muted hover:text-white hover:bg-premium-charcoal transition-colors"
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
