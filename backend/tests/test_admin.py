@@ -69,6 +69,24 @@ def test_admin_create_product(client, db):
     assert data["isFeatured"] is True
 
 
+def test_admin_create_product_rejects_negative_price(client, db):
+    hdrs   = _admin_headers(client, db)
+    cat_id = str(insert_category(db))
+    r = client.post("/admin/products", json={
+        "name": "Bad Price Fish", "categoryId": cat_id, "price": -50.0, "stockQuantity": 10,
+    }, headers=hdrs)
+    assert r.status_code == 422
+
+
+def test_admin_create_product_rejects_negative_stock(client, db):
+    hdrs   = _admin_headers(client, db)
+    cat_id = str(insert_category(db))
+    r = client.post("/admin/products", json={
+        "name": "Bad Stock Fish", "categoryId": cat_id, "price": 100.0, "stockQuantity": -5,
+    }, headers=hdrs)
+    assert r.status_code == 422
+
+
 def test_admin_create_product_defaults_to_in_stock_when_omitted(client, db):
     """
     Regression test: admin_create_product used to do bool(data.get("inStock", True)),

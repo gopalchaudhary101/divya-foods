@@ -39,7 +39,7 @@ from datetime import datetime, timezone
 from typing import Optional
 from fastapi import APIRouter, Depends, File, HTTPException, Query, Response, UploadFile
 from pymongo.database import Database
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.dependencies import get_db, require_admin
 from app.services import product_service, marketing_service
@@ -52,9 +52,9 @@ class ProductUpsertRequest(BaseModel):
     name: Optional[str] = None
     slug: Optional[str] = None
     categoryId: Optional[str] = None
-    price: Optional[float] = None
-    originalPrice: Optional[float] = None
-    stockQuantity: Optional[int] = None
+    price: Optional[float] = Field(None, ge=0)
+    originalPrice: Optional[float] = Field(None, ge=0)
+    stockQuantity: Optional[int] = Field(None, ge=0)
     weight: Optional[str] = None
     origin: Optional[str] = None
     brand: Optional[str] = None
@@ -65,7 +65,7 @@ class ProductUpsertRequest(BaseModel):
     isFeatured: Optional[bool] = None
     isBestSeller: Optional[bool] = None
     isPublished: Optional[bool] = None
-    lowStockThreshold: Optional[int] = None
+    lowStockThreshold: Optional[int] = Field(None, ge=0)
 
 
 # ─── Products ────────────────────────────────────────────────────────────────
@@ -306,8 +306,8 @@ class PurchaseCreateRequest(BaseModel):
     productId: str
     supplierName: str
     purchaseDate: Optional[str] = None
-    unitCost: float
-    quantity: int
+    unitCost: float = Field(..., ge=0)
+    quantity: int = Field(..., gt=0)
     invoiceNumber: Optional[str] = None
     batchNumber: Optional[str] = None
     expiryDate: Optional[str] = None
@@ -317,8 +317,8 @@ class PurchaseCreateRequest(BaseModel):
 class PurchaseUpdateRequest(BaseModel):
     supplierName: Optional[str] = None
     purchaseDate: Optional[str] = None
-    unitCost: Optional[float] = None
-    quantity: Optional[int] = None
+    unitCost: Optional[float] = Field(None, ge=0)
+    quantity: Optional[int] = Field(None, gt=0)
     invoiceNumber: Optional[str] = None
     batchNumber: Optional[str] = None
     expiryDate: Optional[str] = None
@@ -379,7 +379,7 @@ def admin_cancel_purchase(
 # so it lives here rather than in flash_sales.py.
 
 class FlashSaleRequest(BaseModel):
-    salePrice: Optional[float] = None
+    salePrice: Optional[float] = Field(None, gt=0)
     saleEndsAt: Optional[str] = None
 
 

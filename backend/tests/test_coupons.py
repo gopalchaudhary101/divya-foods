@@ -104,6 +104,22 @@ def test_admin_create_coupon(client, db):
     assert data["discountValue"] == 20
 
 
+def test_admin_create_coupon_rejects_negative_discount(client, db):
+    hdrs = _admin_headers(client, db)
+    r = client.post("/admin/coupons", json={
+        "code": "BADCOUPON", "discountType": "flat", "discountValue": -10,
+    }, headers=hdrs)
+    assert r.status_code == 422
+
+
+def test_admin_create_coupon_rejects_percentage_over_100(client, db):
+    hdrs = _admin_headers(client, db)
+    r = client.post("/admin/coupons", json={
+        "code": "TOOBIG", "discountType": "percentage", "discountValue": 150,
+    }, headers=hdrs)
+    assert r.status_code == 422
+
+
 def test_admin_create_duplicate_coupon_conflict(client, db):
     hdrs = _admin_headers(client, db)
     payload = {"code": "DUPE", "discountType": "flat", "discountValue": 10}

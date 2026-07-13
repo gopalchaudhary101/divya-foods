@@ -97,6 +97,19 @@ def test_admin_create_bundle(client, db):
     assert "id" in r.json()["data"]
 
 
+def test_admin_create_bundle_rejects_zero_price(client, db):
+    hdrs = _admin_headers(client, db)
+    cat_id = insert_category(db)
+    pid = str(insert_product(db, cat_id))
+
+    r = client.post("/admin/bundles", json={
+        "name":        "Free Pack",
+        "bundlePrice": 0,
+        "items":       [{"productId": pid, "quantity": 1}],
+    }, headers=hdrs)
+    assert r.status_code == 422
+
+
 def test_admin_list_bundles_includes_inactive(client, db):
     hdrs = _admin_headers(client, db)
     cat_id = insert_category(db)

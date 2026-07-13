@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, model_validator
 from pymongo.database import Database
 
 from app.dependencies import get_db, require_admin
@@ -82,12 +82,18 @@ admin_router = APIRouter(tags=["Admin"])
 class CouponUpsertRequest(BaseModel):
     code: str
     discountType: str           # "percentage" | "flat"
-    discountValue: float
-    minOrderValue: float = 0.0
-    maxDiscount: Optional[float] = None
+    discountValue: float = Field(..., gt=0)
+    minOrderValue: float = Field(0.0, ge=0)
+    maxDiscount: Optional[float] = Field(None, gt=0)
     isActive: bool = True
     expiresAt: Optional[str] = None   # ISO-8601 string or null
-    usageLimit: Optional[int] = None
+    usageLimit: Optional[int] = Field(None, gt=0)
+
+    @model_validator(mode="after")
+    def _percentage_cannot_exceed_100(self):
+        if self.discountType == "percentage" and self.discountValue > 100:
+            raise ValueError("A percentage discount cannot exceed 100.")
+        return self
 
 
 def _coupon_to_dict(c: dict) -> dict:

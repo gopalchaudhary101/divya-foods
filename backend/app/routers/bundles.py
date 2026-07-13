@@ -9,7 +9,7 @@ from typing import Optional
 
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pymongo.database import Database
 
 from app.dependencies import get_db, require_admin
@@ -73,14 +73,14 @@ admin_router = APIRouter(tags=["Admin"])
 
 class BundleItemInput(BaseModel):
     productId: str
-    quantity: int = 1
+    quantity: int = Field(1, gt=0)
 
 
 class BundleUpsertRequest(BaseModel):
     name: str
     description: str = ""
     image: Optional[str] = None
-    bundlePrice: float
+    bundlePrice: float = Field(..., gt=0)
     isActive: bool = True
     items: list[BundleItemInput]
 
