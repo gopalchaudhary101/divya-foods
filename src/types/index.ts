@@ -292,3 +292,23 @@ export interface RecipeFilters {
   categories: string[]
   difficulties: RecipeDifficulty[]
 }
+
+// ─── WhatsApp ───────────────────────────────────────────────────────────────
+
+export interface WhatsAppConfig {
+  enabled: boolean
+  phoneNumber: string
+  productMessageTemplate: string
+  cartMessageTemplate: string
+  orderMessageTemplate: string
+}
+
+export interface WhatsAppAdminConfig extends WhatsAppConfig {
+  cloudApiConfigured: boolean
+}
+
+export interface WhatsAppAnalytics {
+  totalShares: number
+  bySource: { source: string; count: number }[]
+  topProducts: { productId: string; productName: string; count: number }[]
+}

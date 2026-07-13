@@ -14,6 +14,8 @@ import { couponApi } from '@/services/api/couponApi'
 import { settingsApi } from '@/services/api/settingsApi'
 import { CONFIG } from '@/constants/config'
 import { ROUTES } from '@/constants/routes'
+import { WhatsAppShareButton } from '@/components/shared/WhatsAppShareButton'
+import { useWhatsAppConfig, fillWhatsAppTemplate } from '@/hooks/useWhatsApp'
 
 // ─── Razorpay types ───────────────────────────────────────────────────────────
 declare global {
@@ -96,7 +98,8 @@ export default function CheckoutPage() {
   // Guest checkout — unauthenticated visitors choose to log in or continue without an account
   const [checkoutAs, setCheckoutAs]   = useState<'account' | 'guest' | null>(isAuthenticated ? 'account' : null)
   const [guestEmail, setGuestEmail]   = useState('')
-  const [guestConfirmation, setGuestConfirmation] = useState<{ orderNumber: string; email: string } | null>(null)
+  const [guestConfirmation, setGuestConfirmation] = useState<{ orderNumber: string; email: string; total: number } | null>(null)
+  const { data: whatsappConfig } = useWhatsAppConfig()
 
   const deliveryCharge = totalPrice >= CONFIG.DELIVERY.FREE_DELIVERY_ABOVE ? 0 : CONFIG.DELIVERY.STANDARD_CHARGE
   const orderTotal     = totalPrice + deliveryCharge - discount
@@ -209,7 +212,7 @@ export default function CheckoutPage() {
       if (!initiated.razorpayOrderId) {
         dispatch(clearCart())
         if (isGuest) {
-          setGuestConfirmation({ orderNumber: initiated.orderNumber, email: guestEmail })
+          setGuestConfirmation({ orderNumber: initiated.orderNumber, email: guestEmail, total: initiated.amount })
         } else {
           navigate(`/orders/${initiated.orderId}`, { state: { justOrdered: true } })
         }
@@ -240,7 +243,7 @@ export default function CheckoutPage() {
                 response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature,
               )
               dispatch(clearCart())
-              setGuestConfirmation({ orderNumber: initiated.orderNumber, email: guestEmail })
+              setGuestConfirmation({ orderNumber: initiated.orderNumber, email: guestEmail, total: initiated.amount })
             } else {
               await orderApi.verifyPayment(
                 initiated.orderId,
@@ -318,6 +321,19 @@ export default function CheckoutPage() {
               Continue Shopping
             </Link>
           </div>
+          {whatsappConfig && (
+            <div className="mt-4 flex justify-center">
+              <WhatsAppShareButton
+                message={fillWhatsAppTemplate(whatsappConfig.orderMessageTemplate, {
+                  orderNumber: guestConfirmation.orderNumber,
+                  status: 'Confirmed',
+                  total: formatCurrency(guestConfirmation.total),
+                })}
+                source="order"
+                trackItems={[{ productId: guestConfirmation.orderNumber, productName: `Order ${guestConfirmation.orderNumber}` }]}
+              />
+            </div>
+          )}
         </div>
       </>
     )

@@ -17,6 +17,11 @@ vi.mock('@/services/api/couponApi', () => ({
 vi.mock('@/services/api/settingsApi', () => ({
   settingsApi: { get: vi.fn().mockResolvedValue({ businessName: 'Divya Foods', gstNumber: 'GST123', fssaiNumber: 'FSSAI456' }) },
 }))
+vi.mock('@/services/api/whatsappApi', () => ({
+  whatsappApi: { getConfig: vi.fn().mockResolvedValue({
+    enabled: false, phoneNumber: '', productMessageTemplate: '', cartMessageTemplate: '', orderMessageTemplate: '',
+  }), trackShare: vi.fn().mockResolvedValue(undefined) },
+}))
 
 const mockNavigate = vi.fn()
 vi.mock('react-router-dom', async (importOriginal) => {

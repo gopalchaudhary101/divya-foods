@@ -66,6 +66,11 @@ Recipes:
   DELETE /admin/recipes/{id}        → delete recipe
   POST   /admin/recipes/bulk-import → create many recipes at once (skips titles that already exist)
 
+WhatsApp:
+  GET /admin/whatsapp/config     → click-to-chat config (enabled, phone number, message templates)
+  PUT /admin/whatsapp/config     → update config
+  GET /admin/whatsapp/analytics  → total shares, shares by source, top 10 shared products
+
 Settings:
   GET  /admin/settings             → current site settings (business name, GST, FSSAI,
                                       plus image-upload limits used by /upload)
@@ -84,7 +89,8 @@ from pydantic import BaseModel, EmailStr
 
 from app.dependencies import get_db, require_admin
 from app.models.recipe import RecipeCreate, RecipeUpdate, RecipeBulkImportRequest
-from app.services import order_service, product_service, analytics_service, banner_service, settings_service, marketing_service, driver_service, user_admin_service, return_service, recipe_service
+from app.models.whatsapp import WhatsAppConfigUpdate
+from app.services import order_service, product_service, analytics_service, banner_service, settings_service, marketing_service, driver_service, user_admin_service, return_service, recipe_service, whatsapp_service
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -894,6 +900,33 @@ def admin_bulk_import_recipes(
     _admin: dict = Depends(require_admin),
 ):
     return recipe_service.admin_bulk_import_recipes(db, [r.model_dump() for r in body.recipes])
+
+
+# ─── WhatsApp ─────────────────────────────────────────────────────────────────
+
+@router.get("/whatsapp/config")
+def admin_get_whatsapp_config(
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return whatsapp_service.admin_get_config(db)
+
+
+@router.put("/whatsapp/config")
+def admin_update_whatsapp_config(
+    body: WhatsAppConfigUpdate,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return whatsapp_service.admin_update_config(db, body.model_dump(exclude_unset=True))
+
+
+@router.get("/whatsapp/analytics")
+def admin_get_whatsapp_analytics(
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return whatsapp_service.get_share_analytics(db)
 
 
 # ─── Settings ─────────────────────────────────────────────────────────────────

@@ -54,5 +54,6 @@ export const ROUTES = {
     GIFT_CARDS: '/admin/gift-cards',
     DRIVERS: '/admin/drivers',
     USERS: '/admin/users',
+    WHATSAPP: '/admin/whatsapp',
   },
 } as const

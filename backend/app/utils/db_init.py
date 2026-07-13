@@ -149,4 +149,52 @@ def create_indexes(db: Database) -> None:
         weights={"title": 10, "tags": 5, "search_keywords": 5, "description": 1},
     )
 
+    # ── whatsapp ──────────────────────────────────────────────────────────────
+    # whatsapp_settings is a single-document singleton (_id="config"), no index
+    # needed beyond the default _id index. whatsapp_shares is an append-only
+    # event log — indexed for the admin analytics aggregations (top products,
+    # totals) to stay fast regardless of how many shares accumulate.
+    db.whatsapp_shares.create_index("product_id")
+    db.whatsapp_shares.create_index("shared_at")
+
+    # ── bulk order requests ───────────────────────────────────────────────────
+    # Admin list is filtered by status and always sorted newest-first.
+    db.bulk_order_requests.create_index([("status", 1), ("created_at", -1)])
+
+    # ── bundles ───────────────────────────────────────────────────────────────
+    # Public listing filters on is_active; admin listing has no filter but
+    # shares the same newest-first sort, so the compound index still helps.
+    db.bundles.create_index([("is_active", 1), ("created_at", -1)])
+
+    # ── gift cards ────────────────────────────────────────────────────────────
+    # code must be globally unique — was previously only enforced by an
+    # application-level find-before-insert check, which is racy under
+    # concurrent redemption/issuance. A real unique index closes that gap.
+    db.gift_cards.create_index("code", unique=True)
+    db.gift_cards.create_index("created_at")
+
+    # ── purchases (inventory purchase orders) ─────────────────────────────────
+    db.purchases.create_index([("product_id", 1), ("created_at", -1)])
+    db.purchases.create_index("status")
+
+    # ── product Q&A ───────────────────────────────────────────────────────────
+    # Public per-product listing is the hot path; admin's "unanswered" filter
+    # is a separate, lower-traffic query.
+    db.qa.create_index([("product_id", 1), ("created_at", -1)])
+    db.qa.create_index("answer")
+
+    # ── stock movements (inventory audit trail) ───────────────────────────────
+    db.stock_movements.create_index([("product_id", 1), ("created_at", -1)])
+
+    # ── subscriptions ─────────────────────────────────────────────────────────
+    # Covers both the customer's "my active subscriptions" list and the
+    # duplicate-subscription check on create.
+    db.subscriptions.create_index([("user_id", 1), ("status", 1)])
+    db.subscriptions.create_index([("user_id", 1), ("product_id", 1), ("status", 1)])
+
+    # ── scheduled_jobs, settings, image_hashes ────────────────────────────────
+    # All three are accessed exclusively by _id (job_id / singleton _id / file
+    # hash) — the automatic _id index already covers every query here, so no
+    # additional index is needed despite these collections having none today.
+
     logger.info("All indexes created successfully")

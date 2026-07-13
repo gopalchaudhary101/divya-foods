@@ -8,6 +8,10 @@ import { getProductImageSrcSet } from '@/utils/cloudinaryImage'
 import { Badge } from '@/components/ui/Badge'
 import { StarRating } from '@/components/shared/StarRating'
 import { useIsWishlisted, useToggleWishlist } from '@/hooks/useWishlist'
+import { useCategories } from '@/hooks/useProducts'
+import { WhatsAppShareButton } from '@/components/shared/WhatsAppShareButton'
+import { useWhatsAppConfig } from '@/hooks/useWhatsApp'
+import { buildProductShareMessage } from '@/utils/whatsappMessage'
 
 interface ProductCardProps {
   product: Product
@@ -55,6 +59,8 @@ function ProductImage({ src, alt }: { src: string | null; alt: string }) {
 function ProductCardImpl({ product, onAddToCart }: ProductCardProps) {
   const isWishlisted = useIsWishlisted(product.id)
   const toggleWishlist = useToggleWishlist()
+  const { data: categories } = useCategories()
+  const { data: whatsappConfig } = useWhatsAppConfig()
 
   const discountPct =
     product.originalPrice && product.originalPrice > product.price
@@ -62,6 +68,10 @@ function ProductCardImpl({ product, onAddToCart }: ProductCardProps) {
       : null
 
   const primaryImage = product.images[0] ?? null
+  const categoryName = categories?.find(c => c.id === product.category)?.name ?? ''
+  const whatsappMessage = whatsappConfig
+    ? buildProductShareMessage(whatsappConfig.productMessageTemplate, product, categoryName)
+    : ''
 
   return (
     <motion.div
@@ -95,20 +105,30 @@ function ProductCardImpl({ product, onAddToCart }: ProductCardProps) {
           )}
         </div>
 
-        {/* Wishlist button */}
-        <button
-          onClick={(e) => {
-            e.preventDefault()
-            toggleWishlist(product.id)
-          }}
-          aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-premium-navy/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform"
-        >
-          <Heart
-            size={16}
-            className={isWishlisted ? 'text-red-500 fill-red-500' : 'text-premium-teal'}
-          />
-        </button>
+        {/* Wishlist + WhatsApp share buttons */}
+        <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              toggleWishlist(product.id)
+            }}
+            aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+            className="p-2 rounded-full bg-premium-navy/80 backdrop-blur-sm shadow-sm hover:scale-110 transition-transform"
+          >
+            <Heart
+              size={16}
+              className={isWishlisted ? 'text-red-500 fill-red-500' : 'text-premium-teal'}
+            />
+          </button>
+          {whatsappMessage && (
+            <WhatsAppShareButton
+              compact
+              message={whatsappMessage}
+              source="product_card"
+              trackItems={[{ productId: product.id, productName: product.name }]}
+            />
+          )}
+        </div>
       </Link>
 
       {/* Info */}

@@ -6,7 +6,10 @@ import {
   Truck, Shield, ChevronRight, Star, Pencil, Trash2, RefreshCw,
 } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useProduct, useRelatedProducts } from '@/hooks/useProducts'
+import { useProduct, useRelatedProducts, useCategories } from '@/hooks/useProducts'
+import { WhatsAppShareButton } from '@/components/shared/WhatsAppShareButton'
+import { useWhatsAppConfig } from '@/hooks/useWhatsApp'
+import { buildProductShareMessage } from '@/utils/whatsappMessage'
 import { ProductCard } from '@/components/shared/ProductCard'
 import { useIsWishlisted, useToggleWishlist } from '@/hooks/useWishlist'
 import { useReviews, useCanReview, useDeleteReview } from '@/hooks/useReviews'
@@ -68,6 +71,8 @@ export default function ProductDetailPage() {
   const { data: product, isLoading, error } = useProduct(slug ?? '')
   const isWishlisted = useIsWishlisted(product?.id ?? '')
   const toggleWishlist = useToggleWishlist()
+  const { data: categories } = useCategories()
+  const { data: whatsappConfig } = useWhatsAppConfig()
 
   const [activeImage, setActiveImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
@@ -107,6 +112,12 @@ export default function ProductDetailPage() {
     product?.originalPrice && product.originalPrice > product.price
       ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
       : null
+
+  const categoryName = categories?.find(c => c.id === product?.category)?.name ?? ''
+  const whatsappMessage =
+    product && whatsappConfig
+      ? buildProductShareMessage(whatsappConfig.productMessageTemplate, product, categoryName)
+      : ''
 
   function handleAddToCart() {
     if (!product) return
@@ -389,6 +400,15 @@ export default function ProductDetailPage() {
               <Button variant="outline" size="lg" disabled className="cursor-not-allowed">
                 Out of Stock
               </Button>
+            )}
+
+            {whatsappMessage && (
+              <WhatsAppShareButton
+                message={whatsappMessage}
+                source="product_detail"
+                trackItems={[{ productId: product.id, productName: product.name }]}
+                className="w-full"
+              />
             )}
 
             {/* Trust signals */}

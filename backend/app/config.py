@@ -79,6 +79,18 @@ class Settings(BaseSettings):
     # optional integrations above
     SENTRY_DSN: str = ""
 
+    # WhatsApp Business Platform (Cloud API) — blank disables the auto-reply
+    # webhook entirely (see app/services/whatsapp_service.py). The click-to-chat
+    # "Share on WhatsApp" buttons do NOT need any of these — they only need the
+    # plain business phone number, which is admin-configurable in the database
+    # (see whatsapp_service._DEFAULTS), not an env var.
+    WHATSAPP_ACCESS_TOKEN: str = ""          # System User permanent token (Meta Business Settings)
+    WHATSAPP_PHONE_NUMBER_ID: str = ""       # Meta-assigned ID, not the actual phone number
+    WHATSAPP_BUSINESS_ACCOUNT_ID: str = ""   # WABA ID
+    WHATSAPP_VERIFY_TOKEN: str = ""          # Shared secret for the webhook GET handshake
+    WHATSAPP_APP_SECRET: str = ""            # Used to verify X-Hub-Signature-256 on inbound webhooks
+    WHATSAPP_GRAPH_API_VERSION: str = "v21.0"
+
     @model_validator(mode="after")
     def _reject_insecure_jwt_secret_in_production(self) -> "Settings":
         """

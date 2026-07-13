@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/Button'
 import axiosInstance from '@/services/api/axiosInstance'
 import type { ApiResponse } from '@/types'
 import { ROUTES } from '@/constants/routes'
+import { WhatsAppShareButton } from '@/components/shared/WhatsAppShareButton'
+import { useWhatsAppConfig, fillWhatsAppTemplate } from '@/hooks/useWhatsApp'
 
 // ─── Status helpers ───────────────────────────────────────────────────────────
 
@@ -87,6 +89,16 @@ function OrderDetail({ orderId }: { orderId: string }) {
     queryKey: queryKeys.orders.detail(orderId),
     queryFn: () => orderApi.getById(orderId),
   })
+
+  const { data: whatsappConfig } = useWhatsAppConfig()
+  const whatsappMessage =
+    order && whatsappConfig
+      ? fillWhatsAppTemplate(whatsappConfig.orderMessageTemplate, {
+          orderNumber: order.orderNumber,
+          status: STATUS_CONFIG[order.status]?.label ?? order.status,
+          total: formatCurrency(order.total),
+        })
+      : ''
 
   const { data: existingReturn } = useQuery({
     queryKey: queryKeys.returns.forOrder(orderId),
@@ -229,6 +241,15 @@ function OrderDetail({ orderId }: { orderId: string }) {
         >
           <Mail size={13} /> {invoiceAction === 'email' ? 'Sending…' : 'Email Invoice'}
         </button>
+        {whatsappMessage && (
+          <WhatsAppShareButton
+            message={whatsappMessage}
+            source="order"
+            trackItems={order!.items.map(i => ({ productId: i.productId, productName: i.name }))}
+            label="Ask on WhatsApp"
+            className="!px-3 !py-2 text-xs"
+          />
+        )}
       </div>
 
       {/* Visual status stepper */}

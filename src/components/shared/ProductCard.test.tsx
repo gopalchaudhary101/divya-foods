@@ -1,9 +1,14 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithProviders } from '@/test/testUtils'
 import { ProductCard } from './ProductCard'
+import { whatsappApi } from '@/services/api/whatsappApi'
 import type { Product } from '@/types'
+
+vi.mock('@/services/api/whatsappApi', () => ({
+  whatsappApi: { getConfig: vi.fn(), trackShare: vi.fn() },
+}))
 
 const product: Product = {
   id: 'p1',
@@ -24,6 +29,15 @@ const product: Product = {
   isBestSeller: true,
   createdAt: '',
 }
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  vi.mocked(whatsappApi.getConfig).mockResolvedValue({
+    enabled: false, phoneNumber: '', productMessageTemplate: '', cartMessageTemplate: '', orderMessageTemplate: '',
+  })
+  vi.mocked(whatsappApi.trackShare).mockResolvedValue(undefined)
+  vi.stubGlobal('open', vi.fn())
+})
 
 describe('ProductCard', () => {
   it('renders product name, price, and discount badge', () => {
@@ -62,5 +76,24 @@ describe('ProductCard', () => {
     renderWithProviders(<ProductCard product={product} />)
     const links = screen.getAllByRole('link')
     expect(links[0]).toHaveAttribute('href', '/products/norwegian-salmon')
+  })
+
+  it('shows a compact WhatsApp share button and tracks the click when enabled', async () => {
+    vi.mocked(whatsappApi.getConfig).mockResolvedValue({
+      enabled: true, phoneNumber: '919999123242',
+      productMessageTemplate: 'Interested in {productName}!', cartMessageTemplate: '', orderMessageTemplate: '',
+    })
+    const user = userEvent.setup()
+    renderWithProviders(<ProductCard product={product} />)
+
+    const button = await screen.findByLabelText('Share on WhatsApp')
+    await user.click(button)
+
+    expect(whatsappApi.trackShare).toHaveBeenCalledWith({ productId: 'p1', productName: 'Norwegian Salmon', source: 'product_card' })
+  })
+
+  it('does not show a WhatsApp button when sharing is disabled', () => {
+    renderWithProviders(<ProductCard product={product} />)
+    expect(screen.queryByLabelText('Share on WhatsApp')).not.toBeInTheDocument()
   })
 })

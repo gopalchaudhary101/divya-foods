@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/Button'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { CONFIG } from '@/constants/config'
 import { ROUTES } from '@/constants/routes'
+import { WhatsAppShareButton } from '@/components/shared/WhatsAppShareButton'
+import { useWhatsAppConfig, fillWhatsAppTemplate } from '@/hooks/useWhatsApp'
 
 export default function CartPage() {
   const dispatch = useAppDispatch()
@@ -21,6 +23,14 @@ export default function CartPage() {
   const deliveryCharge = totalPrice >= CONFIG.DELIVERY.FREE_DELIVERY_ABOVE ? 0 : CONFIG.DELIVERY.STANDARD_CHARGE
   const orderTotal = totalPrice + deliveryCharge
   const freeDeliveryRemaining = Math.max(0, CONFIG.DELIVERY.FREE_DELIVERY_ABOVE - totalPrice)
+
+  const { data: whatsappConfig } = useWhatsAppConfig()
+  const whatsappMessage = whatsappConfig
+    ? fillWhatsAppTemplate(whatsappConfig.cartMessageTemplate, {
+        itemsList: items.map(i => `- ${i.name} x${i.quantity} (${formatCurrency(i.price * i.quantity)})`).join('\n'),
+        total: formatCurrency(orderTotal),
+      })
+    : ''
 
   function handleCoupon(e: React.FormEvent) {
     e.preventDefault()
@@ -265,6 +275,16 @@ export default function CartPage() {
               >
                 Continue Shopping
               </Link>
+
+              {whatsappMessage && (
+                <WhatsAppShareButton
+                  message={whatsappMessage}
+                  source="cart"
+                  trackItems={items.map(i => ({ productId: i.productId, productName: i.name }))}
+                  label="Enquire on WhatsApp"
+                  className="w-full mt-3"
+                />
+              )}
 
               {/* Trust signals */}
               <div className="mt-5 pt-4 border-t border-white/10 text-xs text-premium-muted space-y-1.5">

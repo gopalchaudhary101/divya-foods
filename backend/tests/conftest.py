@@ -63,6 +63,7 @@ COLLECTIONS = [
     "reviews", "addresses", "notifications", "push_subscriptions", "bundles",
     "qa", "subscriptions", "settings", "image_hashes", "stock_movements", "purchases",
     "bulk_order_requests", "gift_cards", "returns", "scheduled_jobs", "recipes",
+    "whatsapp_settings", "whatsapp_shares",
 ]
 
 @pytest.fixture(autouse=True)

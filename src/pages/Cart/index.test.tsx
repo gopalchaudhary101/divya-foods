@@ -1,13 +1,27 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithProviders } from '@/test/testUtils'
 import CartPage from './index'
+import { whatsappApi } from '@/services/api/whatsappApi'
 import type { CartItem } from '@/types'
+
+vi.mock('@/services/api/whatsappApi', () => ({
+  whatsappApi: { getConfig: vi.fn(), trackShare: vi.fn() },
+}))
 
 const item: CartItem = {
   productId: 'p1', name: 'Salmon', price: 500, quantity: 2, image: '/salmon.webp', maxQuantity: 5,
 }
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  vi.mocked(whatsappApi.getConfig).mockResolvedValue({
+    enabled: false, phoneNumber: '', productMessageTemplate: '', cartMessageTemplate: '', orderMessageTemplate: '',
+  })
+  vi.mocked(whatsappApi.trackShare).mockResolvedValue(undefined)
+  vi.stubGlobal('open', vi.fn())
+})
 
 function cartState(items: CartItem[]) {
   const totalItems = items.reduce((s, i) => s + i.quantity, 0)
@@ -84,5 +98,32 @@ describe('CartPage', () => {
     const input = screen.getByPlaceholderText('DIVYA10') as HTMLInputElement
     await user.type(input, 'save10')
     expect(input.value).toBe('SAVE10')
+  })
+
+  it('shows an "Enquire on WhatsApp" button that tracks every cart item when enabled', async () => {
+    vi.mocked(whatsappApi.getConfig).mockResolvedValue({
+      enabled: true, phoneNumber: '919999123242',
+      productMessageTemplate: '', cartMessageTemplate: 'Items:\n{itemsList}\nTotal: {total}', orderMessageTemplate: '',
+    })
+    const user = userEvent.setup()
+    renderWithProviders(<CartPage />, {
+      preloadedState: cartState([item, { ...item, productId: 'p2', name: 'Tuna' }]),
+    })
+
+    const button = await screen.findByRole('button', { name: 'Enquire on WhatsApp' })
+    await user.click(button)
+
+    expect(whatsappApi.trackShare).toHaveBeenCalledWith({ productId: 'p1', productName: 'Salmon', source: 'cart' })
+    expect(whatsappApi.trackShare).toHaveBeenCalledWith({ productId: 'p2', productName: 'Tuna', source: 'cart' })
+    expect(window.open).toHaveBeenCalledWith(
+      expect.stringContaining('https://wa.me/919999123242?text='),
+      '_blank',
+      'noopener,noreferrer',
+    )
+  })
+
+  it('does not show a WhatsApp button when sharing is disabled', () => {
+    renderWithProviders(<CartPage />, { preloadedState: cartState([item]) })
+    expect(screen.queryByRole('button', { name: 'Enquire on WhatsApp' })).not.toBeInTheDocument()
   })
 })

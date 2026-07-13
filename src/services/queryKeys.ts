@@ -79,6 +79,8 @@ export const queryKeys = {
     customers: () => ['admin', 'customers'] as const,
     analytics: () => ['admin', 'analytics'] as const,
     recipes: (filters?: unknown) => ['admin', 'recipes', filters] as const,
+    whatsappConfig: () => ['admin', 'whatsapp', 'config'] as const,
+    whatsappAnalytics: () => ['admin', 'whatsapp', 'analytics'] as const,
   },
 
   // ─── Q&A ──────────────────────────────────────────────────────────────────
@@ -105,5 +107,10 @@ export const queryKeys = {
     list:    (filters?: unknown) => ['recipes', 'list', filters] as const,
     detail:  (slug: string) => ['recipes', 'detail', slug] as const,
     filters: () => ['recipes', 'filters'] as const,
+  },
+
+  // ─── WhatsApp ─────────────────────────────────────────────────────────────
+  whatsapp: {
+    config: () => ['whatsapp', 'config'] as const,
   },
 } as const

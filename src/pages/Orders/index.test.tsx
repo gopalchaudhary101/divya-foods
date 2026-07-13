@@ -8,6 +8,7 @@ import userEvent from '@testing-library/user-event'
 import OrdersPage from './index'
 import { orderApi } from '@/services/api/orderApi'
 import { returnApi } from '@/services/api/returnApi'
+import { whatsappApi } from '@/services/api/whatsappApi'
 import axiosInstance from '@/services/api/axiosInstance'
 import { createTestStore, createTestQueryClient } from '@/test/testUtils'
 
@@ -19,6 +20,9 @@ vi.mock('@/services/api/orderApi', () => ({
 }))
 vi.mock('@/services/api/returnApi', () => ({
   returnApi: { getForOrder: vi.fn(), request: vi.fn() },
+}))
+vi.mock('@/services/api/whatsappApi', () => ({
+  whatsappApi: { getConfig: vi.fn(), trackShare: vi.fn() },
 }))
 vi.mock('@/services/api/axiosInstance', () => ({
   default: { put: vi.fn() },
@@ -58,6 +62,11 @@ const order = {
 beforeEach(() => {
   vi.clearAllMocks()
   vi.mocked(returnApi.getForOrder).mockResolvedValue(null)
+  vi.mocked(whatsappApi.getConfig).mockResolvedValue({
+    enabled: false, phoneNumber: '', productMessageTemplate: '', cartMessageTemplate: '', orderMessageTemplate: '',
+  })
+  vi.mocked(whatsappApi.trackShare).mockResolvedValue(undefined)
+  vi.stubGlobal('open', vi.fn())
 })
 
 describe('OrdersPage — list view', () => {
@@ -186,6 +195,28 @@ describe('OrdersPage — detail view', () => {
     await user.click(screen.getByRole('button', { name: /Email Invoice/ }))
 
     await waitFor(() => expect(orderApi.emailInvoice).toHaveBeenCalledWith('o1'))
+  })
+
+  it('shows an "Ask on WhatsApp" button that tracks every order item when enabled', async () => {
+    vi.mocked(orderApi.getById).mockResolvedValue(order)
+    vi.mocked(whatsappApi.getConfig).mockResolvedValue({
+      enabled: true, phoneNumber: '919999123242',
+      productMessageTemplate: '', cartMessageTemplate: '', orderMessageTemplate: 'Order {orderNumber} is {status}, total {total}',
+    })
+    const user = userEvent.setup()
+    renderAtRoute('/orders/o1')
+
+    await screen.findByText('DF-000123')
+    await user.click(await screen.findByRole('button', { name: 'Ask on WhatsApp' }))
+
+    expect(whatsappApi.trackShare).toHaveBeenCalledWith({ productId: 'p1', productName: 'Salmon', source: 'order' })
+  })
+
+  it('does not show a WhatsApp button when sharing is disabled', async () => {
+    vi.mocked(orderApi.getById).mockResolvedValue(order)
+    renderAtRoute('/orders/o1')
+    await screen.findByText('DF-000123')
+    expect(screen.queryByRole('button', { name: 'Ask on WhatsApp' })).not.toBeInTheDocument()
   })
 })
 

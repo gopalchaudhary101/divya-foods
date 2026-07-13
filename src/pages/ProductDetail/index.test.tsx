@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
@@ -8,6 +8,7 @@ import userEvent from '@testing-library/user-event'
 import ProductDetailPage from './index'
 import { productApi } from '@/services/api/productApi'
 import { reviewApi } from '@/services/api/reviewApi'
+import { whatsappApi } from '@/services/api/whatsappApi'
 import { createTestStore, createTestQueryClient, type PartialRootState } from '@/test/testUtils'
 
 vi.mock('@/services/api/productApi', () => ({
@@ -18,6 +19,9 @@ vi.mock('@/services/api/reviewApi', () => ({
 }))
 vi.mock('@/services/api/wishlistApi', () => ({
   wishlistApi: { getWishlist: vi.fn(), addToWishlist: vi.fn(), removeFromWishlist: vi.fn() },
+}))
+vi.mock('@/services/api/whatsappApi', () => ({
+  whatsappApi: { getConfig: vi.fn(), trackShare: vi.fn() },
 }))
 vi.mock('react-hot-toast', () => ({ default: { success: vi.fn(), error: vi.fn() } }))
 
@@ -51,6 +55,11 @@ beforeEach(() => {
   vi.mocked(reviewApi.getByProduct).mockResolvedValue({ data: [], total: 0, page: 1, limit: 10, totalPages: 0, success: true })
   vi.mocked(reviewApi.canReview).mockResolvedValue({ canReview: false, reason: 'no_purchase' })
   vi.mocked(productApi.getRelated).mockResolvedValue([])
+  vi.mocked(whatsappApi.getConfig).mockResolvedValue({
+    enabled: false, phoneNumber: '', productMessageTemplate: '', cartMessageTemplate: '', orderMessageTemplate: '',
+  })
+  vi.mocked(whatsappApi.trackShare).mockResolvedValue(undefined)
+  vi.stubGlobal('open', vi.fn())
 })
 
 describe('ProductDetailPage', () => {
@@ -76,8 +85,14 @@ describe('ProductDetailPage', () => {
     renderAtSlug('norwegian-salmon')
     await screen.findByRole('heading', { name: 'Norwegian Salmon' })
 
-    const scripts = Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
-    const parsed = scripts.map(s => JSON.parse(s.textContent ?? '{}'))
+    // react-helmet-async commits <script> tags to document.head in its own
+    // effect, which can land a tick after the heading itself renders —
+    // wait for it explicitly rather than assuming it's synchronous.
+    const parsed = await waitFor(() => {
+      const scripts = Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
+      expect(scripts.length).toBeGreaterThan(0)
+      return scripts.map(s => JSON.parse(s.textContent ?? '{}'))
+    })
 
     expect(parsed.some(ld => ld['@type'] === 'Product' && ld.name === 'Norwegian Salmon')).toBe(true)
 
@@ -206,5 +221,30 @@ describe('ProductDetailPage', () => {
     const addToCartButtons = screen.getAllByRole('button', { name: /Add to Cart/ })
     await user.click(addToCartButtons[1]) // [0] is the main product's own button
     expect(store.getState().cart.items.some(i => i.productId === 'p2')).toBe(true)
+  })
+
+  it('shows a WhatsApp share button with the filled product template when enabled', async () => {
+    vi.mocked(productApi.getBySlug).mockResolvedValue(product as never)
+    vi.mocked(whatsappApi.getConfig).mockResolvedValue({
+      enabled: true, phoneNumber: '919999123242',
+      productMessageTemplate: 'Interested in {productName} for {price}! {link}',
+      cartMessageTemplate: '', orderMessageTemplate: '',
+    })
+    const user = userEvent.setup()
+    renderAtSlug('norwegian-salmon')
+
+    await screen.findByRole('heading', { name: 'Norwegian Salmon' })
+    const button = await screen.findByRole('button', { name: 'Share on WhatsApp' })
+    await user.click(button)
+
+    expect(whatsappApi.trackShare).toHaveBeenCalledWith({ productId: 'p1', productName: 'Norwegian Salmon', source: 'product_detail' })
+  })
+
+  it('does not render a WhatsApp button when sharing is disabled', async () => {
+    vi.mocked(productApi.getBySlug).mockResolvedValue(product as never)
+    renderAtSlug('norwegian-salmon')
+
+    await screen.findByRole('heading', { name: 'Norwegian Salmon' })
+    expect(screen.queryByRole('button', { name: 'Share on WhatsApp' })).not.toBeInTheDocument()
   })
 })

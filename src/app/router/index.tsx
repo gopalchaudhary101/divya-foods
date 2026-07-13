@@ -23,6 +23,7 @@ const AdminProductsPage   = lazy(() => import('@/pages/Admin/Products'))
 const AdminAnalyticsPage  = lazy(() => import('@/pages/Admin/Analytics'))
 const AdminCouponsPage    = lazy(() => import('@/pages/Admin/Coupons'))
 const AdminRecipesPage    = lazy(() => import('@/pages/Admin/Recipes'))
+const AdminWhatsAppPage   = lazy(() => import('@/pages/Admin/WhatsApp'))
 const WishlistPage        = lazy(() => import('@/pages/Wishlist'))
 const ReferralPage        = lazy(() => import('@/pages/Referral'))
 const BundlesPage         = lazy(() => import('@/pages/Bundles'))
@@ -119,6 +120,7 @@ const router = createBrowserRouter([
       { path: 'analytics', element: <AdminAnalyticsPage /> },
       { path: 'coupons', element: <AdminCouponsPage /> },
       { path: 'recipes', element: <AdminRecipesPage /> },
+      { path: 'whatsapp', element: <AdminWhatsAppPage /> },
       { path: 'orders', element: <AdminOrdersPage /> },
       { path: 'returns', element: <AdminReturnsPage /> },
       { path: 'bundles', element: <AdminBundlesPage /> },
