@@ -14,10 +14,11 @@ import random
 import string
 from datetime import datetime, timezone
 
-from bson import ObjectId
 from fastapi import HTTPException, status
 from pymongo import ReturnDocument
 from pymongo.database import Database
+
+from app.utils.mongo import get_object_id
 
 
 def _utcnow() -> datetime:
@@ -77,15 +78,8 @@ def admin_list(db: Database, page: int = 1, limit: int = 20) -> dict:
     return {"success": True, "data": [_to_dict(d) for d in docs], "total": total, "page": page, "limit": limit}
 
 
-def _get_oid(gift_card_id: str) -> ObjectId:
-    try:
-        return ObjectId(gift_card_id)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid gift card ID.")
-
-
 def admin_update(db: Database, gift_card_id: str, payload: dict) -> dict:
-    oid = _get_oid(gift_card_id)
+    oid = get_object_id(gift_card_id, "gift card")
     update: dict = {"updated_at": _utcnow()}
     if "is_active" in payload:
         update["is_active"] = bool(payload["is_active"])

@@ -7,11 +7,12 @@ driver_update_delivery_status).
 
 from datetime import datetime, timezone
 
-from bson import ObjectId
 from fastapi import HTTPException, status
 from pymongo import ReturnDocument
 from pymongo.database import Database
 from pymongo.errors import DuplicateKeyError
+
+from app.utils.mongo import get_object_id
 
 from app.utils.security import hash_password
 
@@ -66,10 +67,7 @@ def admin_list_drivers(db: Database) -> dict:
 
 
 def admin_set_driver_active(db: Database, driver_id: str, is_active: bool) -> dict:
-    try:
-        oid = ObjectId(driver_id)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid driver ID.")
+    oid = get_object_id(driver_id, "driver")
 
     result = db.users.find_one_and_update(
         {"_id": oid, "role": "driver"},

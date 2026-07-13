@@ -21,6 +21,8 @@ from bson import ObjectId
 from fastapi import HTTPException, status
 from pymongo.database import Database
 
+from app.utils.mongo import get_object_id
+
 ASSIGNABLE_ROLES = {"customer", "admin", "driver"}
 
 
@@ -81,10 +83,7 @@ def admin_update_role(db: Database, acting_user_id: ObjectId, target_user_id: st
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"role must be one of: {', '.join(sorted(ASSIGNABLE_ROLES))}",
         )
-    try:
-        oid = ObjectId(target_user_id)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user ID.")
+    oid = get_object_id(target_user_id, "user")
 
     if oid == acting_user_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You cannot change your own role.")

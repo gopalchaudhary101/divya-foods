@@ -18,6 +18,8 @@ from pymongo.database import Database
 from app.database import get_database
 from app.services import email_service
 from app.utils import scheduler
+from app.utils.mongo import get_object_id, get_optional_object_id
+from app.utils.slug import slugify as _slugify, unique_slug
 
 logger = logging.getLogger("app.product")
 
@@ -163,10 +165,7 @@ def get_qr_code_png(db: Database, product_id: str) -> tuple[bytes, str]:
 
     from app.config import settings
 
-    try:
-        oid = ObjectId(product_id)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid product ID.")
+    oid = get_object_id(product_id, "product")
 
     doc = db.products.find_one({"_id": oid}, {"slug": 1})
     if not doc:
@@ -301,13 +300,6 @@ def get_suggestions(db: Database, query: str, limit: int = 6) -> dict:
 
 
 # ─── Admin helpers ───────────────────────────────────────────────────────────
-
-def _slugify(name: str) -> str:
-    slug = name.lower()
-    slug = re.sub(r'[^a-z0-9\s-]', '', slug)
-    slug = re.sub(r'\s+', '-', slug.strip())
-    return re.sub(r'-+', '-', slug)
-
 
 def _to_admin_item(doc: dict, cat_map: dict) -> dict:
     """Full product dict for admin table — includes categoryId + categoryName."""
@@ -469,10 +461,7 @@ def _movement_to_dict(doc: dict) -> dict:
 def admin_get_stock_history(db: Database, product_id: Optional[str] = None, page: int = 1, limit: int = 50) -> dict:
     query: dict = {}
     if product_id:
-        try:
-            query["product_id"] = ObjectId(product_id)
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid product ID")
+        query["product_id"] = get_object_id(product_id, "product")
 
     skip  = (page - 1) * limit
     total = db.stock_movements.count_documents(query)
@@ -490,10 +479,7 @@ def admin_adjust_stock(db: Database, product_id: str, adjustment_type: str, quan
     """Manual stock add/remove/damaged adjustment — the 'Stock Added'/'Stock Removed' triggers."""
     if quantity <= 0:
         raise HTTPException(status_code=400, detail="Quantity must be greater than zero.")
-    try:
-        oid = ObjectId(product_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid product ID")
+    oid = get_object_id(product_id, "product")
 
     product = db.products.find_one({"_id": oid})
     if not product:
@@ -542,10 +528,7 @@ def admin_record_return(
     silently become sellable stock again."""
     if quantity <= 0:
         raise HTTPException(status_code=400, detail="Quantity must be greater than zero.")
-    try:
-        oid = ObjectId(product_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid product ID")
+    oid = get_object_id(product_id, "product")
 
     product = db.products.find_one({"_id": oid})
     if not product:
@@ -614,10 +597,7 @@ def admin_list_purchases(
 ) -> dict:
     query: dict = {}
     if product_id:
-        try:
-            query["product_id"] = ObjectId(product_id)
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid product ID")
+        query["product_id"] = get_object_id(product_id, "product")
     if status_filter:
         query["status"] = status_filter
 
@@ -634,10 +614,7 @@ def admin_list_purchases(
 
 
 def admin_create_purchase(db: Database, data: dict) -> dict:
-    try:
-        product_oid = ObjectId(data["productId"])
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid product ID")
+    product_oid = get_object_id(data["productId"], "product")
     if not db.products.find_one({"_id": product_oid}):
         raise HTTPException(status_code=404, detail="Product not found")
 
@@ -676,10 +653,7 @@ def admin_create_purchase(db: Database, data: dict) -> dict:
 
 
 def admin_update_purchase(db: Database, purchase_id: str, data: dict) -> dict:
-    try:
-        oid = ObjectId(purchase_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid purchase ID")
+    oid = get_object_id(purchase_id, "purchase")
 
     purchase = db.purchases.find_one({"_id": oid})
     if not purchase:
@@ -719,10 +693,7 @@ def admin_update_purchase(db: Database, purchase_id: str, data: dict) -> dict:
 
 
 def admin_receive_purchase(db: Database, purchase_id: str) -> dict:
-    try:
-        oid = ObjectId(purchase_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid purchase ID")
+    oid = get_object_id(purchase_id, "purchase")
 
     purchase = db.purchases.find_one({"_id": oid})
     if not purchase:
@@ -751,10 +722,7 @@ def admin_receive_purchase(db: Database, purchase_id: str) -> dict:
 
 
 def admin_cancel_purchase(db: Database, purchase_id: str) -> dict:
-    try:
-        oid = ObjectId(purchase_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid purchase ID")
+    oid = get_object_id(purchase_id, "purchase")
 
     purchase = db.purchases.find_one({"_id": oid})
     if not purchase:
@@ -850,18 +818,11 @@ def admin_create_product(db: Database, data: dict) -> dict:
     if not name:
         raise HTTPException(status_code=400, detail="Product name is required")
 
-    slug = (data.get("slug") or "").strip() or _slugify(name)
-    base, counter = slug, 1
-    while db.products.find_one({"slug": slug}):
-        slug = f"{base}-{counter}"
-        counter += 1
+    slug = unique_slug(db, "products", _slugify((data.get("slug") or "").strip() or name))
 
     category_id = None
     if data.get("categoryId"):
-        try:
-            category_id = ObjectId(data["categoryId"])
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid category ID")
+        category_id = get_object_id(data["categoryId"], "category")
 
     now = datetime.now(timezone.utc)
     initial_stock = int(data.get("stockQuantity") or 0)
@@ -900,10 +861,7 @@ def admin_create_product(db: Database, data: dict) -> dict:
 
 
 def admin_update_product(db: Database, product_id: str, data: dict) -> dict:
-    try:
-        oid = ObjectId(product_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid product ID")
+    oid = get_object_id(product_id, "product")
 
     existing = db.products.find_one({"_id": oid})
     if not existing:
@@ -923,10 +881,7 @@ def admin_update_product(db: Database, product_id: str, data: dict) -> dict:
     if "originalPrice" in data:
         upd["original_price"] = float(data["originalPrice"]) if data["originalPrice"] else None
     if "categoryId" in data:
-        try:
-            upd["category_id"] = ObjectId(data["categoryId"]) if data["categoryId"] else None
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid category ID")
+        upd["category_id"] = get_optional_object_id(data["categoryId"], "category")
     if "brand"         in data: upd["brand"]          = data["brand"] or None
     if "origin"        in data: upd["origin"]         = data["origin"] or None
     if "weight"        in data: upd["weight"]         = data["weight"] or None
@@ -953,10 +908,7 @@ def admin_update_product(db: Database, product_id: str, data: dict) -> dict:
 
 
 def admin_delete_product(db: Database, product_id: str) -> dict:
-    try:
-        oid = ObjectId(product_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid product ID")
+    oid = get_object_id(product_id, "product")
     result = db.products.delete_one({"_id": oid})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -984,10 +936,7 @@ def admin_bulk_update_products(db: Database, product_ids: list[str], data: dict)
     if "isFeatured"   in data: upd["is_featured"]   = bool(data["isFeatured"])
     if "isBestSeller" in data: upd["is_best_seller"] = bool(data["isBestSeller"])
     if "categoryId"   in data:
-        try:
-            upd["category_id"] = ObjectId(data["categoryId"]) if data["categoryId"] else None
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid category ID")
+        upd["category_id"] = get_optional_object_id(data["categoryId"], "category")
 
     result = db.products.update_many({"_id": {"$in": oids}}, {"$set": upd})
     return {"success": True, "data": {"matched": result.matched_count, "updated": result.modified_count}}
@@ -1040,11 +989,7 @@ def admin_bulk_import_products(db: Database, rows: list[dict]) -> dict:
                 errors.append({"row": i, "reason": f"Unknown category '{row.get('category')}'"})
                 continue
 
-        slug = (row.get("slug") or "").strip() or _slugify(name)
-        base, counter = slug, 1
-        while db.products.find_one({"slug": slug}):
-            slug = f"{base}-{counter}"
-            counter += 1
+        slug = unique_slug(db, "products", _slugify((row.get("slug") or "").strip() or name))
 
         try:
             original_price = float(row["originalPrice"]) if row.get("originalPrice") else None

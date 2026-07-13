@@ -7,10 +7,11 @@ converts it into a real order (or a custom invoice) outside this flow.
 
 from datetime import datetime, timezone
 
-from bson import ObjectId
 from fastapi import HTTPException, status
 from pymongo import ReturnDocument
 from pymongo.database import Database
+
+from app.utils.mongo import get_object_id
 
 STATUSES = {"new", "contacted", "quoted", "closed"}
 
@@ -78,15 +79,8 @@ def admin_list_requests(db: Database, status_filter: str = None, page: int = 1, 
     }
 
 
-def _get_oid(request_id: str) -> ObjectId:
-    try:
-        return ObjectId(request_id)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid request ID.")
-
-
 def admin_update_request(db: Database, request_id: str, payload: dict) -> dict:
-    oid = _get_oid(request_id)
+    oid = get_object_id(request_id, "request")
 
     update = {"updated_at": datetime.now(timezone.utc)}
     if "status" in payload:

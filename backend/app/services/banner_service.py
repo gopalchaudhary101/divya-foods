@@ -2,10 +2,11 @@
 
 from datetime import datetime, timezone
 
-from bson import ObjectId
 from fastapi import HTTPException, status
 from pymongo import ReturnDocument
 from pymongo.database import Database
+
+from app.utils.mongo import get_object_id
 
 
 def _to_dict(doc: dict) -> dict:
@@ -48,15 +49,8 @@ def admin_create(db: Database, payload: dict) -> dict:
     return {"success": True, "data": _to_dict(doc)}
 
 
-def _get_oid(banner_id: str) -> ObjectId:
-    try:
-        return ObjectId(banner_id)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid banner ID.")
-
-
 def admin_update(db: Database, banner_id: str, payload: dict) -> dict:
-    oid = _get_oid(banner_id)
+    oid = get_object_id(banner_id, "banner")
 
     field_map = {
         "title": "title", "subtitle": "subtitle", "image": "image",
@@ -75,7 +69,7 @@ def admin_update(db: Database, banner_id: str, payload: dict) -> dict:
 
 
 def admin_delete(db: Database, banner_id: str) -> dict:
-    oid = _get_oid(banner_id)
+    oid = get_object_id(banner_id, "banner")
     result = db.banners.delete_one({"_id": oid})
     if result.deleted_count == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Banner not found.")

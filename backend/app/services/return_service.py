@@ -27,6 +27,7 @@ from pymongo.database import Database
 
 from app.services import email_service, order_service
 from app.utils import push_service
+from app.utils.mongo import get_object_id
 
 RETURN_WINDOW_HOURS = 24
 RETURN_REASONS = {"wrong_item", "damaged_or_spoiled", "missing_item", "other"}
@@ -81,10 +82,7 @@ def create_return_request(
     note: str,
     items: list,
 ) -> dict:
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
 
     order = db.orders.find_one({"_id": oid, "user_id": user_id})
     if not order:
@@ -175,10 +173,7 @@ def create_return_request(
 
 
 def get_my_return_request(db: Database, user_id: ObjectId, order_id: str) -> dict:
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
     doc = db.returns.find_one({"order_id": oid, "user_id": user_id}, sort=[("requested_at", -1)])
     if not doc:
         raise HTTPException(status_code=404, detail="No return request found for this order.")
@@ -213,10 +208,7 @@ def admin_list_returns(
 
 
 def admin_get_return(db: Database, return_id: str) -> dict:
-    try:
-        oid = ObjectId(return_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid return ID.")
+    oid = get_object_id(return_id, "return")
     doc = db.returns.find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Return request not found.")
@@ -260,10 +252,7 @@ def _release_return_claim(db: Database, oid: ObjectId) -> None:
 
 
 def admin_approve_return(db: Database, return_id: str, note: str = "") -> dict:
-    try:
-        oid = ObjectId(return_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid return ID.")
+    oid = get_object_id(return_id, "return")
     doc = _claim_return_for_processing(db, oid)
 
     try:
@@ -297,10 +286,7 @@ def admin_approve_return_manual(db: Database, return_id: str, reference: str, no
     UPI, cash) and this records it, same shape as admin_approve_return but via
     order_service.admin_record_manual_refund instead of the Razorpay API call.
     """
-    try:
-        oid = ObjectId(return_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid return ID.")
+    oid = get_object_id(return_id, "return")
     doc = _claim_return_for_processing(db, oid)
 
     try:
@@ -329,10 +315,7 @@ def admin_reject_return(db: Database, return_id: str, note: str) -> dict:
     if not note or not note.strip():
         raise HTTPException(status_code=400, detail="A note explaining the rejection is required.")
 
-    try:
-        oid = ObjectId(return_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid return ID.")
+    oid = get_object_id(return_id, "return")
     doc = _claim_return_for_processing(db, oid)
 
     now = _utcnow()

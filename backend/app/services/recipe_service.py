@@ -18,29 +18,16 @@ from fastapi import HTTPException, status
 from pymongo import ReturnDocument
 from pymongo.database import Database
 
+from app.utils.mongo import get_object_id
+from app.utils.slug import slugify as _slugify, unique_slug as _shared_unique_slug
+
 
 def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def _slugify(title: str) -> str:
-    slug = title.lower()
-    slug = re.sub(r'[^a-z0-9\s-]', '', slug)
-    slug = re.sub(r'\s+', '-', slug.strip())
-    return re.sub(r'-+', '-', slug)
-
-
 def _unique_slug(db: Database, base_slug: str, exclude_id: Optional[ObjectId] = None) -> str:
-    slug = base_slug
-    counter = 1
-    while True:
-        query: dict = {"slug": slug}
-        if exclude_id:
-            query["_id"] = {"$ne": exclude_id}
-        if not db.recipes.find_one(query, {"_id": 1}):
-            return slug
-        slug = f"{base_slug}-{counter}"
-        counter += 1
+    return _shared_unique_slug(db, "recipes", base_slug, exclude_id)
 
 
 def _resolve_products(db: Database, product_tags: list[str], limit: int = 4) -> list[dict]:
@@ -216,13 +203,6 @@ def admin_list_recipes(
     }
 
 
-def _get_oid(recipe_id: str) -> ObjectId:
-    try:
-        return ObjectId(recipe_id)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid recipe ID.")
-
-
 def admin_create_recipe(db: Database, payload: dict) -> dict:
     title = payload["title"].strip()
 
@@ -274,7 +254,7 @@ _UPDATE_FIELDS = {
 
 
 def admin_update_recipe(db: Database, recipe_id: str, payload: dict) -> dict:
-    oid = _get_oid(recipe_id)
+    oid = get_object_id(recipe_id, "recipe")
     update = {k: v for k, v in payload.items() if k in _UPDATE_FIELDS and v is not None}
 
     if "title" in update:
@@ -299,7 +279,7 @@ def admin_update_recipe(db: Database, recipe_id: str, payload: dict) -> dict:
 
 
 def admin_delete_recipe(db: Database, recipe_id: str) -> dict:
-    oid = _get_oid(recipe_id)
+    oid = get_object_id(recipe_id, "recipe")
     result = db.recipes.delete_one({"_id": oid})
     if result.deleted_count == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found.")

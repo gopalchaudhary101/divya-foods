@@ -22,6 +22,7 @@ from pymongo.database import Database
 
 from app.config import settings
 from app.services import email_service, invoice_service, product_service, settings_service, membership_service, gift_card_service
+from app.utils.mongo import get_object_id
 
 
 def _get_customer_email(db: Database, user_id) -> str:
@@ -195,10 +196,7 @@ def _resolve_address(
 ) -> dict:
     """Return an address snapshot dict from either a saved address or inline input."""
     if address_id:
-        try:
-            oid = ObjectId(address_id)
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid address ID.")
+        oid = get_object_id(address_id, "address")
         saved = db.addresses.find_one({"_id": oid, "user_id": user_id})
         if not saved:
             raise HTTPException(status_code=404, detail="Address not found.")
@@ -496,10 +494,7 @@ def verify_payment(db: Database, user: dict, body: dict) -> dict:
     if not hmac.compare_digest(expected, rzp_signature or ""):
         raise HTTPException(status_code=400, detail="Payment verification failed — invalid signature.")
 
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
 
     doc = db.orders.find_one({"_id": oid, "user_id": user["_id"]})
     if not doc:
@@ -716,10 +711,7 @@ def _refund_order(
 # the other, exactly like the payment-capture flow.
 
 def admin_initiate_refund(db: Database, order_id: str, amount: float, note: str = "") -> dict:
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
 
     doc = db.orders.find_one({"_id": oid})
     if not doc:
@@ -751,10 +743,7 @@ def admin_initiate_refund(db: Database, order_id: str, amount: float, note: str 
 # Razorpay refund this function itself never initiated.
 
 def admin_record_manual_refund(db: Database, order_id: str, amount: float, reference: str, note: str = "") -> dict:
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
 
     doc = db.orders.find_one({"_id": oid})
     if not doc:
@@ -852,10 +841,7 @@ def get_my_orders(db: Database, user_id: ObjectId, page: int = 1, limit: int = 1
 
 
 def get_order_by_id(db: Database, user_id: ObjectId, order_id: str) -> dict:
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
     doc = db.orders.find_one({"_id": oid, "user_id": user_id})
     if not doc:
         raise HTTPException(status_code=404, detail="Order not found.")
@@ -869,10 +855,7 @@ CANCELLABLE_STATUSES = {"pending", "confirmed"}
 
 def cancel_order(db: Database, user_id: ObjectId, order_id: str, reason: str = "") -> dict:
     """Customer cancels their own order. Only allowed when pending or confirmed."""
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
 
     # Atomic claim: gates the write on the exact status this call is allowed to
     # act on, not just a prior read — a double-click, a client retry, or two
@@ -985,10 +968,7 @@ def admin_list_orders(
 
 
 def admin_get_order(db: Database, order_id: str) -> dict:
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
     doc = db.orders.find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Order not found.")
@@ -1013,10 +993,7 @@ def admin_update_status(
     new_status: str,
     note: str = "",
 ) -> dict:
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
 
     doc = db.orders.find_one({"_id": oid})
     if not doc:
@@ -1222,10 +1199,7 @@ def admin_upsert_delivery(db: Database, order_id: str, data: dict) -> dict:
     when provided, it takes precedence over any manually-typed driverName/driverPhone so
     the account's own details stay the single source of truth once a real driver is assigned.
     """
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
 
     order = db.orders.find_one({"_id": oid})
     if not order:
@@ -1240,10 +1214,7 @@ def admin_upsert_delivery(db: Database, order_id: str, data: dict) -> dict:
             updated[snake] = data[camel]
 
     if data.get("driverId"):
-        try:
-            driver_oid = ObjectId(data["driverId"])
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid driver ID.")
+        driver_oid = get_object_id(data["driverId"], "driver")
         driver = db.users.find_one({"_id": driver_oid, "role": "driver"})
         if not driver:
             raise HTTPException(status_code=404, detail="Driver not found.")
@@ -1313,10 +1284,7 @@ def driver_update_delivery_status(
     """A driver may only update the delivery status/proof-of-delivery on orders assigned
     to them — everything else about the delivery record (provider, tracking ID, reassigning
     to a different driver, ...) stays admin-only via admin_upsert_delivery."""
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
 
     order = db.orders.find_one({"_id": oid})
     if not order or not order.get("delivery") or order["delivery"].get("driver_id") != driver_id:
@@ -1352,10 +1320,7 @@ def get_invoice_pdf(db: Database, order_id: str, user_id: Optional[ObjectId] = N
     ownership (404s if it's not their order); pass None for the admin path,
     which can fetch any order.
     """
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
 
     query: dict = {"_id": oid}
     if user_id is not None:
@@ -1373,10 +1338,7 @@ def get_invoice_pdf(db: Database, order_id: str, user_id: Optional[ObjectId] = N
 def email_invoice(db: Database, order_id: str, user_id: Optional[ObjectId] = None) -> dict:
     """Emails the invoice PDF to the order's customer (fire-and-forget, like other transactional email)."""
     pdf_bytes, order_number = get_invoice_pdf(db, order_id, user_id)
-    try:
-        oid = ObjectId(order_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid order ID.")
+    oid = get_object_id(order_id, "order")
     doc = db.orders.find_one({"_id": oid})
     customer_email = _get_customer_email(db, doc["user_id"])
     if not customer_email:
