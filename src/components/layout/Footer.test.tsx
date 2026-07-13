@@ -12,7 +12,7 @@ beforeEach(() => {
   mock.reset()
   mock.onGet('/settings').reply(200, {
     success: true,
-    data: { businessName: 'Divya Luxury Seafoods', gstNumber: '22AAAAA0000A1Z5', fssaiNumber: '12345678901234' },
+    data: { businessName: 'Divya Foods', gstNumber: '22AAAAA0000A1Z5', fssaiNumber: '12345678901234' },
   })
 })
 afterAll(() => mock.restore())

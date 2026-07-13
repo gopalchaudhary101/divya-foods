@@ -9,10 +9,10 @@ cleanupOutdatedCaches()
 self.addEventListener('push', (event) => {
   if (!event.data) return
   let data = {}
-  try { data = event.data.json() } catch { data = { title: 'Divya Luxury Seafoods', body: event.data.text() } }
+  try { data = event.data.json() } catch { data = { title: 'Divya Foods', body: event.data.text() } }
 
   event.waitUntil(
-    self.registration.showNotification(data.title ?? 'Divya Luxury Seafoods', {
+    self.registration.showNotification(data.title ?? 'Divya Foods', {
       body:    data.body    ?? '',
       icon:    '/icons/icon-192.png',
       badge:   '/icons/icon-192.png',

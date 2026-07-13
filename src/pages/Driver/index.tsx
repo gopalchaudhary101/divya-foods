@@ -146,7 +146,7 @@ export default function DriverDashboardPage() {
 
   return (
     <>
-      <Helmet><title>Driver Dashboard — Divya Luxury Seafoods</title></Helmet>
+      <Helmet><title>Driver Dashboard — Divya Foods</title></Helmet>
       <div className="min-h-screen bg-ocean-50 dark:bg-ocean-950">
         <div className="bg-white dark:bg-ocean-900 border-b border-ocean-100 dark:border-ocean-800 px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">

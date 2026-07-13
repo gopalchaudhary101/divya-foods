@@ -49,7 +49,7 @@ export default function ResetPasswordPage() {
 
   return (
     <>
-      <Helmet><title>Reset Password — Divya Luxury Seafoods</title></Helmet>
+      <Helmet><title>Reset Password — Divya Foods</title></Helmet>
 
       <div className="min-h-screen flex bg-premium-cream dark:bg-[#03182E]">
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-premium-navy to-[#060F16] flex-col justify-between p-12">
@@ -57,7 +57,7 @@ export default function ResetPasswordPage() {
             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
               <Fish size={22} className="text-premium-gold" />
             </div>
-            <span className="font-display text-2xl font-bold text-white">Divya Luxury Seafoods</span>
+            <span className="font-display text-2xl font-bold text-white">Divya Foods</span>
           </Link>
 
           <div>
@@ -70,7 +70,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <p className="text-premium-muted text-xs">
-            © {new Date().getFullYear()} Divya Luxury Seafoods · O-52, Saurabh Vihar, New Delhi
+            © {new Date().getFullYear()} Divya Foods · O-52, Saurabh Vihar, New Delhi
           </p>
         </div>
 
@@ -80,7 +80,7 @@ export default function ResetPasswordPage() {
               <div className="w-8 h-8 bg-premium-navy rounded-xl flex items-center justify-center">
                 <Fish size={18} className="text-premium-gold" />
               </div>
-              <span className="font-display text-xl font-bold text-premium-navy dark:text-white">Divya Luxury Seafoods</span>
+              <span className="font-display text-xl font-bold text-premium-navy dark:text-white">Divya Foods</span>
             </Link>
 
             {invalidLink ? (

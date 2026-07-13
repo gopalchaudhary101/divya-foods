@@ -5,7 +5,7 @@ export default function TermsConditionsPage() {
   return (
     <LegalPageLayout
       title="Terms &amp; Conditions"
-      description="The terms that govern your use of Divya Luxury Seafoods and your purchases through the Site."
+      description="The terms that govern your use of Divya Foods and your purchases through the Site."
       lastUpdated="8 July 2026"
     >
       <p>

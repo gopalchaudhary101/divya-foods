@@ -32,7 +32,7 @@ export default function VerifyEmailPage() {
 
   return (
     <>
-      <Helmet><title>Verify Email — Divya Luxury Seafoods</title></Helmet>
+      <Helmet><title>Verify Email — Divya Foods</title></Helmet>
 
       <div className="min-h-screen flex items-center justify-center bg-premium-cream dark:bg-[#03182E] px-4">
         <div className="w-full max-w-md text-center">
@@ -40,7 +40,7 @@ export default function VerifyEmailPage() {
             <div className="w-8 h-8 bg-premium-navy rounded-xl flex items-center justify-center">
               <Fish size={18} className="text-premium-gold" />
             </div>
-            <span className="font-display text-xl font-bold text-premium-navy dark:text-white">Divya Luxury Seafoods</span>
+            <span className="font-display text-xl font-bold text-premium-navy dark:text-white">Divya Foods</span>
           </Link>
 
           {status === 'verifying' && (

@@ -34,7 +34,7 @@ beforeEach(() => {
   mock.onGet(/\/admin\/orders/).reply(200, { data: [order], total: 1, page: 1, totalPages: 1 })
   mock.onGet('/admin/settings').reply(200, {
     success: true,
-    data: { businessName: 'Divya Luxury Seafoods', gstNumber: '', fssaiNumber: '', deliveryProviders: ['Porter', 'Dunzo'] },
+    data: { businessName: 'Divya Foods', gstNumber: '', fssaiNumber: '', deliveryProviders: ['Porter', 'Dunzo'] },
   })
   globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url')
   globalThis.URL.revokeObjectURL = vi.fn()

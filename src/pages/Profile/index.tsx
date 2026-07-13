@@ -320,7 +320,7 @@ export default function ProfilePage() {
 
   return (
     <>
-      <Helmet><title>My Profile — Divya Luxury Seafoods</title></Helmet>
+      <Helmet><title>My Profile — Divya Foods</title></Helmet>
 
       <div className="min-h-screen bg-premium-cream dark:bg-ocean-950 pb-16">
         {/* ── Hero header ────────────────────────────────────────────── */}

@@ -1,5 +1,5 @@
 """
-Divya Luxury Seafoods — Create Admin / Developer Account
+Divya Foods — Create Admin / Developer Account
 =========================================================
 One-time CLI to create a brand-new admin or developer account directly,
 without going through public signup (which always creates 'customer'

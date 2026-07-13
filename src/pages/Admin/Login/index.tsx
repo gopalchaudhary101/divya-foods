@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
 
   return (
     <>
-      <Helmet><title>Admin Login — Divya Luxury Seafoods</title></Helmet>
+      <Helmet><title>Admin Login — Divya Foods</title></Helmet>
 
       <div className="min-h-screen flex items-center justify-center bg-premium-navy px-6">
         <div className="w-full max-w-sm">

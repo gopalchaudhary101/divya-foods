@@ -25,7 +25,7 @@ function getRecipeLD(r: RecipeDetail) {
     name: r.title,
     description: r.description,
     ...(r.image && { image: [r.image] }),
-    author: { '@type': 'Organization', name: 'Divya Luxury Seafoods' },
+    author: { '@type': 'Organization', name: 'Divya Foods' },
     recipeCuisine: r.cuisine,
     recipeCategory: r.category,
     prepTime: toISODuration(r.prepTimeMinutes),

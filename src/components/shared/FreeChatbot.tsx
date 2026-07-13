@@ -65,7 +65,7 @@ const KB = {
     '↩️ **Return & Refund Policy:**\n\n✅ **We accept replacements / refunds if:**\n• Product arrived damaged or spoiled\n• Wrong item was delivered\n• Quality issue confirmed on arrival\n\n📲 **How to claim:**\n1. WhatsApp a photo to **+91 9999123242** within **24 hours** of delivery\n2. We arrange replacement or refund within **2–3 business days**\n\n❌ **We cannot accept returns for:**\n• Thawed or opened products (food safety regulations)\n• Products not reported within 24 hours of delivery',
 
   contact:
-    '📞 **Contact Divya Luxury Seafoods:**\n\n• 📱 WhatsApp / Phone: **+91 9999123242**\n• 📞 Alternate: **+91 7303436108**\n• 📧 Email: **salesdivyafoods@gmail.com**\n• 🌐 Website: www.divyafoods.com\n• 📍 Address: O-52, Saurabh Vihar, Jaitpur, Badarpur Extension, New Delhi – 110044',
+    '📞 **Contact Divya Foods:**\n\n• 📱 WhatsApp / Phone: **+91 9999123242**\n• 📞 Alternate: **+91 7303436108**\n• 📧 Email: **salesdivyafoods@gmail.com**\n• 🌐 Website: www.divyafoods.com\n• 📍 Address: O-52, Saurabh Vihar, Jaitpur, Badarpur Extension, New Delhi – 110044',
 
   hours:
     '🕐 **Business Hours:**\n• Monday – Saturday: **9 AM – 7 PM**\n• Sunday: **10 AM – 5 PM**\n\nFor urgent queries outside hours, WhatsApp us at **+91 9999123242** and we\'ll get back to you as soon as possible.',
@@ -324,7 +324,7 @@ function buildReply(intent: Intent, query: string): BotReply {
   switch (intent) {
     case 'greeting':
       return {
-        text: "Hi! 👋 Welcome to **Divya Luxury Seafoods**! I'm your support assistant. I can help with products, delivery, recipes, storage tips, and more. What can I help you with today?",
+        text: "Hi! 👋 Welcome to **Divya Foods**! I'm your support assistant. I can help with products, delivery, recipes, storage tips, and more. What can I help you with today?",
         chips: MAIN_CHIPS,
       }
     case 'delivery_areas':
@@ -560,7 +560,7 @@ function MessageBubble({ msg, onChip }: { msg: Msg; onChip: (chip: string) => vo
 const WELCOME: Msg = {
   id: 0,
   role: 'bot',
-  text: "Hi! 👋 Welcome to **Divya Luxury Seafoods**! I'm your support assistant — here to help with products, delivery, recipes, storage tips, and more.\n\nWhat can I help you with today?",
+  text: "Hi! 👋 Welcome to **Divya Foods**! I'm your support assistant — here to help with products, delivery, recipes, storage tips, and more.\n\nWhat can I help you with today?",
   chips: MAIN_CHIPS,
 }
 
@@ -688,7 +688,7 @@ export function FreeChatbot() {
                 <Headphones size={16} className="text-premium-gold" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-white font-semibold text-sm leading-tight">Divya Luxury Seafoods Support</p>
+                <p className="text-white font-semibold text-sm leading-tight">Divya Foods Support</p>
                 <p className="text-premium-muted text-xs flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-premium-teal inline-block" />
                   Online · Always here to help

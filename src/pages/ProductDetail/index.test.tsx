@@ -68,7 +68,7 @@ describe('ProductDetailPage', () => {
     expect(screen.getByText('₹899')).toBeInTheDocument()
     expect(screen.getByText('₹999')).toBeInTheDocument()
     expect(screen.getByText('Save 10%')).toBeInTheDocument()
-    expect(document.title).toBe('Norwegian Salmon — Divya Luxury Seafoods')
+    expect(document.title).toBe('Norwegian Salmon — Divya Foods')
   })
 
   it('includes Product and BreadcrumbList JSON-LD schema', async () => {

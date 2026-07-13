@@ -68,7 +68,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Divya Luxury Seafoods API",
+    title="Divya Foods API",
     description=(
         "Premium Seafood & Global Gourmet Platform — REST API\n\n"
         "Built with FastAPI + MongoDB Atlas. "
@@ -183,7 +183,7 @@ app.include_router(recipes.router)
 @app.get("/", tags=["Health"])
 def root():
     return {
-        "message": "Divya Luxury Seafoods API is running",
+        "message": "Divya Foods API is running",
         "version": "1.0.0",
         "docs": "/docs",
     }

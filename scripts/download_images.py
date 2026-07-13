@@ -1,5 +1,5 @@
 """
-Divya Luxury Seafoods — Product Image Download & Management Script
+Divya Foods — Product Image Download & Management Script
 =========================================================
 Usage:
   1. Get a FREE Pexels API key at: https://www.pexels.com/api/
@@ -269,8 +269,7 @@ def create_placeholder(folder_path: Path, product_name: str, category: str, inde
         except Exception:
             font_large = font_small = font_brand = ImageFont.load_default()
 
-    # Brand — current name, not the pre-rebrand "Divya Foods"
-    draw.text((600, 100), "DIVYA LUXURY SEAFOODS", fill=PREMIUM_GOLD_LIGHT, font=font_brand, anchor="mm")
+    draw.text((600, 100), "DIVYA FOODS", fill=PREMIUM_GOLD_LIGHT, font=font_brand, anchor="mm")
     draw.line([(400, 140), (800, 140)], fill=PREMIUM_GOLD, width=1)
 
     # Simple camera icon (rounded body + lens circle + viewfinder bump)
@@ -562,7 +561,7 @@ def generate_report(catalog: dict):
         cats[c] = cats.get(c, 0) + 1
 
     lines = [
-        "# Divya Luxury Seafoods — Image Download Report",
+        "# Divya Foods — Image Download Report",
         "",
         f"**Generated:** {time.strftime('%Y-%m-%d %H:%M:%S')}",
         "",
@@ -606,7 +605,7 @@ def generate_report(catalog: dict):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Divya Luxury Seafoods Image Manager")
+    parser = argparse.ArgumentParser(description="Divya Foods Image Manager")
     parser.add_argument("--batch",        type=int, help="Batch number to download (1-8)")
     parser.add_argument("--placeholders", action="store_true", help="Generate placeholders for all products")
     parser.add_argument("--images",       type=int, default=3, help="Images per product (default: 3)")

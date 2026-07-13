@@ -62,7 +62,7 @@ export default function BulkOrderPage() {
   if (submitted) {
     return (
       <>
-        <Helmet><title>Bulk Order Request — Divya Luxury Seafoods</title></Helmet>
+        <Helmet><title>Bulk Order Request — Divya Foods</title></Helmet>
         <div className="max-w-lg mx-auto px-4 py-20 text-center">
           <CheckCircle size={56} className="mx-auto text-premium-teal mb-5" />
           <h1 className="font-display text-2xl font-semibold text-premium-navy dark:text-white mb-2">Request Received!</h1>
@@ -77,7 +77,7 @@ export default function BulkOrderPage() {
 
   return (
     <>
-      <Helmet><title>Bulk / Wholesale Orders — Divya Luxury Seafoods</title></Helmet>
+      <Helmet><title>Bulk / Wholesale Orders — Divya Foods</title></Helmet>
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
         <div className="text-center mb-8">
           <Building2 size={40} className="mx-auto text-premium-teal mb-3" />

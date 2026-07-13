@@ -100,7 +100,7 @@ export default function AdminGiftCardsPage() {
 
   return (
     <>
-      <Helmet><title>Gift Cards — Admin | Divya Luxury Seafoods</title></Helmet>
+      <Helmet><title>Gift Cards — Admin | Divya Foods</title></Helmet>
       <div className="min-h-screen bg-ocean-50 dark:bg-[#03182E]">
         <div className="bg-white dark:bg-ocean-950 border-b border-ocean-100 dark:border-ocean-800 px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">

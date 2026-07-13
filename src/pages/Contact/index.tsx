@@ -47,8 +47,8 @@ export default function ContactPage() {
   return (
     <>
       <PageSEO
-        title="Contact Us — Divya Luxury Seafoods"
-        description="Get in touch with Divya Luxury Seafoods for order queries, bulk enquiries, or general questions."
+        title="Contact Us — Divya Foods"
+        description="Get in touch with Divya Foods for order queries, bulk enquiries, or general questions."
       />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">

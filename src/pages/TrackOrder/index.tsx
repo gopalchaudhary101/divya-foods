@@ -51,7 +51,7 @@ export default function TrackOrderPage() {
 
   return (
     <>
-      <Helmet><title>Track Your Order — Divya Luxury Seafoods</title></Helmet>
+      <Helmet><title>Track Your Order — Divya Foods</title></Helmet>
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
         <h1 className="font-display text-2xl font-semibold text-premium-navy dark:text-white mb-2 text-center">
           Track Your Order

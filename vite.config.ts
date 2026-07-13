@@ -13,8 +13,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       manifest: {
-        name: 'Divya Luxury Seafoods',
-        short_name: 'Divya Luxury Seafoods',
+        name: 'Divya Foods',
+        short_name: 'Divya Foods',
         description: 'Premium imported seafood delivered across Delhi NCR — Salmon, Prawns, Tuna, Lobster & more',
         start_url: '/',
         display: 'standalone',

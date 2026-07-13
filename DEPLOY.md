@@ -1,4 +1,4 @@
-# Divya Luxury Seafoods — Deployment Guide
+# Divya Foods — Deployment Guide
 
 **Stack:** React/Vite → Vercel | FastAPI → Railway | MongoDB Atlas
 
@@ -24,7 +24,7 @@ Run these commands once from the project root:
 ```bash
 git init
 git add .
-git commit -m "Initial commit — Divya Luxury Seafoods full-stack app"
+git commit -m "Initial commit — Divya Foods full-stack app"
 ```
 
 Then on GitHub.com:

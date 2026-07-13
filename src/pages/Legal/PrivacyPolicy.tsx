@@ -5,7 +5,7 @@ export default function PrivacyPolicyPage() {
   return (
     <LegalPageLayout
       title="Privacy Policy"
-      description="How Divya Luxury Seafoods collects, uses, and protects your personal data."
+      description="How Divya Foods collects, uses, and protects your personal data."
       lastUpdated="8 July 2026"
     >
       <p>

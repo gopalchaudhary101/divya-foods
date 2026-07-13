@@ -274,7 +274,7 @@ export default function AdminCouponsPage() {
 
   return (
     <>
-      <Helmet><title>Coupons — Admin | Divya Luxury Seafoods</title></Helmet>
+      <Helmet><title>Coupons — Admin | Divya Foods</title></Helmet>
 
       <div className="min-h-screen bg-ocean-50 dark:bg-[#03182E]">
         {/* Top bar */}

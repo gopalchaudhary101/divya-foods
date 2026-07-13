@@ -25,7 +25,7 @@ def test_get_settings_returns_real_business_details_by_default(client, db):
     r = client.get("/settings")
     assert r.status_code == 200
     data = r.json()["data"]
-    assert data["businessName"] == "Divya Luxury Seafoods"
+    assert data["businessName"] == "Divya Foods"
     assert data["gstNumber"] == "07CEZPJ6770F1ZU"
     assert data["fssaiNumber"] == "13323010000427"
 
@@ -60,15 +60,15 @@ def test_admin_update_settings_partial(client, db):
     assert r.status_code == 200
     data = r.json()["data"]
     assert data["fssaiNumber"] == "12345678901234"
-    assert data["businessName"] == "Divya Luxury Seafoods"  # untouched field keeps its default
+    assert data["businessName"] == "Divya Foods"  # untouched field keeps its default
 
 
 def test_admin_update_settings_persists_across_calls(client, db):
     hdrs = _admin_headers(client, db)
-    client.put("/admin/settings", json={"businessName": "Divya Luxury Seafoods Pvt Ltd"}, headers=hdrs)
+    client.put("/admin/settings", json={"businessName": "Divya Foods Pvt Ltd"}, headers=hdrs)
 
     r = client.get("/admin/settings", headers=hdrs)
-    assert r.json()["data"]["businessName"] == "Divya Luxury Seafoods Pvt Ltd"
+    assert r.json()["data"]["businessName"] == "Divya Foods Pvt Ltd"
 
 
 def test_admin_update_settings_ignores_unknown_fields(client, db):

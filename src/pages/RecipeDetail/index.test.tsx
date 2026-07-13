@@ -37,7 +37,7 @@ const recipe: RecipeDetail = {
   cuisine: 'Continental', category: 'seafood', ingredients: ['2 salmon fillets', '3 tbsp butter'],
   steps: ['Sear the salmon', 'Baste with butter'], prepTimeMinutes: 10, cookTimeMinutes: 15,
   totalTimeMinutes: 25, difficulty: 'Easy', servings: 2, emoji: '🐟', image: null,
-  tags: ['quick'], productTags: ['salmon'], metaTitle: 'Garlic Butter Salmon — Divya Luxury Seafoods',
+  tags: ['quick'], productTags: ['salmon'], metaTitle: 'Garlic Butter Salmon — Divya Foods',
   metaDescription: 'A quick salmon recipe', searchKeywords: ['salmon recipe'],
   isPublished: true, createdAt: '', updatedAt: '',
   recommendedProducts: [{ id: 'p1', name: 'Norwegian Salmon', slug: 'norwegian-salmon', price: 899, image: null, inStock: true }],
@@ -64,7 +64,7 @@ describe('RecipeDetailPage', () => {
     expect(screen.getByText('Sear the salmon')).toBeInTheDocument()
     expect(screen.getByText('25 mins total')).toBeInTheDocument()
     expect(screen.getByText('Serves 2')).toBeInTheDocument()
-    expect(document.title).toBe('Garlic Butter Salmon — Divya Luxury Seafoods')
+    expect(document.title).toBe('Garlic Butter Salmon — Divya Foods')
   })
 
   it('includes Recipe and BreadcrumbList JSON-LD schema', async () => {

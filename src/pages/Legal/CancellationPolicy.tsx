@@ -5,7 +5,7 @@ export default function CancellationPolicyPage() {
   return (
     <LegalPageLayout
       title="Cancellation Policy"
-      description="How and when you can cancel an order placed with Divya Luxury Seafoods."
+      description="How and when you can cancel an order placed with Divya Foods."
       lastUpdated="8 July 2026"
     >
       <h2>Self-Service Cancellation</h2>

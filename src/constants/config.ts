@@ -1,5 +1,5 @@
 export const CONFIG = {
-  APP_NAME: 'Divya Luxury Seafoods',
+  APP_NAME: 'Divya Foods',
   TAGLINE: 'Premium Seafood & Global Gourmet Delivered Fresh',
   CONTACT: {
     PHONE_1: '+91 9999123242',

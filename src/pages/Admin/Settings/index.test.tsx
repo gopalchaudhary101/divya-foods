@@ -9,7 +9,7 @@ import axiosInstance from '@/services/api/axiosInstance'
 const mock = new MockAdapter(axiosInstance)
 
 const settings = {
-  businessName: 'Divya Luxury Seafoods', gstNumber: '22AAAAA0000A1Z5', fssaiNumber: '12345678901234',
+  businessName: 'Divya Foods', gstNumber: '22AAAAA0000A1Z5', fssaiNumber: '12345678901234',
   maxUploadSizeMB: 5, maxImageDimension: 6000, compressionQuality: 'auto:good' as const,
   allowedFormats: ['jpeg', 'png', 'webp'], enableWebP: true, enableAVIF: true,
   thumbnailSizes: [150, 400, 800],
@@ -26,7 +26,7 @@ describe('AdminSettingsPage', () => {
     renderWithProviders(<AdminSettingsPage />)
     expect(await screen.findByDisplayValue('22AAAAA0000A1Z5')).toBeInTheDocument()
     expect(screen.getByDisplayValue('12345678901234')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('Divya Luxury Seafoods')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Divya Foods')).toBeInTheDocument()
   })
 
   it('saves updated settings', async () => {

@@ -32,10 +32,10 @@ def _generate_fallback(product: dict) -> dict:
     origin = product.get("origin")
     tags = product.get("tags") or []
 
-    seo_title = f"{name} | Buy Online at Divya Luxury Seafoods"[:60]
+    seo_title = f"{name} | Buy Online at Divya Foods"[:60]
     origin_bit = f"Premium quality from {origin}. " if origin else ""
-    seo_description = f"Shop {name} online at Divya Luxury Seafoods. {origin_bit}Fast delivery across Delhi NCR."[:160]
-    caption = f"🐟 Fresh {name} now available at Divya Luxury Seafoods! {origin_bit}Order now for fast delivery across Delhi NCR."
+    seo_description = f"Shop {name} online at Divya Foods. {origin_bit}Fast delivery across Delhi NCR."[:160]
+    caption = f"🐟 Fresh {name} now available at Divya Foods! {origin_bit}Order now for fast delivery across Delhi NCR."
 
     hashtags = ["#DivyaFoods", "#PremiumSeafood"]
     if brand:
@@ -75,7 +75,7 @@ def _generate_with_ai(product: dict) -> dict:
 
     client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
-    prompt = f"""Generate digital marketing content for this e-commerce product from Divya Luxury Seafoods, a premium imported seafood and gourmet food marketplace in Delhi, India.
+    prompt = f"""Generate digital marketing content for this e-commerce product from Divya Foods, a premium imported seafood and gourmet food marketplace in Delhi, India.
 
 Product name: {product.get("name")}
 Brand: {product.get("brand") or "N/A"}

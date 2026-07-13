@@ -5,7 +5,7 @@ export default function ShippingPolicyPage() {
   return (
     <LegalPageLayout
       title="Shipping Policy"
-      description="Delivery areas, timelines, cold-chain handling, and charges for Divya Luxury Seafoods orders."
+      description="Delivery areas, timelines, cold-chain handling, and charges for Divya Foods orders."
       lastUpdated="8 July 2026"
     >
       <h2>Delivery Areas</h2>

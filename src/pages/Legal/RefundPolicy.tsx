@@ -5,7 +5,7 @@ export default function RefundPolicyPage() {
   return (
     <LegalPageLayout
       title="Refund Policy"
-      description="When and how Divya Luxury Seafoods issues refunds for orders, damaged items, and cancellations."
+      description="When and how Divya Foods issues refunds for orders, damaged items, and cancellations."
       lastUpdated="8 July 2026"
     >
       <p>

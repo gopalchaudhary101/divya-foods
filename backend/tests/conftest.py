@@ -1,5 +1,5 @@
 """
-Shared pytest fixtures for the Divya Luxury Seafoods test suite.
+Shared pytest fixtures for the Divya Foods test suite.
 
 Strategy:
 - One MongoClient for the whole session → divyafoods_test database

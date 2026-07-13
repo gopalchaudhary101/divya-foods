@@ -19,7 +19,7 @@ interface LegalPageLayoutProps {
 export function LegalPageLayout({ title, description, lastUpdated, children }: LegalPageLayoutProps) {
   return (
     <>
-      <PageSEO title={`${title} — Divya Luxury Seafoods`} description={description} />
+      <PageSEO title={`${title} — Divya Foods`} description={description} />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <motion.div initial="hidden" animate="visible" variants={fadeUp}>

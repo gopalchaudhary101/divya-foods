@@ -1,4 +1,4 @@
-# Divya Luxury Seafoods
+# Divya Foods
 
 An imported foods marketplace — frozen seafood, Japanese groceries, imported meats, cheese, and gourmet goods — with delivery across Delhi NCR.
 

@@ -36,7 +36,7 @@ export default function BundlesPage() {
 
   return (
     <>
-      <Helmet><title>Bundle Deals — Divya Luxury Seafoods</title></Helmet>
+      <Helmet><title>Bundle Deals — Divya Foods</title></Helmet>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}

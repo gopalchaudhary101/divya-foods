@@ -192,7 +192,7 @@ export default function AdminAnalyticsPage() {
 
   return (
     <>
-      <Helmet><title>Analytics — Admin | Divya Luxury Seafoods</title></Helmet>
+      <Helmet><title>Analytics — Admin | Divya Foods</title></Helmet>
 
       <div className="min-h-screen bg-ocean-50 dark:bg-[#03182E]">
         {/* Top bar */}

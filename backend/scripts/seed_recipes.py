@@ -1,5 +1,5 @@
 """
-Divya Luxury Seafoods — Seed Recipe Content
+Divya Foods — Seed Recipe Content
 =============================================
 Seeds the recipes collection: the original 8 hand-written recipes (migrated
 from the old static src/data/recipes.ts) plus a curated batch spanning every
@@ -158,7 +158,7 @@ MIGRATED = [
     ),
     dict(
         title="Butter Garlic Crab", emoji="🦀", cuisine="Asian", category="seafood",
-        description="Indulgent butter garlic crab with a rich sauce. A Divya Luxury Seafoods signature recipe.",
+        description="Indulgent butter garlic crab with a rich sauce. A Divya Foods signature recipe.",
         ingredients=["1 whole crab (500-700g), cleaned and halved", "4 tbsp butter", "8 cloves garlic (minced)",
                      "2 tbsp soy sauce", "1 tbsp oyster sauce", "1 tsp sugar",
                      "Fresh coriander & red chilli to garnish"],

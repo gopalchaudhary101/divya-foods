@@ -5,7 +5,7 @@ export default function CookiesPolicyPage() {
   return (
     <LegalPageLayout
       title="Cookies Policy"
-      description="How Divya Luxury Seafoods uses browser storage to keep you signed in and your cart in sync."
+      description="How Divya Foods uses browser storage to keep you signed in and your cart in sync."
       lastUpdated="8 July 2026"
     >
       <p>

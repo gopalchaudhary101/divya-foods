@@ -239,8 +239,8 @@ export default function ProductsPage() {
       <PageSEO
         title={
           activeCategory
-            ? `${categories.find((c: { slug: string }) => c.slug === activeCategory)?.name ?? 'Products'} — Divya Luxury Seafoods`
-            : 'All Products — Divya Luxury Seafoods'
+            ? `${categories.find((c: { slug: string }) => c.slug === activeCategory)?.name ?? 'Products'} — Divya Foods`
+            : 'All Products — Divya Foods'
         }
         description={
           activeCategory

@@ -422,7 +422,7 @@ export default function AdminRecipesPage() {
 
   return (
     <>
-      <Helmet><title>Recipes — Admin | Divya Luxury Seafoods</title></Helmet>
+      <Helmet><title>Recipes — Admin | Divya Foods</title></Helmet>
 
       <div className="min-h-screen bg-ocean-50 dark:bg-[#03182E]">
         {/* Top bar */}

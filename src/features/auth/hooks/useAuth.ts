@@ -53,7 +53,7 @@ export function useAuth() {
         const response = await authApi.register(payload)
         dispatch(setCredentials({ user: response.user, token: response.access_token }))
         localStorage.setItem('refresh_token', response.refresh_token)
-        toast.success(`Welcome to Divya Luxury Seafoods, ${response.user.name}!`)
+        toast.success(`Welcome to Divya Foods, ${response.user.name}!`)
         navigate(ROUTES.HOME)
       } catch (err) {
         toast.error(getErrorMessage(err))

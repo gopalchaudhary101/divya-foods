@@ -48,7 +48,7 @@ export function AuthInitializer({ children }: AuthInitializerProps) {
       <div className="min-h-screen flex items-center justify-center bg-ocean-950">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-ocean-200 border-t-ocean-500 rounded-full animate-spin" />
-          <p className="text-ocean-200 text-sm font-medium tracking-wide">Loading Divya Luxury Seafoods…</p>
+          <p className="text-ocean-200 text-sm font-medium tracking-wide">Loading Divya Foods…</p>
         </div>
       </div>
     )

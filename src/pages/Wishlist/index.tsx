@@ -50,7 +50,7 @@ export default function WishlistPage() {
   if (!isAuthenticated) {
     return (
       <>
-        <Helmet><title>Wishlist — Divya Luxury Seafoods</title></Helmet>
+        <Helmet><title>Wishlist — Divya Foods</title></Helmet>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
           <div className="relative inline-block mb-6">
             <Heart size={64} className="text-red-200" />
@@ -99,7 +99,7 @@ export default function WishlistPage() {
   if (isLoading) {
     return (
       <>
-        <Helmet><title>Wishlist — Divya Luxury Seafoods</title></Helmet>
+        <Helmet><title>Wishlist — Divya Foods</title></Helmet>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="h-8 w-40 bg-premium-navy/10 dark:bg-ocean-800 rounded animate-pulse mb-8" />
           <WishlistSkeleton />
@@ -114,7 +114,7 @@ export default function WishlistPage() {
   if (wishlistItems.length === 0) {
     return (
       <>
-        <Helmet><title>Wishlist — Divya Luxury Seafoods</title></Helmet>
+        <Helmet><title>Wishlist — Divya Foods</title></Helmet>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
           <Heart size={64} className="mx-auto text-premium-navy/20 dark:text-ocean-700 mb-6" />
           <h1 className="font-display text-3xl font-semibold text-premium-navy dark:text-white mb-2">
@@ -139,7 +139,7 @@ export default function WishlistPage() {
   // ── Wishlist grid ──────────────────────────────────────────────────────────
   return (
     <>
-      <Helmet><title>{`Wishlist (${wishlistItems.length} items) — Divya Luxury Seafoods`}</title></Helmet>
+      <Helmet><title>{`Wishlist (${wishlistItems.length} items) — Divya Foods`}</title></Helmet>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
