@@ -148,7 +148,7 @@ tiers (M10+) include Cloud Backup with point-in-time recovery.
 
 ---
 
-## Step 6 — Verify everything works
+## Step 7 — Verify everything works
 
 - [ ] `https://www.divyafoods.com` loads the shop
 - [ ] `https://YOUR-RAILWAY-URL/health` returns `{"status":"healthy"}`
@@ -173,9 +173,21 @@ No code changes needed — keys are purely environment-driven.
 
 ## Continuous deployment
 
-After initial setup, every `git push origin main` automatically:
-- Rebuilds and redeploys the frontend on Vercel
-- Rebuilds and redeploys the backend on Railway
+After initial setup, every `git push origin main` automatically rebuilds and
+redeploys the **backend on Railway** — Railway's GitHub integration handles
+this with no extra step.
+
+The **frontend on Vercel does NOT auto-deploy on push** — this project's
+Vercel project has no GitHub integration wired up. After pushing frontend
+changes, deploy manually from the repo root:
+
+```bash
+vercel --prod
+```
+
+(If you set up Vercel's GitHub integration yourself, this section no longer
+applies — check your Vercel project's Settings → Git to confirm one way or
+the other before assuming either behavior.)
 
 ---
 

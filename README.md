@@ -101,7 +101,8 @@ uvicorn app.main:app --reload
 
 The frontend runs at `http://localhost:5173` and the backend API at `http://localhost:8000`.
 
-See [DEPLOY.md](DEPLOY.md) for production deployment instructions.
+See [DEPLOY.md](DEPLOY.md) for production deployment instructions and
+[ARCHITECTURE.md](ARCHITECTURE.md) for how the codebase is organized.
 
 ## Author
 
