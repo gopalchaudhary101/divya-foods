@@ -1,10 +1,8 @@
 import logging
-import re
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
 from app.config import settings
@@ -32,6 +30,8 @@ if settings.SENTRY_DSN:
     )
 from app.database import connect_to_mongo, close_mongo_connection, ping_database
 from app.limiter import limiter
+from app.middleware.security import block_mongo_injection, security_headers
+from app.middleware.caching import cache_control_headers
 from app.services import cart_service, product_service
 from app.utils import scheduler
 from app.routers import (
@@ -49,8 +49,6 @@ from app.routers import contact
 from app.routers import recipes
 from app.routers import whatsapp
 from app.routers import admin_products, admin_analytics
-
-_MONGO_OP = re.compile(r'\$[a-zA-Z]')
 
 
 @asynccontextmanager
@@ -100,55 +98,12 @@ app.add_middleware(
 # effect as the gzip/brotli Vercel already applies to the frontend's own assets.
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-
-@app.middleware("http")
-async def block_mongo_injection(request: Request, call_next):
-    """Reject requests whose query params contain MongoDB operator characters ($word)."""
-    for key, val in request.query_params.items():
-        if _MONGO_OP.search(key) or _MONGO_OP.search(val):
-            return JSONResponse(
-                status_code=422,
-                content={"detail": "Invalid characters in request parameters."},
-            )
-    return await call_next(request)
-
-
-@app.middleware("http")
-async def security_headers(request: Request, call_next):
-    """
-    Same defense-in-depth headers already applied to the frontend at Vercel's
-    edge (see vercel.json) — added here too since this API is a separate
-    origin that browsers/tools can hit directly (e.g. /docs, /redoc).
-    """
-    response = await call_next(request)
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
-    response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
-    # Only in production — /docs is disabled there anyway (see docs_url above),
-    # so this API only ever serves JSON and can be locked all the way down.
-    # Skipped when DEBUG=True so the local Swagger UI (which loads its own
-    # CDN-hosted JS/CSS) keeps working exactly as before in dev.
-    if not settings.DEBUG:
-        response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
-    return response
-
-
-# GET-only, public, no per-user variance, and rarely change — safe to let the
-# browser (and any future CDN) skip a round trip for a short window instead of
-# hitting MongoDB on literally every request from every visitor. Deliberately
-# a narrow allowlist: nothing personalized (orders/cart/users/admin/...) is
-# ever included here.
-_CACHEABLE_GET_PREFIXES = ("/categories", "/banners", "/products/featured", "/products/best-sellers", "/products", "/recipes", "/whatsapp/config")
-
-
-@app.middleware("http")
-async def cache_control_headers(request: Request, call_next):
-    response = await call_next(request)
-    if request.method == "GET" and request.url.path.startswith(_CACHEABLE_GET_PREFIXES):
-        response.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=300"
-    return response
+# Registered in this exact order — Starlette layers each @middleware("http")
+# equivalent innermost-last, so this preserves the original request/response
+# pipeline: Mongo-injection guard first, then security headers, then caching.
+app.middleware("http")(block_mongo_injection)
+app.middleware("http")(security_headers)
+app.middleware("http")(cache_control_headers)
 
 # ─── Routers ──────────────────────────────────────────────────────────────────
 app.include_router(auth.router)
