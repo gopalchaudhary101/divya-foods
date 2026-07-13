@@ -46,6 +46,7 @@ from app.routers import gift_cards
 from app.routers import driver
 from app.routers import webhooks
 from app.routers import contact
+from app.routers import recipes
 
 _MONGO_OP = re.compile(r'\$[a-zA-Z]')
 
@@ -137,7 +138,7 @@ async def security_headers(request: Request, call_next):
 # hitting MongoDB on literally every request from every visitor. Deliberately
 # a narrow allowlist: nothing personalized (orders/cart/users/admin/...) is
 # ever included here.
-_CACHEABLE_GET_PREFIXES = ("/categories", "/banners", "/products/featured", "/products/best-sellers", "/products")
+_CACHEABLE_GET_PREFIXES = ("/categories", "/banners", "/products/featured", "/products/best-sellers", "/products", "/recipes")
 
 
 @app.middleware("http")
@@ -174,6 +175,7 @@ app.include_router(gift_cards.router)
 app.include_router(driver.router)
 app.include_router(webhooks.router)
 app.include_router(contact.router)
+app.include_router(recipes.router)
 
 
 # ─── Health Endpoints ─────────────────────────────────────────────────────────

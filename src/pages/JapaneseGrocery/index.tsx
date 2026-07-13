@@ -9,7 +9,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { addToCart } from '@/features/cart/cartSlice'
 import { ROUTES } from '@/constants/routes'
 import { CONFIG } from '@/constants/config'
-import { RECIPES } from '@/data/recipes'
+import { useRecipes } from '@/hooks/useRecipes'
 import { getFAQLD } from '@/utils/structuredData'
 import type { Product } from '@/types'
 import toast from 'react-hot-toast'
@@ -203,12 +203,11 @@ function WhyAuthentic() {
 
 // ─── Recipe teaser ────────────────────────────────────────────────────────────
 
-const JAPANESE_RECIPES = RECIPES.filter(r =>
-  r.tags.includes('japanese') || r.protein === 'salmon' || r.protein === 'tuna'
-).slice(0, 3)
-
 function RecipeTeaser() {
-  if (JAPANESE_RECIPES.length === 0) return null
+  const { data } = useRecipes({ cuisine: 'Japanese', limit: 3 })
+  const japaneseRecipes = data?.data ?? []
+
+  if (japaneseRecipes.length === 0) return null
 
   return (
     <motion.section
@@ -229,17 +228,17 @@ function RecipeTeaser() {
         </div>
 
         <div className="grid sm:grid-cols-3 gap-4">
-          {JAPANESE_RECIPES.map(r => (
+          {japaneseRecipes.map(r => (
             <Link
               key={r.id}
-              to={ROUTES.RECIPES}
+              to={ROUTES.RECIPE_DETAIL.replace(':slug', r.slug)}
               className="group bg-white dark:bg-ocean-900 rounded-2xl p-5 border border-premium-navy/10 dark:border-ocean-800 hover:border-premium-gold/40 dark:hover:border-ocean-600 transition-all hover:shadow-md"
             >
               <div className="text-4xl mb-3">{r.emoji}</div>
-              <h3 className="font-semibold text-premium-navy dark:text-white text-sm mb-1">{r.name}</h3>
+              <h3 className="font-semibold text-premium-navy dark:text-white text-sm mb-1">{r.title}</h3>
               <p className="text-xs text-premium-navy/50 dark:text-ocean-400 line-clamp-2 mb-3">{r.description}</p>
               <div className="flex items-center gap-3 text-xs text-premium-navy/40">
-                <span>{r.time}</span>
+                <span>{r.totalTimeMinutes} mins</span>
                 <span>·</span>
                 <span className="capitalize">{r.difficulty}</span>
               </div>

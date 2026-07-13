@@ -52,7 +52,7 @@ import { ProductCard } from '@/components/shared/ProductCard'
 import { CONFIG } from '@/constants/config'
 import { ROUTES } from '@/constants/routes'
 import { useFeaturedProducts, useBestSellers } from '@/hooks/useProducts'
-import { RECIPES } from '@/data/recipes'
+import { useRecipes } from '@/hooks/useRecipes'
 
 // ─── Animation helper ─────────────────────────────────────────────────────────
 
@@ -241,7 +241,10 @@ function WhyChooseUs() {
 // ─── Recipes teaser ───────────────────────────────────────────────────────────
 
 function RecipesTeaser() {
-  const preview = RECIPES.slice(0, 3)
+  const { data } = useRecipes({ limit: 3 })
+  const preview = data?.data ?? []
+
+  if (preview.length === 0) return null
 
   return (
     <motion.section
@@ -265,14 +268,14 @@ function RecipesTeaser() {
           {preview.map(r => (
             <Link
               key={r.id}
-              to={ROUTES.RECIPES}
+              to={ROUTES.RECIPE_DETAIL.replace(':slug', r.slug)}
               className="df-glow-hover group bg-premium-navy rounded-2xl p-5 border border-transparent"
             >
               <div className="text-4xl mb-3">{r.emoji}</div>
-              <h3 className="font-semibold text-white text-sm mb-1">{r.name}</h3>
+              <h3 className="font-semibold text-white text-sm mb-1">{r.title}</h3>
               <p className="text-xs text-premium-muted line-clamp-2 mb-3">{r.description}</p>
               <div className="flex items-center gap-3 text-xs text-premium-muted">
-                <span className="flex items-center gap-1"><Clock size={11} />{r.time}</span>
+                <span className="flex items-center gap-1"><Clock size={11} />{r.totalTimeMinutes} mins</span>
                 <span className="capitalize">{r.difficulty}</span>
               </div>
               <div className="mt-3 text-xs font-medium text-premium-gold group-hover:text-premium-gold-light transition-colors flex items-center gap-1">

@@ -22,10 +22,12 @@ const AdminDashboardPage  = lazy(() => import('@/pages/Admin/Dashboard'))
 const AdminProductsPage   = lazy(() => import('@/pages/Admin/Products'))
 const AdminAnalyticsPage  = lazy(() => import('@/pages/Admin/Analytics'))
 const AdminCouponsPage    = lazy(() => import('@/pages/Admin/Coupons'))
+const AdminRecipesPage    = lazy(() => import('@/pages/Admin/Recipes'))
 const WishlistPage        = lazy(() => import('@/pages/Wishlist'))
 const ReferralPage        = lazy(() => import('@/pages/Referral'))
 const BundlesPage         = lazy(() => import('@/pages/Bundles'))
 const RecipesPage         = lazy(() => import('@/pages/Recipes'))
+const RecipeDetailPage    = lazy(() => import('@/pages/RecipeDetail'))
 const JapaneseGroceryPage = lazy(() => import('@/pages/JapaneseGrocery'))
 const AboutPage             = lazy(() => import('@/pages/About'))
 const ContactPage           = lazy(() => import('@/pages/Contact'))
@@ -87,6 +89,7 @@ const router = createBrowserRouter([
       { path: ROUTES.FLASH_SALES, element: wrap(<FlashSalesPage />) },
       { path: ROUTES.SUBSCRIPTIONS, element: wrap(<SubscriptionsPage />) },
       { path: ROUTES.RECIPES, element: wrap(<RecipesPage />) },
+      { path: ROUTES.RECIPE_DETAIL, element: wrap(<RecipeDetailPage />) },
       { path: ROUTES.JAPANESE_GROCERY, element: wrap(<JapaneseGroceryPage />) },
       { path: ROUTES.ABOUT, element: wrap(<AboutPage />) },
       { path: ROUTES.CONTACT, element: wrap(<ContactPage />) },
@@ -115,6 +118,7 @@ const router = createBrowserRouter([
       { path: 'products', element: <AdminProductsPage /> },
       { path: 'analytics', element: <AdminAnalyticsPage /> },
       { path: 'coupons', element: <AdminCouponsPage /> },
+      { path: 'recipes', element: <AdminRecipesPage /> },
       { path: 'orders', element: <AdminOrdersPage /> },
       { path: 'returns', element: <AdminReturnsPage /> },
       { path: 'bundles', element: <AdminBundlesPage /> },

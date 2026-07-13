@@ -41,3 +41,33 @@ def test_sitemap_includes_out_of_stock_products(client, db):
 
     r = client.get("/sitemap.xml")
     assert "https://divya-foods.vercel.app/products/rare-fish</loc>" in r.text
+
+
+def test_sitemap_includes_published_recipes(client, db):
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    db.recipes.insert_one({
+        "title": "Garlic Butter Salmon", "slug": "garlic-butter-salmon",
+        "description": "A great recipe.", "cuisine": "Continental", "category": "seafood",
+        "ingredients": ["salmon"], "steps": ["cook it"],
+        "prep_time_minutes": 5, "cook_time_minutes": 10, "difficulty": "Easy", "servings": 2,
+        "is_published": True, "created_at": now, "updated_at": now,
+    })
+
+    r = client.get("/sitemap.xml")
+    assert "https://divya-foods.vercel.app/recipes/garlic-butter-salmon</loc>" in r.text
+
+
+def test_sitemap_excludes_unpublished_recipes(client, db):
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    db.recipes.insert_one({
+        "title": "Secret Draft Recipe", "slug": "secret-draft-recipe",
+        "description": "Not ready yet.", "cuisine": "Continental", "category": "seafood",
+        "ingredients": ["salmon"], "steps": ["cook it"],
+        "prep_time_minutes": 5, "cook_time_minutes": 10, "difficulty": "Easy", "servings": 2,
+        "is_published": False, "created_at": now, "updated_at": now,
+    })
+
+    r = client.get("/sitemap.xml")
+    assert "secret-draft-recipe" not in r.text

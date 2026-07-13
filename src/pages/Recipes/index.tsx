@@ -1,149 +1,80 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { PageSEO } from '@/components/shared/PageSEO'
-import { Clock, ChevronDown, ChevronUp, Users, BarChart2, Tag } from 'lucide-react'
+import { RecipeCard } from '@/components/shared/RecipeCard'
+import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { RECIPES, RECIPE_FILTERS, type Recipe } from '@/data/recipes'
+import { useRecipes, useRecipeFilters } from '@/hooks/useRecipes'
+import { useDebounce } from '@/hooks/useDebounce'
 import { ROUTES } from '@/constants/routes'
+import type { RecipeListParams } from '@/services/api/recipeApi'
 
-// ─── Difficulty badge ─────────────────────────────────────────────────────────
-
-const DIFF_COLOR: Record<Recipe['difficulty'], string> = {
-  Easy:   'bg-premium-teal/10 text-premium-teal',
-  Medium: 'bg-premium-gold/10 text-premium-gold',
-  Hard:   'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-}
-
-// ─── Single recipe card ───────────────────────────────────────────────────────
-
-function RecipeCard({ recipe }: { recipe: Recipe }) {
-  const [open, setOpen] = useState(false)
-
+function RecipeCardSkeleton() {
   return (
-    <motion.div
-      layout
-      className="bg-white dark:bg-ocean-900 rounded-2xl border border-premium-navy/10 dark:border-ocean-800 overflow-hidden shadow-sm"
-    >
-      {/* Card header — always visible */}
-      <button
-        className="w-full text-left p-5 flex items-start gap-4"
-        onClick={() => setOpen(o => !o)}
-        aria-expanded={open}
-      >
-        <div className="w-14 h-14 rounded-xl bg-premium-navy/5 dark:bg-ocean-800 flex items-center justify-center text-3xl shrink-0">
-          {recipe.emoji}
+    <div className="rounded-2xl overflow-hidden bg-white dark:bg-ocean-900 border border-premium-navy/10 dark:border-ocean-800 animate-pulse p-5">
+      <div className="flex items-start gap-4">
+        <div className="w-14 h-14 rounded-xl bg-premium-navy/10 dark:bg-ocean-800 shrink-0" />
+        <div className="flex-1 flex flex-col gap-2.5">
+          <div className="h-4 bg-premium-navy/10 dark:bg-ocean-800 rounded w-2/3" />
+          <div className="h-3 bg-premium-navy/10 dark:bg-ocean-800 rounded w-full" />
+          <div className="h-3 bg-premium-navy/10 dark:bg-ocean-800 rounded w-1/2" />
         </div>
-
-        <div className="flex-1 min-w-0">
-          <h3 className="font-display font-bold text-premium-navy dark:text-white text-base sm:text-lg leading-tight">
-            {recipe.name}
-          </h3>
-          <p className="text-premium-navy/50 dark:text-ocean-400 text-sm mt-1 line-clamp-2">
-            {recipe.description}
-          </p>
-
-          <div className="flex flex-wrap items-center gap-3 mt-2.5">
-            <span className="flex items-center gap-1 text-xs text-premium-navy/50">
-              <Clock size={12} /> {recipe.time}
-            </span>
-            <span className="flex items-center gap-1 text-xs text-premium-navy/50">
-              <Users size={12} /> Serves {recipe.serves}
-            </span>
-            <span className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${DIFF_COLOR[recipe.difficulty]}`}>
-              <BarChart2 size={11} /> {recipe.difficulty}
-            </span>
-          </div>
-
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {recipe.tags.map(t => (
-              <span key={t} className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-premium-navy/5 dark:bg-ocean-800 text-premium-navy/50 dark:text-ocean-400 rounded-full">
-                <Tag size={9} />{t}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="text-premium-navy/40 shrink-0 mt-1">
-          {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-        </div>
-      </button>
-
-      {/* Expandable details */}
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            key="detail"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="overflow-hidden"
-          >
-            <div className="px-5 pb-5 border-t border-premium-navy/10 dark:border-ocean-800">
-              <div className="grid sm:grid-cols-2 gap-5 mt-4">
-                {/* Ingredients */}
-                <div>
-                  <h4 className="df-eyebrow mb-2.5">
-                    Ingredients
-                  </h4>
-                  <ul className="space-y-1.5">
-                    {recipe.ingredients.map((ing, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-premium-navy/80 dark:text-ocean-300">
-                        <span className="w-1.5 h-1.5 rounded-full bg-premium-gold mt-2 shrink-0" />
-                        {ing}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Steps */}
-                <div>
-                  <h4 className="df-eyebrow mb-2.5">
-                    Method
-                  </h4>
-                  <ol className="space-y-2.5">
-                    {recipe.steps.map((step, i) => (
-                      <li key={i} className="flex items-start gap-3 text-sm text-premium-navy/80 dark:text-ocean-300">
-                        <span className="shrink-0 w-5 h-5 rounded-full bg-premium-gold text-premium-navy flex items-center justify-center text-xs font-bold mt-0.5">
-                          {i + 1}
-                        </span>
-                        {step}
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              </div>
-
-              {/* Shop CTA */}
-              <div className="mt-5 pt-4 border-t border-premium-navy/5 dark:border-ocean-800">
-                <p className="text-xs text-premium-navy/50 mb-2">Need ingredients? Shop our premium {recipe.protein} collection.</p>
-                <Link
-                  to={`${ROUTES.PRODUCTS}?search=${recipe.protein}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-premium-teal hover:text-premium-gold transition-colors"
-                >
-                  Shop {recipe.protein.charAt(0).toUpperCase() + recipe.protein.slice(1)} →
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+      </div>
+    </div>
   )
 }
 
-// ─── Main page ────────────────────────────────────────────────────────────────
-
 export default function RecipesPage() {
-  const [activeFilter, setActiveFilter] = useState<Recipe['protein'] | null>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchInput, setSearchInput] = useState(searchParams.get('search') || '')
+  const debouncedSearch = useDebounce(searchInput, 500)
 
-  const filtered = activeFilter ? RECIPES.filter(r => r.protein === activeFilter) : RECIPES
+  useEffect(() => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      if (debouncedSearch) next.set('search', debouncedSearch)
+      else next.delete('search')
+      next.delete('page')
+      return next
+    }, { replace: true })
+  }, [debouncedSearch]) // eslint-disable-line
+
+  const activeCuisine = searchParams.get('cuisine') || undefined
+  const activeCategory = searchParams.get('category') || undefined
+  const page = Number(searchParams.get('page') || '1')
+
+  const filters: RecipeListParams = {
+    page,
+    limit: 12,
+    cuisine: activeCuisine,
+    category: activeCategory,
+    search: searchParams.get('search') || undefined,
+  }
+
+  const { data, isLoading } = useRecipes(filters)
+  const { data: filterOptions } = useRecipeFilters()
+
+  const recipes = data?.data ?? []
+  const total = data?.total ?? 0
+  const totalPages = data?.totalPages ?? 0
+  const cuisines = filterOptions?.cuisines ?? []
+  const categories = filterOptions?.categories ?? []
+
+  function setParam(key: string, value: string | null) {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      if (value) next.set(key, value)
+      else next.delete(key)
+      if (key !== 'page') next.delete('page')
+      return next
+    })
+  }
 
   return (
     <>
       <PageSEO
         title="Recipes & Cooking Ideas — Divya Luxury Seafoods"
-        description="Easy seafood recipes using Divya Luxury Seafoods premium imports. Garlic butter salmon, crispy calamari, coconut prawn curry and more."
+        description="Recipes using Divya Luxury Seafoods premium imports — seafood, Japanese, curries, grilled dishes and more. Garlic butter salmon, crispy calamari, coconut prawn curry and more."
       />
 
       {/* ── Page header ───────────────────────────────────────────────── */}
@@ -156,60 +87,147 @@ export default function RecipesPage() {
             Recipes & Cooking Ideas
           </h1>
           <p className="text-premium-muted text-sm sm:text-base max-w-xl mx-auto">
-            Step-by-step recipes using our premium imported seafood. From a quick 10-minute
-            stir-fry to an impressive dinner-party centerpiece.
+            Step-by-step recipes using our premium imported seafood, Japanese pantry
+            staples and more. From a quick 10-minute stir-fry to an impressive
+            dinner-party centerpiece.
           </p>
         </div>
       </div>
 
-      {/* ── Filter tabs ───────────────────────────────────────────────── */}
+      {/* ── Search + filter tabs ──────────────────────────────────────── */}
       <div className="sticky top-16 z-20 bg-white dark:bg-ocean-950 border-b border-premium-navy/10 dark:border-ocean-800 px-4 -mt-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex gap-2 overflow-x-auto py-3 scrollbar-none">
-            {RECIPE_FILTERS.map(f => (
+        <div className="max-w-5xl mx-auto py-3 flex flex-col gap-3">
+          <div className="relative max-w-sm">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-premium-navy/40 pointer-events-none" />
+            <input
+              type="search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search recipes…"
+              aria-label="Search recipes"
+              className="w-full pl-9 pr-4 py-2 text-sm border border-premium-navy/15 dark:border-ocean-700 rounded-xl dark:bg-ocean-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-premium-gold"
+            />
+          </div>
+
+          {cuisines.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto scrollbar-none">
               <button
-                key={f.label}
-                onClick={() => setActiveFilter(f.value)}
+                onClick={() => setParam('cuisine', null)}
                 className={`shrink-0 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  activeFilter === f.value
+                  !activeCuisine
                     ? 'bg-premium-gold text-premium-navy shadow-sm'
                     : 'bg-premium-navy/5 dark:bg-ocean-800 text-premium-navy/60 dark:text-ocean-300 hover:bg-premium-navy/10 dark:hover:bg-ocean-700'
                 }`}
               >
-                {f.label}
+                All cuisines
               </button>
-            ))}
-          </div>
+              {cuisines.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setParam('cuisine', c)}
+                  className={`shrink-0 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    activeCuisine === c
+                      ? 'bg-premium-gold text-premium-navy shadow-sm'
+                      : 'bg-premium-navy/5 dark:bg-ocean-800 text-premium-navy/60 dark:text-ocean-300 hover:bg-premium-navy/10 dark:hover:bg-ocean-700'
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {categories.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto scrollbar-none">
+              <button
+                onClick={() => setParam('category', null)}
+                className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                  !activeCategory
+                    ? 'bg-premium-teal text-white'
+                    : 'bg-premium-navy/5 dark:bg-ocean-800 text-premium-navy/50 dark:text-ocean-400 hover:bg-premium-navy/10 dark:hover:bg-ocean-700'
+                }`}
+              >
+                All dish types
+              </button>
+              {categories.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setParam('category', c)}
+                  className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium capitalize transition-all ${
+                    activeCategory === c
+                      ? 'bg-premium-teal text-white'
+                      : 'bg-premium-navy/5 dark:bg-ocean-800 text-premium-navy/50 dark:text-ocean-400 hover:bg-premium-navy/10 dark:hover:bg-ocean-700'
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       {/* ── Recipe grid ───────────────────────────────────────────────── */}
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <p className="text-xs text-premium-navy/40 mb-4">
-          {filtered.length} recipe{filtered.length !== 1 ? 's' : ''} · Click any recipe to expand
-        </p>
+        {!isLoading && (
+          <p className="text-xs text-premium-navy/40 mb-4">
+            {total} recipe{total !== 1 ? 's' : ''} found
+          </p>
+        )}
 
-        <motion.div layout className="space-y-4">
-          <AnimatePresence mode="popLayout">
-            {filtered.map(recipe => (
-              <motion.div
-                key={recipe.id}
-                layout
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.97 }}
-                transition={{ duration: 0.2 }}
-              >
-                <RecipeCard recipe={recipe} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-
-        {filtered.length === 0 && (
+        {isLoading ? (
+          <div className="grid sm:grid-cols-2 gap-4">
+            {Array.from({ length: 6 }, (_, i) => <RecipeCardSkeleton key={i} />)}
+          </div>
+        ) : recipes.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-4xl mb-3">🍳</p>
-            <p className="text-premium-navy/50">No recipes for this filter yet. More coming soon!</p>
+            <p className="text-premium-navy/50">No recipes match these filters yet. More coming soon!</p>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 gap-4">
+            {recipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-10">
+            <button
+              onClick={() => setParam('page', String(page - 1))}
+              disabled={page === 1}
+              className="p-2 rounded-lg border border-premium-navy/15 dark:border-ocean-700 text-premium-navy/70 dark:text-ocean-200 disabled:opacity-40 hover:bg-premium-navy/10 dark:hover:bg-ocean-800 transition-colors"
+            >
+              <ChevronLeft size={16} />
+            </button>
+
+            {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+              const pg = i + 1
+              return (
+                <button
+                  key={pg}
+                  onClick={() => setParam('page', String(pg))}
+                  className={[
+                    'w-9 h-9 rounded-lg text-sm font-medium transition-colors',
+                    pg === page
+                      ? 'bg-premium-navy text-white'
+                      : 'border border-premium-navy/15 dark:border-ocean-700 text-premium-navy/70 dark:text-ocean-200 hover:bg-premium-navy/10 dark:hover:bg-ocean-800',
+                  ].join(' ')}
+                >
+                  {pg}
+                </button>
+              )
+            })}
+
+            <button
+              onClick={() => setParam('page', String(page + 1))}
+              disabled={page === totalPages}
+              className="p-2 rounded-lg border border-premium-navy/15 dark:border-ocean-700 text-premium-navy/70 dark:text-ocean-200 disabled:opacity-40 hover:bg-premium-navy/10 dark:hover:bg-ocean-800 transition-colors"
+            >
+              <ChevronRight size={16} />
+            </button>
           </div>
         )}
       </div>

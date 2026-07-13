@@ -78,6 +78,7 @@ export const queryKeys = {
     orders: (filters?: unknown) => ['admin', 'orders', filters] as const,
     customers: () => ['admin', 'customers'] as const,
     analytics: () => ['admin', 'analytics'] as const,
+    recipes: (filters?: unknown) => ['admin', 'recipes', filters] as const,
   },
 
   // ─── Q&A ──────────────────────────────────────────────────────────────────
@@ -97,5 +98,12 @@ export const queryKeys = {
   // ─── Flash Sales ──────────────────────────────────────────────────────────
   flashSales: {
     all: () => ['flash-sales'] as const,
+  },
+
+  // ─── Recipes ──────────────────────────────────────────────────────────────
+  recipes: {
+    list:    (filters?: unknown) => ['recipes', 'list', filters] as const,
+    detail:  (slug: string) => ['recipes', 'detail', slug] as const,
+    filters: () => ['recipes', 'filters'] as const,
   },
 } as const

@@ -1,51 +1,100 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithProviders } from '@/test/testUtils'
 import RecipesPage from './index'
-import { RECIPES } from '@/data/recipes'
+import { recipeApi } from '@/services/api/recipeApi'
+import type { Recipe } from '@/types'
+
+vi.mock('@/services/api/recipeApi', () => ({
+  recipeApi: { getList: vi.fn(), getBySlug: vi.fn(), getFilters: vi.fn() },
+}))
+
+const recipe: Recipe = {
+  id: 'r1', title: 'Garlic Butter Salmon', slug: 'garlic-butter-salmon',
+  description: 'Pan-seared salmon in a garlic butter sauce.',
+  cuisine: 'Continental', category: 'seafood', ingredients: ['Salmon', 'Butter', 'Garlic'],
+  steps: ['Sear the salmon', 'Baste with butter'], prepTimeMinutes: 10, cookTimeMinutes: 15,
+  totalTimeMinutes: 25, difficulty: 'Easy', servings: 2, emoji: '🐟', image: null,
+  tags: ['quick'], productTags: ['salmon'], metaTitle: 'Garlic Butter Salmon',
+  metaDescription: 'A quick salmon recipe', searchKeywords: ['salmon recipe'],
+  isPublished: true, createdAt: '', updatedAt: '',
+}
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  vi.mocked(recipeApi.getFilters).mockResolvedValue({ cuisines: ['Continental', 'Japanese'], categories: ['seafood', 'curry'], difficulties: ['Easy', 'Medium', 'Hard'] })
+})
 
 describe('RecipesPage', () => {
-  it('lists all recipes by default', () => {
+  it('shows a loading skeleton, then renders recipes', async () => {
+    vi.mocked(recipeApi.getList).mockResolvedValue({ data: [recipe], total: 1, page: 1, limit: 12, totalPages: 1, success: true })
     renderWithProviders(<RecipesPage />)
-    expect(screen.getByText(`${RECIPES.length} recipes · Click any recipe to expand`)).toBeInTheDocument()
+    expect(await screen.findByText('Garlic Butter Salmon')).toBeInTheDocument()
+    expect(screen.getByText('1 recipe found')).toBeInTheDocument()
   })
 
-  it('expands a recipe to show ingredients and method', async () => {
+  it('shows an empty state when no recipes match', async () => {
+    vi.mocked(recipeApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 12, totalPages: 0, success: true })
+    renderWithProviders(<RecipesPage />)
+    expect(await screen.findByText('No recipes match these filters yet. More coming soon!')).toBeInTheDocument()
+  })
+
+  it('links each recipe card to its detail page', async () => {
+    vi.mocked(recipeApi.getList).mockResolvedValue({ data: [recipe], total: 1, page: 1, limit: 12, totalPages: 1, success: true })
+    renderWithProviders(<RecipesPage />)
+    const link = await screen.findByText('Garlic Butter Salmon')
+    expect(link.closest('a')).toHaveAttribute('href', '/recipes/garlic-butter-salmon')
+  })
+
+  it('filters by cuisine from the tab bar', async () => {
+    vi.mocked(recipeApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 12, totalPages: 0, success: true })
     const user = userEvent.setup()
     renderWithProviders(<RecipesPage />)
 
-    const first = RECIPES[0]
-    await user.click(screen.getByRole('button', { name: new RegExp(first.name) }))
+    await screen.findByText('Japanese')
+    await user.click(screen.getByText('Japanese'))
 
-    expect(screen.getByText('Ingredients')).toBeInTheDocument()
-    expect(screen.getByText('Method')).toBeInTheDocument()
-    expect(screen.getByText(first.ingredients[0])).toBeInTheDocument()
+    await waitFor(() => expect(recipeApi.getList).toHaveBeenCalledWith(
+      expect.objectContaining({ cuisine: 'Japanese' })
+    ))
   })
 
-  it('collapses an expanded recipe on second click', async () => {
+  it('filters by category from the tab bar', async () => {
+    vi.mocked(recipeApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 12, totalPages: 0, success: true })
     const user = userEvent.setup()
     renderWithProviders(<RecipesPage />)
 
-    const first = RECIPES[0]
-    const button = screen.getByRole('button', { name: new RegExp(first.name) })
-    await user.click(button)
-    expect(screen.getByText('Ingredients')).toBeInTheDocument()
+    await screen.findByText('curry')
+    await user.click(screen.getByText('curry'))
 
-    await user.click(button)
-    await waitFor(() => expect(screen.queryByText('Ingredients')).not.toBeInTheDocument())
+    await waitFor(() => expect(recipeApi.getList).toHaveBeenCalledWith(
+      expect.objectContaining({ category: 'curry' })
+    ))
   })
 
-  it('filters recipes by protein', async () => {
-    const salmonRecipe = RECIPES.find(r => r.protein === 'salmon')
-    if (!salmonRecipe) return // skip if data set has no salmon recipe
-
+  it('searches recipes with debounced input', async () => {
+    vi.mocked(recipeApi.getList).mockResolvedValue({ data: [], total: 0, page: 1, limit: 12, totalPages: 0, success: true })
     const user = userEvent.setup()
     renderWithProviders(<RecipesPage />)
 
-    const salmonFilterCount = RECIPES.filter(r => r.protein === 'salmon').length
-    await user.click(screen.getByRole('button', { name: '🐟 Salmon' }))
+    await user.type(screen.getByLabelText('Search recipes'), 'salmon')
 
-    expect(screen.getByText(`${salmonFilterCount} recipe${salmonFilterCount !== 1 ? 's' : ''} · Click any recipe to expand`)).toBeInTheDocument()
+    await waitFor(() => expect(recipeApi.getList).toHaveBeenCalledWith(
+      expect.objectContaining({ search: 'salmon' })
+    ), { timeout: 2000 })
+  })
+
+  it('renders pagination and navigates pages', async () => {
+    vi.mocked(recipeApi.getList).mockResolvedValue({ data: [recipe], total: 30, page: 1, limit: 12, totalPages: 3, success: true })
+    const user = userEvent.setup()
+    renderWithProviders(<RecipesPage />)
+
+    await screen.findByText('Garlic Butter Salmon')
+    await user.click(screen.getByRole('button', { name: '2' }))
+
+    await waitFor(() => expect(recipeApi.getList).toHaveBeenCalledWith(
+      expect.objectContaining({ page: 2 })
+    ))
   })
 })

@@ -243,3 +243,52 @@ export interface MembershipInfo {
     freeDeliveryAbove: number | null
   }
 }
+
+// ─── Recipe ───────────────────────────────────────────────────────────────────
+export type RecipeDifficulty = 'Easy' | 'Medium' | 'Hard'
+
+export interface RecipeProductRecommendation {
+  id: string
+  name: string
+  slug: string
+  price: number
+  image: string | null
+  inStock: boolean
+}
+
+export interface Recipe {
+  id: string
+  title: string
+  slug: string
+  description: string
+  cuisine: string
+  category: string
+  ingredients: string[]
+  steps: string[]
+  prepTimeMinutes: number
+  cookTimeMinutes: number
+  totalTimeMinutes: number
+  difficulty: RecipeDifficulty
+  servings: number
+  emoji: string
+  image: string | null
+  tags: string[]
+  productTags: string[]
+  metaTitle: string
+  metaDescription: string
+  searchKeywords: string[]
+  isPublished: boolean
+  createdAt: string | null
+  updatedAt: string | null
+}
+
+export interface RecipeDetail extends Recipe {
+  recommendedProducts: RecipeProductRecommendation[]
+  relatedRecipes: Recipe[]
+}
+
+export interface RecipeFilters {
+  cuisines: string[]
+  categories: string[]
+  difficulties: RecipeDifficulty[]
+}

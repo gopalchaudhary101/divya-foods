@@ -59,6 +59,13 @@ Banners:
   PUT    /admin/banners/{id}        → update banner
   DELETE /admin/banners/{id}        → delete banner
 
+Recipes:
+  GET    /admin/recipes             → paginated list with search / cuisine / category / isPublished filters
+  POST   /admin/recipes             → create recipe
+  PUT    /admin/recipes/{id}        → update recipe
+  DELETE /admin/recipes/{id}        → delete recipe
+  POST   /admin/recipes/bulk-import → create many recipes at once (skips titles that already exist)
+
 Settings:
   GET  /admin/settings             → current site settings (business name, GST, FSSAI,
                                       plus image-upload limits used by /upload)
@@ -76,7 +83,8 @@ from pymongo.database import Database
 from pydantic import BaseModel, EmailStr
 
 from app.dependencies import get_db, require_admin
-from app.services import order_service, product_service, analytics_service, banner_service, settings_service, marketing_service, driver_service, user_admin_service, return_service
+from app.models.recipe import RecipeCreate, RecipeUpdate, RecipeBulkImportRequest
+from app.services import order_service, product_service, analytics_service, banner_service, settings_service, marketing_service, driver_service, user_admin_service, return_service, recipe_service
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -830,6 +838,62 @@ def admin_delete_banner(
     _admin: dict = Depends(require_admin),
 ):
     return banner_service.admin_delete(db, banner_id)
+
+
+# ─── Recipes ──────────────────────────────────────────────────────────────────
+
+@router.get("/recipes")
+def admin_list_recipes(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    search: Optional[str] = Query(None),
+    cuisine: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    is_published: Optional[bool] = Query(None, alias="isPublished"),
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return recipe_service.admin_list_recipes(
+        db, page=page, limit=limit, search=search, cuisine=cuisine,
+        category=category, is_published=is_published,
+    )
+
+
+@router.post("/recipes")
+def admin_create_recipe(
+    body: RecipeCreate,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return recipe_service.admin_create_recipe(db, body.model_dump())
+
+
+@router.put("/recipes/{recipe_id}")
+def admin_update_recipe(
+    recipe_id: str,
+    body: RecipeUpdate,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return recipe_service.admin_update_recipe(db, recipe_id, body.model_dump(exclude_unset=True))
+
+
+@router.delete("/recipes/{recipe_id}")
+def admin_delete_recipe(
+    recipe_id: str,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return recipe_service.admin_delete_recipe(db, recipe_id)
+
+
+@router.post("/recipes/bulk-import")
+def admin_bulk_import_recipes(
+    body: RecipeBulkImportRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return recipe_service.admin_bulk_import_recipes(db, [r.model_dump() for r in body.recipes])
 
 
 # ─── Settings ─────────────────────────────────────────────────────────────────

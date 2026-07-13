@@ -132,4 +132,21 @@ def create_indexes(db: Database) -> None:
     # Duplicate-request guard: "is there already an active return for this order?"
     db.returns.create_index([("order_id", 1), ("status", 1)])
 
+    # ── recipes ───────────────────────────────────────────────────────────────
+    # Built to stay fast well past the 1000-recipe mark: every filterable field
+    # (cuisine, category, difficulty) has its own index, the listing's default
+    # sort is covered by a compound index, and full-text search reuses the same
+    # $text-index pattern as products (see product_text_search below).
+    db.recipes.create_index("slug", unique=True)
+    db.recipes.create_index("cuisine")
+    db.recipes.create_index("category")
+    db.recipes.create_index("difficulty")
+    db.recipes.create_index("is_published")
+    db.recipes.create_index([("is_published", 1), ("created_at", -1)])
+    db.recipes.create_index(
+        [("title", "text"), ("description", "text"), ("tags", "text"), ("search_keywords", "text")],
+        name="recipe_text_search",
+        weights={"title": 10, "tags": 5, "search_keywords": 5, "description": 1},
+    )
+
     logger.info("All indexes created successfully")

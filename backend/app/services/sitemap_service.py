@@ -77,6 +77,19 @@ def generate_sitemap_xml(db: Database) -> str:
             image = {"url": first_image, "title": p.get("name", "")}
         entries.append(_url_entry(f"{base}/products/{slug}", lastmod, "weekly", "0.8", image))
 
+    # Published recipes only — a draft recipe isn't real content yet and
+    # shouldn't be offered to search engines.
+    recipes = list(
+        db.recipes.find({"is_published": {"$ne": False}}, {"slug": 1, "image": 1, "title": 1, "updated_at": 1})
+    )
+    for r in recipes:
+        slug = r.get("slug")
+        if not slug:
+            continue
+        lastmod = r["updated_at"].strftime("%Y-%m-%d") if r.get("updated_at") else today
+        image = {"url": r["image"], "title": r.get("title", "")} if r.get("image") else None
+        entries.append(_url_entry(f"{base}/recipes/{slug}", lastmod, "weekly", "0.6", image))
+
     body = "".join(entries)
     return (
         '<?xml version="1.0" encoding="UTF-8"?>'
