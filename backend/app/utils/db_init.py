@@ -32,6 +32,10 @@ def create_indexes(db: Database) -> None:
     # ── users ─────────────────────────────────────────────────────────────────
     db.users.create_index("email", unique=True)
     db.users.create_index("phone", sparse=True)
+    # Admin user list (user_admin_service.admin_list_users): optional role
+    # filter, always sorted newest-first — without this it's a full collection
+    # scan + in-memory sort on every admin page load, even page 1.
+    db.users.create_index([("role", 1), ("created_at", -1)])
 
     # ── products ──────────────────────────────────────────────────────────────
     db.products.create_index("slug", unique=True)
@@ -53,6 +57,13 @@ def create_indexes(db: Database) -> None:
     db.products.create_index([("category_id", 1), ("price", 1)])
     # Compound: featured products sorted by creation date
     db.products.create_index([("is_featured", 1), ("created_at", -1)])
+    # Compound: best sellers sorted by review count (same shape as the
+    # is_featured index above — get_best_sellers's fixed filter+sort).
+    db.products.create_index([("is_best_seller", 1), ("review_count", -1)])
+    # Compound: "Popular" sort option on the main product listing.
+    db.products.create_index([("is_published", 1), ("review_count", -1)])
+    # Origin filter on the main product listing (e.g. "Norway", "Japan").
+    db.products.create_index("origin")
 
     # ── categories ────────────────────────────────────────────────────────────
     db.categories.create_index("slug", unique=True)
@@ -75,6 +86,15 @@ def create_indexes(db: Database) -> None:
     # every product-detail page view, so this multikey index on the embedded
     # items array matters more than the daily/periodic queries above.
     db.orders.create_index([("items.product_id", 1), ("payment_status", 1)])
+    # Customer's own order history ("My Orders") — one of the most frequently
+    # hit customer-facing queries; without this it's an unindexed sort over
+    # every order ever placed by that customer.
+    db.orders.create_index([("user_id", 1), ("created_at", -1)])
+    # Driver dashboard's order list, scoped by assigned driver and sorted by
+    # most-recently-updated.
+    db.orders.create_index([("delivery.driver_id", 1), ("updated_at", -1)])
+    # Admin order list's delivery-status filter.
+    db.orders.create_index("delivery.delivery_status")
 
     # ── carts ─────────────────────────────────────────────────────────────────
     # Bug fix: this index used to target `db.cart` (singular) — a collection
