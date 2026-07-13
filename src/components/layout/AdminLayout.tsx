@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import {
   LayoutDashboard, Package, ShoppingBag, Users, Tag, Boxes,
   Truck, Gift, ClipboardList, Settings, BarChart3, LogOut, Menu, X, RotateCcw, ChefHat, MessageCircle,
+  Image as ImageIcon,
 } from 'lucide-react'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { ROUTES } from '@/constants/routes'
@@ -21,6 +22,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: ROUTES.ADMIN.INVENTORY,   label: 'Inventory',    icon: <Boxes size={18} /> },
   { to: ROUTES.ADMIN.BULK_ORDERS, label: 'Bulk Orders', icon: <ClipboardList size={18} /> },
   { to: ROUTES.ADMIN.COUPONS,     label: 'Coupons',     icon: <Tag size={18} /> },
+  { to: ROUTES.ADMIN.BANNERS,     label: 'Banners',     icon: <ImageIcon size={18} /> },
   { to: ROUTES.ADMIN.BUNDLES,     label: 'Bundles',     icon: <Package size={18} /> },
   { to: ROUTES.ADMIN.RECIPES,     label: 'Recipes',     icon: <ChefHat size={18} /> },
   { to: ROUTES.ADMIN.WHATSAPP,    label: 'WhatsApp',    icon: <MessageCircle size={18} /> },

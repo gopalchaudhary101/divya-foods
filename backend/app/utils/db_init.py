@@ -109,9 +109,6 @@ def create_indexes(db: Database) -> None:
     # ── banners ───────────────────────────────────────────────────────────────
     db.banners.create_index([("is_active", 1), ("order", 1)])
 
-    # ── newsletters ───────────────────────────────────────────────────────────
-    db.newsletters.create_index("email", unique=True)
-
     # ── notifications ─────────────────────────────────────────────────────────
     db.notifications.create_index("user_id")
     db.notifications.create_index("is_read")

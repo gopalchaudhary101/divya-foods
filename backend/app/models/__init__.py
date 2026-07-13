@@ -18,7 +18,6 @@ from app.models.cart import CartAddItem, CartUpdateItem, CartInDB, CartResponse,
 from app.models.review import ReviewCreate, ReviewInDB, ReviewResponse
 from app.models.coupon import CouponCreate, CouponInDB, CouponResponse, CouponValidateRequest, CouponValidateResponse
 from app.models.banner import BannerCreate, BannerUpdate, BannerInDB, BannerResponse
-from app.models.newsletter import NewsletterSubscribe, NewsletterInDB
 from app.models.notification import NotificationInDB, NotificationResponse
 
 __all__ = [
@@ -34,6 +33,5 @@ __all__ = [
     "ReviewCreate", "ReviewInDB", "ReviewResponse",
     "CouponCreate", "CouponInDB", "CouponResponse", "CouponValidateRequest", "CouponValidateResponse",
     "BannerCreate", "BannerUpdate", "BannerInDB", "BannerResponse",
-    "NewsletterSubscribe", "NewsletterInDB",
     "NotificationInDB", "NotificationResponse",
 ]
