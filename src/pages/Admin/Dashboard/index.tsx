@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { Button } from '@/components/ui/Button'
+import { Pagination } from '@/components/ui/Pagination'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { formatDate } from '@/utils/formatDate'
 import axiosInstance from '@/services/api/axiosInstance'
@@ -898,28 +899,8 @@ export default function AdminDashboardPage() {
             )}
 
             {/* Pagination */}
-            {ordersData && ordersData.totalPages > 1 && (
-              <div className="flex items-center justify-between px-5 py-4 border-t border-ocean-100 dark:border-ocean-800">
-                <p className="text-xs text-ocean-400">
-                  Page {ordersData.page} of {ordersData.totalPages}
-                </p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="px-3 py-1.5 text-sm border border-ocean-200 dark:border-ocean-700 rounded-lg disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
-                  >
-                    Prev
-                  </button>
-                  <button
-                    onClick={() => setPage(p => Math.min(ordersData.totalPages, p + 1))}
-                    disabled={page === ordersData.totalPages}
-                    className="px-3 py-1.5 text-sm border border-ocean-200 dark:border-ocean-700 rounded-lg disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+            {ordersData && (
+              <Pagination page={page} totalPages={ordersData.totalPages} onPageChange={setPage} buttons="text" />
             )}
           </div>
 

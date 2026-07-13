@@ -6,18 +6,46 @@ import { X } from 'lucide-react'
 interface ModalProps {
   isOpen: boolean
   onClose: () => void
-  title?: string
+  title?: React.ReactNode
   children: React.ReactNode
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+  /**
+   * 'premium' (default) matches the storefront's navy/gold design system used
+   * by the other components/ui/* primitives. 'admin' matches the ocean/mint
+   * palette every Admin/* page already uses, so a modal doesn't visually
+   * clash with the rest of that page.
+   */
+  tone?: 'premium' | 'admin'
 }
 
 const sizeClasses = {
   sm: 'max-w-sm',
-  md: 'max-w-lg',
-  lg: 'max-w-2xl',
+  md: 'max-w-md',
+  lg: 'max-w-lg',
+  xl: 'max-w-xl',
+  '2xl': 'max-w-2xl',
 }
 
-export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
+const toneClasses = {
+  premium: {
+    backdrop: 'bg-premium-navy/70 backdrop-blur-sm',
+    surface: 'shadow-premium',
+    border: 'border-premium-navy/10 dark:border-ocean-800',
+    title: 'text-premium-navy dark:text-white',
+    closeButton: 'text-premium-navy/40 hover:text-premium-gold hover:bg-premium-navy/5 dark:hover:bg-ocean-800',
+  },
+  admin: {
+    backdrop: 'bg-black/50',
+    surface: 'shadow-2xl',
+    border: 'border-ocean-100 dark:border-ocean-800',
+    title: 'text-ocean-900 dark:text-white',
+    closeButton: 'text-ocean-400 hover:text-ocean-700 hover:bg-ocean-50 dark:hover:bg-ocean-800',
+  },
+}
+
+export function Modal({ isOpen, onClose, title, children, size = 'md', tone = 'premium' }: ModalProps) {
+  const t = toneClasses[tone]
+
   // Close on Escape key
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -40,7 +68,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-premium-navy/70 backdrop-blur-sm"
+            className={`absolute inset-0 ${t.backdrop}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -53,7 +81,8 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
             aria-modal="true"
             aria-labelledby={title ? 'modal-title' : undefined}
             className={[
-              'relative w-full bg-white dark:bg-ocean-900 rounded-2xl shadow-premium',
+              'relative w-full bg-white dark:bg-ocean-900 rounded-2xl',
+              t.surface,
               'flex flex-col max-h-[90vh]',
               sizeClasses[size],
             ].join(' ')}
@@ -64,17 +93,17 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
           >
             {/* Header */}
             {title && (
-              <div className="flex items-center justify-between px-6 py-4 border-b border-premium-navy/10 dark:border-ocean-800">
+              <div className={`flex items-center justify-between px-6 py-4 border-b ${t.border}`}>
                 <h2
                   id="modal-title"
-                  className="font-display text-lg font-semibold text-premium-navy dark:text-white"
+                  className={`font-display text-lg font-semibold ${t.title}`}
                 >
                   {title}
                 </h2>
                 <button
                   onClick={onClose}
                   aria-label="Close dialog"
-                  className="p-1.5 rounded-lg text-premium-navy/40 hover:text-premium-gold hover:bg-premium-navy/5 dark:hover:bg-ocean-800 transition-colors"
+                  className={`p-1.5 rounded-lg transition-colors ${t.closeButton}`}
                 >
                   <X size={18} />
                 </button>
@@ -82,7 +111,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
             )}
 
             {/* Body */}
-            <div className="overflow-y-auto p-6 flex-1">{children}</div>
+            <div className="overflow-y-auto flex-1">{children}</div>
           </motion.div>
         </div>
       )}

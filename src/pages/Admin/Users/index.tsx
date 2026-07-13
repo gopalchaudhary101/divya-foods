@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronLeft, Users, Search, Lock } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { userAdminApi, type AssignableRole, type UserRole, type AdminUserSummary } from '@/services/api/userAdminApi'
+import { Pagination } from '@/components/ui/Pagination'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { formatDate } from '@/utils/formatDate'
 import { ROUTES } from '@/constants/routes'
@@ -173,24 +174,8 @@ export default function AdminUsersPage() {
             )}
           </div>
 
-          {data && data.totalPages > 1 && (
-            <div className="flex items-center justify-center gap-3 mt-5">
-              <button
-                disabled={page <= 1}
-                onClick={() => setPage(p => p - 1)}
-                className="text-xs font-medium px-3 py-1.5 border border-ocean-200 dark:border-ocean-700 rounded-lg text-ocean-600 dark:text-ocean-300 disabled:opacity-40"
-              >
-                Previous
-              </button>
-              <span className="text-xs text-ocean-400">Page {page} of {data.totalPages}</span>
-              <button
-                disabled={page >= data.totalPages}
-                onClick={() => setPage(p => p + 1)}
-                className="text-xs font-medium px-3 py-1.5 border border-ocean-200 dark:border-ocean-700 rounded-lg text-ocean-600 dark:text-ocean-300 disabled:opacity-40"
-              >
-                Next
-              </button>
-            </div>
+          {data && (
+            <Pagination page={page} totalPages={data.totalPages} onPageChange={setPage} variant="centered" buttons="text" />
           )}
         </div>
       </div>

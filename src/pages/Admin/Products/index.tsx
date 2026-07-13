@@ -12,6 +12,8 @@ import {
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
+import { Modal } from '@/components/ui/Modal'
+import { Pagination } from '@/components/ui/Pagination'
 import { ImageUploader } from '@/components/shared/ImageUploader'
 import { formatCurrency } from '@/utils/formatCurrency'
 import axiosInstance from '@/services/api/axiosInstance'
@@ -101,11 +103,8 @@ function DeleteModal({
   loading: boolean
 }) {
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div
-        className="bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl p-6 w-full max-w-sm"
-        onClick={e => e.stopPropagation()}
-      >
+    <Modal isOpen onClose={onClose} size="sm" tone="admin">
+      <div className="p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-red-50 rounded-xl">
             <Trash2 size={18} className="text-red-500" />
@@ -121,7 +120,7 @@ function DeleteModal({
           <Button variant="danger" size="sm" className="flex-1" loading={loading} onClick={onConfirm}>Delete</Button>
         </div>
       </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -139,11 +138,8 @@ function BulkDeleteModal({
   loading: boolean
 }) {
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div
-        className="bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl p-6 w-full max-w-sm"
-        onClick={e => e.stopPropagation()}
-      >
+    <Modal isOpen onClose={onClose} size="sm" tone="admin">
+      <div className="p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-red-50 rounded-xl">
             <Trash2 size={18} className="text-red-500" />
@@ -159,7 +155,7 @@ function BulkDeleteModal({
           <Button variant="danger" size="sm" className="flex-1" loading={loading} onClick={onConfirm}>Delete</Button>
         </div>
       </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -877,29 +873,7 @@ export default function AdminProductsPage() {
             )}
 
             {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between px-5 py-4 border-t border-ocean-100 dark:border-ocean-800">
-                <p className="text-xs text-ocean-400">
-                  Page {productsData?.page} of {totalPages}
-                </p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="px-3 py-1.5 text-sm border border-ocean-200 dark:border-ocean-700 rounded-lg disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
-                  >
-                    Prev
-                  </button>
-                  <button
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    className="px-3 py-1.5 text-sm border border-ocean-200 dark:border-ocean-700 rounded-lg disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} buttons="text" />
           </div>
 
           {/* Legend */}

@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { LayoutDashboard, Search, ChevronLeft, ChevronRight, X, RotateCcw } from 'lucide-react'
+import { LayoutDashboard, Search, X, RotateCcw } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { adminReturnApi, type ReturnRequestRecord, type ReturnStatus } from '@/services/api/returnApi'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { formatDate } from '@/utils/formatDate'
 import { Button } from '@/components/ui/Button'
+import { Modal } from '@/components/ui/Modal'
+import { Pagination } from '@/components/ui/Pagination'
 import { ROUTES } from '@/constants/routes'
 
 const STATUS_OPTIONS: ReturnStatus[] = ['requested', 'approved', 'rejected', 'refunded']
@@ -77,11 +79,8 @@ function DetailModal({ ret, onClose }: { ret: ReturnRequestRecord; onClose: () =
   const isRazorpayOrder = ret.orderPaymentMethod === 'razorpay'
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div
-        className="bg-white dark:bg-ocean-900 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6"
-        onClick={e => e.stopPropagation()}
-      >
+    <Modal isOpen onClose={onClose} size="lg" tone="admin">
+      <div className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
             <h2 className="font-display text-lg font-semibold text-ocean-900 dark:text-white">{ret.orderNumber}</h2>
@@ -204,7 +203,7 @@ function DetailModal({ ret, onClose }: { ret: ReturnRequestRecord; onClose: () =
           </>
         )}
       </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -305,21 +304,7 @@ export default function AdminReturnsPage() {
               </div>
             )}
 
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3 border-t border-ocean-100 dark:border-ocean-800">
-                <span className="text-xs text-ocean-400">Page {page} of {totalPages}</span>
-                <div className="flex gap-2">
-                  <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                    className="p-1.5 rounded-lg border border-ocean-200 dark:border-ocean-700 disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors">
-                    <ChevronLeft size={14} />
-                  </button>
-                  <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                    className="p-1.5 rounded-lg border border-ocean-200 dark:border-ocean-700 disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors">
-                    <ChevronRight size={14} />
-                  </button>
-                </div>
-              </div>
-            )}
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </div>
         </div>
       </div>

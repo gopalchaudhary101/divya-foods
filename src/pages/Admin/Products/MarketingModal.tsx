@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { X, RefreshCw, Copy, Facebook, Linkedin, MessageCircle, Instagram, QrCode } from 'lucide-react'
+import { RefreshCw, Copy, Facebook, Linkedin, MessageCircle, Instagram, QrCode } from 'lucide-react'
 import toast from 'react-hot-toast'
 import axiosInstance from '@/services/api/axiosInstance'
 import { Button } from '@/components/ui/Button'
+import { Modal } from '@/components/ui/Modal'
 import type { ApiResponse } from '@/types'
 
 interface MarketingContent {
@@ -96,18 +97,7 @@ export function MarketingModal({
     : null
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div
-        className="bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-ocean-100 dark:border-ocean-800 sticky top-0 bg-white dark:bg-ocean-900">
-          <h3 className="font-display font-semibold text-ocean-900 dark:text-white">Marketing — {productName}</h3>
-          <button onClick={onClose} aria-label="Close" className="p-1.5 hover:bg-ocean-50 dark:hover:bg-ocean-800 rounded-lg">
-            <X size={18} className="text-ocean-400" />
-          </button>
-        </div>
-
+    <Modal isOpen onClose={onClose} title={`Marketing — ${productName}`} size="lg" tone="admin">
         <div className="px-6 py-5 space-y-4">
           <button
             onClick={downloadQrCode}
@@ -200,7 +190,6 @@ export function MarketingModal({
             </>
           )}
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }

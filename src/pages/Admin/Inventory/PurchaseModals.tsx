@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import axiosInstance from '@/services/api/axiosInstance'
 import { Button } from '@/components/ui/Button'
+import { Modal } from '@/components/ui/Modal'
 import type { Purchase } from './types'
 
 interface ProductOption {
@@ -21,20 +21,9 @@ function ModalShell({
   children: React.ReactNode
 }) {
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div
-        className="bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-ocean-100 dark:border-ocean-800 sticky top-0 bg-white dark:bg-ocean-900">
-          <h3 className="font-display font-semibold text-ocean-900 dark:text-white">{title}</h3>
-          <button onClick={onClose} className="p-1.5 hover:bg-ocean-50 dark:hover:bg-ocean-800 rounded-lg">
-            <X size={18} className="text-ocean-400" />
-          </button>
-        </div>
-        <div className="px-6 py-5">{children}</div>
-      </div>
-    </div>
+    <Modal isOpen onClose={onClose} title={title} size="lg" tone="admin">
+      <div className="px-6 py-5">{children}</div>
+    </Modal>
   )
 }
 

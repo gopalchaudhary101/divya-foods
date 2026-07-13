@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ChevronLeft, Gift, Plus, X, Copy, ToggleLeft, ToggleRight } from 'lucide-react'
+import { ChevronLeft, Gift, Plus, Copy, ToggleLeft, ToggleRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { adminGiftCardApi, type GiftCardIssuePayload } from '@/services/api/giftCardApi'
 import { Button } from '@/components/ui/Button'
+import { Modal } from '@/components/ui/Modal'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { formatDate } from '@/utils/formatDate'
 import { ROUTES } from '@/constants/routes'
@@ -37,13 +38,8 @@ function IssueModal({ onClose }: { onClose: () => void }) {
   })
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white dark:bg-ocean-900 rounded-2xl max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display text-lg font-semibold text-ocean-900 dark:text-white">Issue Gift Card</h2>
-          <button onClick={onClose} className="text-ocean-400 hover:text-ocean-700"><X size={18} /></button>
-        </div>
-
+    <Modal isOpen onClose={onClose} title="Issue Gift Card" size="md" tone="admin">
+      <div className="p-6">
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-ocean-500 uppercase tracking-widest mb-1">Value (₹) *</label>
@@ -72,7 +68,7 @@ function IssueModal({ onClose }: { onClose: () => void }) {
           Issue Gift Card
         </Button>
       </div>
-    </div>
+    </Modal>
   )
 }
 

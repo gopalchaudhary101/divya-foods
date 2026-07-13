@@ -98,7 +98,7 @@ describe('MarketingModal', () => {
     const user = userEvent.setup()
     renderWithProviders(<MarketingModal productId="p1" productName="Norwegian Salmon" onClose={onClose} />)
 
-    await user.click(screen.getByRole('button', { name: 'Close' }))
+    await user.click(screen.getByRole('button', { name: 'Close dialog' }))
     expect(onClose).toHaveBeenCalledTimes(1)
   })
 })

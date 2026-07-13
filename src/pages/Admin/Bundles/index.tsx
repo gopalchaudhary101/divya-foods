@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import axiosInstance from '@/services/api/axiosInstance'
 import type { ApiResponse } from '@/types'
 import { Button } from '@/components/ui/Button'
+import { Modal } from '@/components/ui/Modal'
 import { ROUTES } from '@/constants/routes'
 import { formatCurrency } from '@/utils/formatCurrency'
 
@@ -76,20 +77,7 @@ function BundleModal({
   const valid = form.name.trim() && form.bundlePrice && form.items.length > 0
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div
-        className="bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-ocean-100 dark:border-ocean-800 sticky top-0 bg-white dark:bg-ocean-900 z-10">
-          <h3 className="font-display font-semibold text-ocean-900 dark:text-white">
-            {initial.name ? 'Edit Bundle' : 'New Bundle'}
-          </h3>
-          <button onClick={onClose} className="p-1.5 hover:bg-ocean-50 dark:hover:bg-ocean-800 rounded-lg">
-            <X size={16} />
-          </button>
-        </div>
-
+    <Modal isOpen onClose={onClose} title={initial.name ? 'Edit Bundle' : 'New Bundle'} size="lg" tone="admin">
         <div className="px-5 py-5 space-y-4">
           {[
             { label: 'Bundle Name *', key: 'name' as const, placeholder: 'e.g. Salmon Lovers Pack' },
@@ -167,8 +155,7 @@ function BundleModal({
             </Button>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -329,8 +316,8 @@ export default function AdminBundlesPage() {
       )}
 
       {deleteId && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setDeleteId(null)}>
-          <div className="bg-white dark:bg-ocean-900 rounded-2xl p-6 max-w-sm w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+        <Modal isOpen onClose={() => setDeleteId(null)} size="sm" tone="admin">
+          <div className="p-6">
             <h3 className="font-display font-semibold text-ocean-900 dark:text-white mb-2">Delete bundle?</h3>
             <p className="text-sm text-ocean-500 mb-5">This cannot be undone. The bundle will be removed immediately.</p>
             <div className="flex gap-3">
@@ -342,7 +329,7 @@ export default function AdminBundlesPage() {
               </Button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </>
   )

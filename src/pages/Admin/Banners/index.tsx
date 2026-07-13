@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import {
-  Image as ImageIcon, Plus, Pencil, Trash2, X, ChevronLeft,
+  Image as ImageIcon, Plus, Pencil, Trash2, ChevronLeft,
   ToggleLeft, ToggleRight, AlertTriangle, ExternalLink,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -11,6 +11,7 @@ import toast from 'react-hot-toast'
 import { adminBannerApi, type BannerUpsertPayload } from '@/services/api/bannerApi'
 import { ImageUploader } from '@/components/shared/ImageUploader'
 import { Button } from '@/components/ui/Button'
+import { Modal } from '@/components/ui/Modal'
 import { ROUTES } from '@/constants/routes'
 import type { Banner } from '@/types'
 
@@ -73,26 +74,7 @@ function BannerModal({
   })
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="banner-modal-title"
-      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-ocean-100 dark:border-ocean-800">
-          <h3 id="banner-modal-title" className="font-display font-semibold text-ocean-900 dark:text-white">
-            {isEdit ? 'Edit Banner' : 'Create Banner'}
-          </h3>
-          <button onClick={onClose} className="p-1.5 hover:bg-ocean-50 dark:hover:bg-ocean-800 rounded-lg">
-            <X size={16} />
-          </button>
-        </div>
-
+    <Modal isOpen onClose={onClose} title={isEdit ? 'Edit Banner' : 'Create Banner'} size="md" tone="admin">
         <form onSubmit={handleSubmit(v => mutation.mutate(v))} className="px-5 py-4 space-y-4">
           <div>
             <label className="block text-xs font-semibold text-ocean-500 uppercase tracking-widest mb-1">
@@ -149,8 +131,7 @@ function BannerModal({
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -163,8 +144,8 @@ function DeleteConfirm({ banner, onClose, onDeleted }: { banner: Banner; onClose
     onError: () => toast.error('Failed to delete banner'),
   })
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
+    <Modal isOpen onClose={onClose} size="sm" tone="admin">
+      <div className="p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center shrink-0">
             <AlertTriangle size={18} className="text-red-500" />
@@ -188,7 +169,7 @@ function DeleteConfirm({ banner, onClose, onDeleted }: { banner: Banner; onClose
           </Button>
         </div>
       </div>
-    </div>
+    </Modal>
   )
 }
 

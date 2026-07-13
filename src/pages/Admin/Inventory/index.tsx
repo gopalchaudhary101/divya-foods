@@ -4,11 +4,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import {
   LayoutDashboard, Search, ChevronDown, Package, ImageIcon,
-  Plus, History, RotateCcw, Boxes, Truck, ChevronLeft, ChevronRight,
+  Plus, History, RotateCcw, Boxes, Truck,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import axiosInstance from '@/services/api/axiosInstance'
 import { Button } from '@/components/ui/Button'
+import { Pagination } from '@/components/ui/Pagination'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { formatDate } from '@/utils/formatDate'
 import { ROUTES } from '@/constants/routes'
@@ -161,21 +162,7 @@ function StockOverviewTab() {
         </div>
       )}
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between px-5 py-4 border-t border-ocean-100 dark:border-ocean-800">
-          <p className="text-xs text-ocean-400">Page {page} of {totalPages}</p>
-          <div className="flex gap-2">
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-              className="p-1.5 rounded-lg border border-ocean-200 dark:border-ocean-700 disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors">
-              <ChevronLeft size={14} />
-            </button>
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-              className="p-1.5 rounded-lg border border-ocean-200 dark:border-ocean-700 disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors">
-              <ChevronRight size={14} />
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       {adjustTarget && <AdjustStockModal product={adjustTarget} onClose={() => setAdjustTarget(null)} />}
       {returnTarget && <RecordReturnModal product={returnTarget} onClose={() => setReturnTarget(null)} />}
@@ -322,21 +309,7 @@ function PurchaseOrdersTab() {
         </div>
       )}
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between px-5 py-4 border-t border-ocean-100 dark:border-ocean-800">
-          <p className="text-xs text-ocean-400">Page {page} of {totalPages}</p>
-          <div className="flex gap-2">
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-              className="p-1.5 rounded-lg border border-ocean-200 dark:border-ocean-700 disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors">
-              <ChevronLeft size={14} />
-            </button>
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-              className="p-1.5 rounded-lg border border-ocean-200 dark:border-ocean-700 disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors">
-              <ChevronRight size={14} />
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       {showForm && <PurchaseFormModal products={products} purchase={null} onClose={() => setShowForm(false)} />}
       {editTarget && <PurchaseFormModal products={products} purchase={editTarget} onClose={() => setEditTarget(null)} />}

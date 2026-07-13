@@ -6,6 +6,7 @@ import { ChevronLeft, Building2, Mail, Phone, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { adminBulkOrderApi, type BulkOrderRequest, type BulkOrderStatus } from '@/services/api/bulkOrderApi'
 import { formatDate } from '@/utils/formatDate'
+import { Modal } from '@/components/ui/Modal'
 import { ROUTES } from '@/constants/routes'
 
 const STATUS_OPTIONS: BulkOrderStatus[] = ['new', 'contacted', 'quoted', 'closed']
@@ -33,11 +34,8 @@ function DetailModal({ request, onClose }: { request: BulkOrderRequest; onClose:
   })
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div
-        className="bg-white dark:bg-ocean-900 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6"
-        onClick={e => e.stopPropagation()}
-      >
+    <Modal isOpen onClose={onClose} size="lg" tone="admin">
+      <div className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
             <h2 className="font-display text-lg font-semibold text-ocean-900 dark:text-white">
@@ -96,7 +94,7 @@ function DetailModal({ request, onClose }: { request: BulkOrderRequest; onClose:
           {mutation.isPending ? 'Saving…' : 'Save'}
         </button>
       </div>
-    </div>
+    </Modal>
   )
 }
 

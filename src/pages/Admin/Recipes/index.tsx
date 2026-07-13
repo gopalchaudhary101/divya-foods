@@ -3,12 +3,14 @@ import { Helmet } from 'react-helmet-async'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import {
-  Plus, Search, Edit2, Trash2, X, ChevronLeft,
+  Plus, Search, Edit2, Trash2, ChevronLeft,
   AlertTriangle, ChefHat, UploadCloud, Eye, EyeOff,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
+import { Modal } from '@/components/ui/Modal'
+import { Pagination } from '@/components/ui/Pagination'
 import { adminRecipeApi, recipeApi, type RecipeUpsertPayload } from '@/services/api/recipeApi'
 import { queryKeys } from '@/services/queryKeys'
 import { ROUTES } from '@/constants/routes'
@@ -121,26 +123,7 @@ function RecipeFormModal({
   })
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="recipe-modal-title"
-      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-ocean-100 dark:border-ocean-800 sticky top-0 bg-white dark:bg-ocean-900">
-          <h3 id="recipe-modal-title" className="font-display font-semibold text-ocean-900 dark:text-white">
-            {isEdit ? 'Edit Recipe' : 'Create Recipe'}
-          </h3>
-          <button onClick={onClose} className="p-1.5 hover:bg-ocean-50 dark:hover:bg-ocean-800 rounded-lg">
-            <X size={16} />
-          </button>
-        </div>
-
+    <Modal isOpen onClose={onClose} title={isEdit ? 'Edit Recipe' : 'Create Recipe'} size="2xl" tone="admin">
         <form onSubmit={handleSubmit(v => mutation.mutate(v))} className="px-5 py-4 space-y-4">
           <div>
             <label className="block text-xs font-semibold text-ocean-500 uppercase tracking-widest mb-1">Title *</label>
@@ -272,8 +255,7 @@ function RecipeFormModal({
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -310,14 +292,11 @@ function BulkImportModal({ onClose, onImported }: { onClose: () => void; onImpor
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl w-full max-w-xl p-6" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-display font-semibold text-ocean-900 dark:text-white flex items-center gap-2">
-            <UploadCloud size={18} /> Bulk Import Recipes
-          </h3>
-          <button onClick={onClose} className="p-1.5 hover:bg-ocean-50 dark:hover:bg-ocean-800 rounded-lg"><X size={16} /></button>
-        </div>
+    <Modal
+      isOpen onClose={onClose} size="xl" tone="admin"
+      title={<span className="flex items-center gap-2"><UploadCloud size={18} /> Bulk Import Recipes</span>}
+    >
+      <div className="p-6">
         <p className="text-xs text-ocean-500 mb-3">
           Paste a JSON array of recipe objects (same fields as the create form — camelCase keys).
           Titles that already exist are skipped, not overwritten, so it's safe to re-run the same batch.
@@ -337,7 +316,7 @@ function BulkImportModal({ onClose, onImported }: { onClose: () => void; onImpor
           </Button>
         </div>
       </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -350,8 +329,8 @@ function DeleteConfirm({ recipe, onClose, onDeleted }: { recipe: Recipe; onClose
     onError: () => toast.error('Failed to delete recipe'),
   })
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white dark:bg-ocean-900 rounded-2xl shadow-2xl w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
+    <Modal isOpen onClose={onClose} size="sm" tone="admin">
+      <div className="p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center shrink-0">
             <AlertTriangle size={18} className="text-red-500" />
@@ -375,7 +354,7 @@ function DeleteConfirm({ recipe, onClose, onDeleted }: { recipe: Recipe; onClose
           </Button>
         </div>
       </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -539,27 +518,7 @@ export default function AdminRecipesPage() {
               </div>
             )}
 
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between px-5 py-4 border-t border-ocean-100 dark:border-ocean-800">
-                <p className="text-xs text-ocean-400">Page {page} of {totalPages}</p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="px-3 py-1.5 text-sm border border-ocean-200 dark:border-ocean-700 rounded-lg disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
-                  >
-                    Prev
-                  </button>
-                  <button
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    className="px-3 py-1.5 text-sm border border-ocean-200 dark:border-ocean-700 rounded-lg disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} buttons="text" />
           </div>
         </div>
       </div>

@@ -2,11 +2,12 @@ import React, { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { LayoutDashboard, Search, Download, CheckSquare, Square, ChevronLeft, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Search, Download, CheckSquare, Square } from 'lucide-react'
 import toast from 'react-hot-toast'
 import axiosInstance from '@/services/api/axiosInstance'
 import type { Order } from '@/types'
 import { Button } from '@/components/ui/Button'
+import { Pagination } from '@/components/ui/Pagination'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { formatDate } from '@/utils/formatDate'
 import { ROUTES } from '@/constants/routes'
@@ -222,21 +223,7 @@ export default function AdminOrdersPage() {
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3 border-t border-ocean-100 dark:border-ocean-800">
-                <span className="text-xs text-ocean-400">Page {page} of {totalPages}</span>
-                <div className="flex gap-2">
-                  <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                    className="p-1.5 rounded-lg border border-ocean-200 dark:border-ocean-700 disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors">
-                    <ChevronLeft size={14} />
-                  </button>
-                  <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                    className="p-1.5 rounded-lg border border-ocean-200 dark:border-ocean-700 disabled:opacity-40 hover:bg-ocean-50 dark:hover:bg-ocean-800 transition-colors">
-                    <ChevronRight size={14} />
-                  </button>
-                </div>
-              </div>
-            )}
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </div>
         </div>
       </div>
