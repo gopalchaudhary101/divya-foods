@@ -174,3 +174,15 @@ removes duplicated logic, it doesn't restyle anything.
 - **MongoDB Atlas is likely still on the M0 free tier**, which has no
   continuous backup. See DEPLOY.md Step 6 before real orders depend on this
   data being recoverable.
+- **The scheduled background jobs (abandoned-cart reminders, low-stock
+  digest) are already safe to run across multiple worker processes** —
+  `app/utils/scheduler.py`'s `claim_daily_run()` and the abandoned-cart
+  job's per-cart atomic claim both exist specifically so this doesn't
+  double-send if you ever run more than one instance/worker. If you add a
+  new scheduled job, give it the same kind of atomic claim — don't assume
+  single-process.
+- **MongoDB connection pooling uses PyMongo's default (100 per process)** —
+  fine for the single Railway instance running today. If this is ever
+  horizontally scaled to N replicas, budget N × pool-size against your
+  Atlas tier's total connection limit (M0 caps at 500) and tune
+  `MongoClient(..., maxPoolSize=...)` in `app/database.py` accordingly.
