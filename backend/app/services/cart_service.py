@@ -44,6 +44,15 @@ def find_and_remind_abandoned_carts(db: Database) -> int:
         "reminder_sent_at": None,
     }))
 
+    # One batched lookup for every candidate's user, instead of a find_one
+    # per cart — this job's read cost used to scale with the number of
+    # abandoned carts; now it's a single query regardless of how many.
+    user_ids = [cart["user_id"] for cart in candidates]
+    users_by_id = {
+        u["_id"]: u
+        for u in db.users.find({"_id": {"$in": user_ids}}, {"email": 1, "name": 1})
+    }
+
     sent = 0
     for cart in candidates:
         claimed = db.carts.find_one_and_update(
@@ -53,7 +62,7 @@ def find_and_remind_abandoned_carts(db: Database) -> int:
         if not claimed:
             continue  # a concurrent worker process already claimed this cart
 
-        user = db.users.find_one({"_id": cart["user_id"]}, {"email": 1, "name": 1})
+        user = users_by_id.get(cart["user_id"])
         if not user or not user.get("email"):
             continue
 
