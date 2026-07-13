@@ -10,17 +10,19 @@ from typing import Optional
 
 import cloudinary
 import cloudinary.uploader
-from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, UploadFile, status
 from PIL import Image, ImageOps, UnidentifiedImageError
 from pydantic import BaseModel, Field
 from pymongo.database import Database
 from bson import ObjectId
 
 from app.config import settings
-from app.dependencies import get_db, get_current_user
+from app.dependencies import get_db, get_current_user, require_admin
 from app.limiter import limiter
 from app.models.base import utcnow
+from app.services import user_admin_service
 from app.services.product_service import _to_list_item
+from app.utils.mongo import get_object_id
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -210,10 +212,7 @@ def update_address(
     db: Database = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
-    try:
-        oid = ObjectId(address_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid address ID.")
+    oid = get_object_id(address_id, "address")
 
     existing = db.addresses.find_one({"_id": oid, "user_id": current_user["_id"]})
     if not existing:
@@ -247,10 +246,7 @@ def delete_address(
     db: Database = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
-    try:
-        oid = ObjectId(address_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid address ID.")
+    oid = get_object_id(address_id, "address")
 
     result = db.addresses.delete_one({"_id": oid, "user_id": current_user["_id"]})
     if result.deleted_count == 0:
@@ -263,10 +259,7 @@ def set_default_address(
     db: Database = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
-    try:
-        oid = ObjectId(address_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid address ID.")
+    oid = get_object_id(address_id, "address")
 
     existing = db.addresses.find_one({"_id": oid, "user_id": current_user["_id"]})
     if not existing:
@@ -323,10 +316,7 @@ def add_to_wishlist(
 ):
     """Add a product to the wishlist. Idempotent — adding twice is a no-op."""
     # Verify the product exists
-    try:
-        oid = ObjectId(body.product_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid product ID.")
+    oid = get_object_id(body.product_id, "product")
 
     if not db.products.find_one({"_id": oid}):
         raise HTTPException(status_code=404, detail="Product not found.")
@@ -350,3 +340,36 @@ def remove_from_wishlist(
         {"$pull": {"wishlist_product_ids": product_id}},
     )
     return {"success": True, "message": "Removed from wishlist."}
+
+
+# ─── Admin — user role management ────────────────────────────────────────────
+# Separate no-prefix router — lives under /admin/users. Moved here from the
+# former monolithic admin.py.
+
+admin_router = APIRouter(tags=["Admin"])
+
+
+class RoleUpdateRequest(BaseModel):
+    role: str
+
+
+@admin_router.get("/admin/users")
+def admin_list_users(
+    search: Optional[str] = Query(None),
+    role: Optional[str] = Query(None),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return user_admin_service.admin_list_users(db, search, role, page, limit)
+
+
+@admin_router.put("/admin/users/{user_id}/role")
+def admin_update_user_role(
+    user_id: str,
+    body: RoleUpdateRequest,
+    db: Database = Depends(get_db),
+    admin: dict = Depends(require_admin),
+):
+    return user_admin_service.admin_update_role(db, admin["_id"], user_id, body.role)

@@ -2,7 +2,7 @@
 WhatsApp integration schema.
 
 Fields are camelCase to match the frontend directly (same convention as
-SettingsUpdateRequest in app/routers/admin.py) — no snake_case translation
+SettingsUpdateRequest in app/routers/settings.py) — no snake_case translation
 layer, since whatsapp_service's config dict is itself stored camelCase.
 
 Two independent layers, both admin-configurable:

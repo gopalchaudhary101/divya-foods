@@ -6,8 +6,7 @@ POST /whatsapp/track-share  → log a share-button click for admin analytics
 GET  /whatsapp/webhook      → Meta's one-time webhook verification handshake
 POST /whatsapp/webhook      → inbound customer messages (signature-verified)
 
-Admin config/analytics routes live in app/routers/admin.py, matching the
-Banners/Recipes convention.
+Admin config/analytics routes are in admin_router below, under /admin/whatsapp.
 """
 
 import json
@@ -17,9 +16,9 @@ import threading
 from fastapi import APIRouter, Depends, Query, Request, Response, status
 from pymongo.database import Database
 
-from app.dependencies import get_db
+from app.dependencies import get_db, require_admin
 from app.limiter import limiter
-from app.models.whatsapp import TrackShareRequest
+from app.models.whatsapp import TrackShareRequest, WhatsAppConfigUpdate
 from app.services import whatsapp_service
 
 logger = logging.getLogger("app.whatsapp")
@@ -80,3 +79,35 @@ async def receive_webhook(request: Request, db: Database = Depends(get_db)):
         ).start()
 
     return {"success": True}
+
+
+# ─── Admin ────────────────────────────────────────────────────────────────────
+# Separate no-prefix router — lives under /admin/whatsapp. Moved here from the
+# former monolithic admin.py.
+
+admin_router = APIRouter(tags=["Admin"])
+
+
+@admin_router.get("/admin/whatsapp/config")
+def admin_get_whatsapp_config(
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return whatsapp_service.admin_get_config(db)
+
+
+@admin_router.put("/admin/whatsapp/config")
+def admin_update_whatsapp_config(
+    body: WhatsAppConfigUpdate,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return whatsapp_service.admin_update_config(db, body.model_dump(exclude_unset=True))
+
+
+@admin_router.get("/admin/whatsapp/analytics")
+def admin_get_whatsapp_analytics(
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return whatsapp_service.get_share_analytics(db)

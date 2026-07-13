@@ -17,14 +17,16 @@ POST /orders/guest/verify        → verify Razorpay payment for a guest order
 GET  /orders/guest/track         → look up a guest order by order number + email
 """
 
+from datetime import datetime, timezone
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from pydantic import BaseModel, EmailStr
 from pymongo.database import Database
 
-from app.dependencies import get_db, get_current_user
+from app.dependencies import get_db, get_current_user, require_admin
 from app.limiter import limiter
 from app.services import order_service, return_service
+from app.utils.mongo import get_object_id
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
@@ -212,3 +214,230 @@ def track_guest_order(
     db: Database = Depends(get_db),
 ):
     return order_service.track_guest_order(db, order_number, email)
+
+
+# ─── Admin — Orders, bulk actions, returns ───────────────────────────────────
+# A separate no-prefix router (rather than extending `router` above) since
+# these live under /admin/... rather than /orders/... — moved here from the
+# former monolithic admin.py, grouped with the customer-facing routes above
+# because they're all order_service/return_service-backed.
+
+admin_router = APIRouter(tags=["Admin"])
+
+
+class StatusUpdateRequest(BaseModel):
+    status: str
+    note: Optional[str] = ""
+
+
+class DeliveryUpsertRequest(BaseModel):
+    provider: Optional[str] = None
+    trackingId: Optional[str] = None
+    bookingId: Optional[str] = None
+    partnerName: Optional[str] = None
+    driverId: Optional[str] = None
+    driverName: Optional[str] = None
+    driverPhone: Optional[str] = None
+    vehicleNumber: Optional[str] = None
+    vehicleType: Optional[str] = None
+    deliveryCharge: Optional[float] = None
+    notes: Optional[str] = None
+    proofOfDeliveryUrl: Optional[str] = None
+    estimatedDeliveryAt: Optional[str] = None
+    deliveryStatus: Optional[str] = None
+    statusNote: Optional[str] = None
+
+
+@admin_router.get("/admin/orders")
+def admin_list_orders(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    status: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    delivery_status: Optional[str] = Query(None, alias="deliveryStatus"),
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return order_service.admin_list_orders(db, page, limit, status, search, delivery_status)
+
+
+@admin_router.get("/admin/orders/{order_id}")
+def admin_get_order(
+    order_id: str,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return order_service.admin_get_order(db, order_id)
+
+
+@admin_router.put("/admin/orders/{order_id}/status")
+def admin_update_order_status(
+    order_id: str,
+    body: StatusUpdateRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return order_service.admin_update_status(db, order_id, body.status, body.note or "")
+
+
+@admin_router.put("/admin/orders/{order_id}/delivery")
+def admin_upsert_delivery(
+    order_id: str,
+    body: DeliveryUpsertRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return order_service.admin_upsert_delivery(db, order_id, body.model_dump(exclude_unset=True))
+
+
+@admin_router.get("/admin/orders/{order_id}/invoice")
+def admin_get_invoice(
+    order_id: str,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    pdf_bytes, order_number = order_service.get_invoice_pdf(db, order_id, None)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'inline; filename="invoice-{order_number}.pdf"'},
+    )
+
+
+@admin_router.post("/admin/orders/{order_id}/invoice/email")
+def admin_email_invoice(
+    order_id: str,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return order_service.email_invoice(db, order_id, None)
+
+
+class BulkStatusRequest(BaseModel):
+    order_ids: list[str]
+    status: str
+
+
+@admin_router.put("/admin/bulk-order-status")
+def admin_bulk_order_status(
+    body: BulkStatusRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    valid = {"confirmed", "processing", "shipped", "delivered", "cancelled"}
+    if body.status not in valid:
+        raise HTTPException(status_code=422, detail=f"Status must be one of: {', '.join(valid)}")
+    oids = []
+    for s in body.order_ids:
+        try:
+            oids.append(get_object_id(s))
+        except HTTPException:
+            pass
+    if not oids:
+        raise HTTPException(status_code=400, detail="No valid order IDs provided.")
+    result = db.orders.update_many(
+        {"_id": {"$in": oids}},
+        {"$set": {"status": body.status, "updated_at": datetime.now(timezone.utc)}},
+    )
+    return {"success": True, "data": {"updated": result.modified_count}}
+
+
+@admin_router.get("/admin/export-orders")
+def admin_export_orders_csv(
+    status: Optional[str] = Query(None),
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    import csv
+    import io
+    from fastapi.responses import StreamingResponse
+
+    query: dict = {}
+    if status:
+        query["status"] = status
+
+    docs = list(db.orders.find(query).sort("created_at", -1).limit(2000))
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Order Number", "Customer", "Phone", "Status", "Payment", "Total (₹)", "Items", "Date"])
+    for doc in docs:
+        addr = doc.get("delivery_address", {})
+        created = doc.get("created_at")
+        writer.writerow([
+            doc.get("order_number", ""),
+            addr.get("full_name", ""),
+            addr.get("phone", ""),
+            doc.get("status", ""),
+            doc.get("payment_status", ""),
+            doc.get("total", 0),
+            len(doc.get("items", [])),
+            created.strftime("%Y-%m-%d") if created else "",
+        ])
+
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=orders.csv"},
+    )
+
+
+class ReturnResolveRequest(BaseModel):
+    note: Optional[str] = ""
+
+
+class ReturnManualApproveRequest(BaseModel):
+    reference: str
+    note: Optional[str] = ""
+
+
+@admin_router.get("/admin/returns")
+def admin_list_returns(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    status: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return return_service.admin_list_returns(db, page, limit, status, search)
+
+
+@admin_router.get("/admin/returns/{return_id}")
+def admin_get_return(
+    return_id: str,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return return_service.admin_get_return(db, return_id)
+
+
+@admin_router.put("/admin/returns/{return_id}/approve")
+def admin_approve_return(
+    return_id: str,
+    body: ReturnResolveRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return return_service.admin_approve_return(db, return_id, body.note or "")
+
+
+@admin_router.put("/admin/returns/{return_id}/approve-manual")
+def admin_approve_return_manual(
+    return_id: str,
+    body: ReturnManualApproveRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return return_service.admin_approve_return_manual(db, return_id, body.reference, body.note or "")
+
+
+@admin_router.put("/admin/returns/{return_id}/reject")
+def admin_reject_return(
+    return_id: str,
+    body: ReturnResolveRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    return return_service.admin_reject_return(db, return_id, body.note or "")

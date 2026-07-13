@@ -1,10 +1,12 @@
 from datetime import datetime, timezone
+from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from pymongo.database import Database
 
-from app.dependencies import get_db
+from app.dependencies import get_db, require_admin
+from app.utils.mongo import get_object_id
 
 router = APIRouter(prefix="/coupons", tags=["Coupons"])
 
@@ -68,3 +70,133 @@ def validate_coupon(body: ValidateRequest, db: Database = Depends(get_db)):
 
 def _fail(message: str) -> dict:
     return {"success": True, "data": {"valid": False, "discountAmount": 0, "message": message}}
+
+
+# ─── Admin ────────────────────────────────────────────────────────────────────
+# Separate no-prefix router — these live under /admin/coupons rather than
+# /coupons/... Moved here from the former monolithic admin.py.
+
+admin_router = APIRouter(tags=["Admin"])
+
+
+class CouponUpsertRequest(BaseModel):
+    code: str
+    discountType: str           # "percentage" | "flat"
+    discountValue: float
+    minOrderValue: float = 0.0
+    maxDiscount: Optional[float] = None
+    isActive: bool = True
+    expiresAt: Optional[str] = None   # ISO-8601 string or null
+    usageLimit: Optional[int] = None
+
+
+def _coupon_to_dict(c: dict) -> dict:
+    return {
+        "id":             str(c["_id"]),
+        "code":           c["code"],
+        "discountType":   c["discount_type"],
+        "discountValue":  c["discount_value"],
+        "minOrderValue":  c.get("min_order_value", 0),
+        "maxDiscount":    c.get("max_discount"),
+        "isActive":       c.get("is_active", True),
+        "expiresAt":      c["expires_at"].isoformat() if c.get("expires_at") else None,
+        "usageLimit":     c.get("usage_limit"),
+        "usedCount":      c.get("used_count", 0),
+        "createdAt":      c["created_at"].isoformat(),
+    }
+
+
+@admin_router.get("/admin/coupons")
+def admin_list_coupons(
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    docs = list(db.coupons.find({}).sort("created_at", -1))
+    return {"success": True, "data": [_coupon_to_dict(c) for c in docs]}
+
+
+@admin_router.post("/admin/coupons")
+def admin_create_coupon(
+    body: CouponUpsertRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    code = body.code.upper().strip()
+    if db.coupons.find_one({"code": code}):
+        raise HTTPException(status_code=409, detail=f"Coupon '{code}' already exists.")
+
+    expires = None
+    if body.expiresAt:
+        try:
+            expires = datetime.fromisoformat(body.expiresAt.replace("Z", "+00:00"))
+        except ValueError:
+            raise HTTPException(status_code=422, detail="Invalid expiresAt date format.")
+
+    now = datetime.now(timezone.utc)
+    doc = {
+        "code":            code,
+        "discount_type":   body.discountType,
+        "discount_value":  body.discountValue,
+        "min_order_value": body.minOrderValue,
+        "max_discount":    body.maxDiscount,
+        "is_active":       body.isActive,
+        "expires_at":      expires,
+        "usage_limit":     body.usageLimit,
+        "used_count":      0,
+        "created_at":      now,
+        "updated_at":      now,
+    }
+    result = db.coupons.insert_one(doc)
+    doc["_id"] = result.inserted_id
+    return {"success": True, "data": _coupon_to_dict(doc)}
+
+
+@admin_router.put("/admin/coupons/{coupon_id}")
+def admin_update_coupon(
+    coupon_id: str,
+    body: CouponUpsertRequest,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    oid = get_object_id(coupon_id, "coupon")
+
+    expires = None
+    if body.expiresAt:
+        try:
+            expires = datetime.fromisoformat(body.expiresAt.replace("Z", "+00:00"))
+        except ValueError:
+            raise HTTPException(status_code=422, detail="Invalid expiresAt date format.")
+
+    update = {
+        "$set": {
+            "code":            body.code.upper().strip(),
+            "discount_type":   body.discountType,
+            "discount_value":  body.discountValue,
+            "min_order_value": body.minOrderValue,
+            "max_discount":    body.maxDiscount,
+            "is_active":       body.isActive,
+            "expires_at":      expires,
+            "usage_limit":     body.usageLimit,
+            "updated_at":      datetime.now(timezone.utc),
+        }
+    }
+    result = db.coupons.update_one({"_id": oid}, update)
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Coupon not found.")
+
+    doc = db.coupons.find_one({"_id": oid})
+    return {"success": True, "data": _coupon_to_dict(doc)}
+
+
+@admin_router.delete("/admin/coupons/{coupon_id}")
+def admin_delete_coupon(
+    coupon_id: str,
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    oid = get_object_id(coupon_id, "coupon")
+
+    result = db.coupons.delete_one({"_id": oid})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Coupon not found.")
+    return {"success": True, "data": {"deleted": True}}

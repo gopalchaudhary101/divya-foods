@@ -9,12 +9,12 @@ DELETE /subscriptions/{id}   → cancel
 from datetime import datetime, timezone, timedelta
 from typing import Literal, Optional
 
-from bson import ObjectId
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from pymongo.database import Database
 
-from app.dependencies import get_db, get_current_user
+from app.dependencies import get_db, get_current_user, require_admin
+from app.utils.mongo import get_object_id
 
 router = APIRouter(prefix="/subscriptions", tags=["Subscriptions"])
 
@@ -111,10 +111,7 @@ def update_subscription(
     db: Database = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
-    try:
-        oid = ObjectId(sub_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid subscription ID.")
+    oid = get_object_id(sub_id, "subscription")
 
     sub = db.subscriptions.find_one({"_id": oid, "user_id": str(current_user["_id"])})
     if not sub:
@@ -140,10 +137,7 @@ def cancel_subscription(
     db: Database = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
-    try:
-        oid = ObjectId(sub_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid subscription ID.")
+    oid = get_object_id(sub_id, "subscription")
 
     result = db.subscriptions.update_one(
         {"_id": oid, "user_id": str(current_user["_id"])},
@@ -151,3 +145,37 @@ def cancel_subscription(
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Subscription not found.")
+
+
+# ─── Admin (view only) ────────────────────────────────────────────────────────
+# Separate no-prefix router — lives under /admin/subscriptions. Moved here
+# from the former monolithic admin.py.
+
+admin_router = APIRouter(tags=["Admin"])
+
+
+@admin_router.get("/admin/subscriptions")
+def admin_list_subscriptions(
+    status: Optional[str] = Query(None),
+    db: Database = Depends(get_db),
+    _admin: dict = Depends(require_admin),
+):
+    query: dict = {}
+    if status:
+        query["status"] = status
+    docs = list(db.subscriptions.find(query).sort("created_at", -1).limit(200))
+    return {
+        "success": True,
+        "data": [
+            {
+                "id":          str(d["_id"]),
+                "userId":      d.get("user_id", ""),
+                "productName": d.get("product_name", ""),
+                "quantity":    d.get("quantity", 1),
+                "frequency":   d.get("frequency", "monthly"),
+                "status":      d.get("status", "active"),
+                "nextDelivery": d["next_delivery"].isoformat() if d.get("next_delivery") else None,
+            }
+            for d in docs
+        ],
+    }

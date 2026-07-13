@@ -36,7 +36,7 @@ from app.services import cart_service, product_service
 from app.utils import scheduler
 from app.routers import (
     auth, products, categories, orders, cart,
-    users, coupons, banners, reviews, admin,
+    users, coupons, banners, reviews,
 )
 from app.routers import notifications, chat, upload, referrals, bundles
 from app.routers import loyalty, flash_sales, qa, subscriptions, settings as settings_router
@@ -48,6 +48,7 @@ from app.routers import webhooks
 from app.routers import contact
 from app.routers import recipes
 from app.routers import whatsapp
+from app.routers import admin_products, admin_analytics
 
 _MONGO_OP = re.compile(r'\$[a-zA-Z]')
 
@@ -154,30 +155,42 @@ app.include_router(auth.router)
 app.include_router(products.router)
 app.include_router(categories.router)
 app.include_router(orders.router)
+app.include_router(orders.admin_router)
 app.include_router(cart.router)
 app.include_router(users.router)
+app.include_router(users.admin_router)
 app.include_router(coupons.router)
+app.include_router(coupons.admin_router)
 app.include_router(banners.router)
+app.include_router(banners.admin_router)
 app.include_router(reviews.router)
-app.include_router(admin.router)
 app.include_router(notifications.router)
 app.include_router(chat.router)
 app.include_router(upload.router)
 app.include_router(referrals.router)
 app.include_router(bundles.router)
+app.include_router(bundles.admin_router)
 app.include_router(loyalty.router)
 app.include_router(flash_sales.router)
 app.include_router(qa.router)
+app.include_router(qa.admin_router)
 app.include_router(subscriptions.router)
+app.include_router(subscriptions.admin_router)
 app.include_router(settings_router.router)
+app.include_router(settings_router.admin_router)
 app.include_router(sitemap.router)
 app.include_router(bulk_orders.router)
 app.include_router(gift_cards.router)
 app.include_router(driver.router)
+app.include_router(driver.admin_router)
 app.include_router(webhooks.router)
 app.include_router(contact.router)
 app.include_router(recipes.router)
+app.include_router(recipes.admin_router)
 app.include_router(whatsapp.router)
+app.include_router(whatsapp.admin_router)
+app.include_router(admin_products.router)
+app.include_router(admin_analytics.router)
 
 
 # ─── Health Endpoints ─────────────────────────────────────────────────────────
