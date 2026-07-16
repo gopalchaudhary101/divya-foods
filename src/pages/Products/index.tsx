@@ -72,7 +72,7 @@ export default function ProductsPage() {
     minRating: searchParams.get('minRating') ? Number(searchParams.get('minRating')) : undefined,
   }
 
-  const { data, isLoading, isFetching } = useProducts(filters)
+  const { data, isLoading, isFetching, isError, refetch } = useProducts(filters)
   const { data: categoriesData } = useCategories()
 
   const products = data?.data ?? []
@@ -368,6 +368,19 @@ export default function ProductsPage() {
                 {Array.from({ length: 12 }, (_, i) => (
                   <ProductCardSkeleton key={i} />
                 ))}
+              </div>
+            ) : isError ? (
+              <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+                <p className="text-4xl">⚠️</p>
+                <p className="text-premium-navy/70 dark:text-ocean-300 text-lg font-medium">
+                  Couldn't load products
+                </p>
+                <p className="text-sm text-premium-navy/40">
+                  Please check your connection and try again.
+                </p>
+                <Button variant="outline" size="sm" onClick={() => refetch()}>
+                  Retry
+                </Button>
               </div>
             ) : products.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">

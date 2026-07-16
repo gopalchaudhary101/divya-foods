@@ -573,7 +573,7 @@ function OrderDetail({ orderId }: { orderId: string }) {
 // ─── Orders list page (/orders) ───────────────────────────────────────────────
 
 function OrdersList() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: queryKeys.orders.all(),
     queryFn: () => orderApi.getMyOrders(),
   })
@@ -581,6 +581,18 @@ function OrdersList() {
   if (isLoading) return (
     <div className="max-w-3xl mx-auto px-4 py-16 text-center">
       <div className="w-10 h-10 border-4 border-premium-gold border-t-transparent rounded-full animate-spin mx-auto" />
+    </div>
+  )
+
+  if (isError) return (
+    <div className="max-w-3xl mx-auto px-4 py-24 text-center">
+      <Package size={56} className="mx-auto text-premium-navy/20 dark:text-ocean-700 mb-5" />
+      <h1 className="font-display text-2xl font-semibold text-premium-navy dark:text-white mb-2">Couldn't load your orders</h1>
+      <p className="text-premium-navy/40 mb-6">Something went wrong on our end. Your orders are safe — please try again.</p>
+      <button onClick={() => refetch()}
+        className="inline-flex items-center gap-2 bg-premium-gold hover:bg-premium-gold-light text-premium-navy px-6 py-3 rounded-xl font-medium transition-colors">
+        Retry
+      </button>
     </div>
   )
 

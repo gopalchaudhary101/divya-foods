@@ -71,6 +71,12 @@ const wrap = (element: React.ReactNode) => (
   <Suspense fallback={<PageLoader />}>{element}</Suspense>
 )
 
+// Account pages (orders, profile, wishlist, loyalty, referral, subscriptions)
+// require a login, but any logged-in role may view their own — this is just
+// "must be authenticated", expressed via RequireRole's existing role list.
+const ANY_AUTHENTICATED_ROLE: React.ComponentProps<typeof RequireRole>['roles'] =
+  ['customer', 'admin', 'driver', 'developer']
+
 const router = createBrowserRouter([
   {
     path: ROUTES.HOME,
@@ -82,14 +88,14 @@ const router = createBrowserRouter([
       { path: ROUTES.CART, element: wrap(<CartPage />) },
       { path: ROUTES.WISHLIST, element: wrap(<WishlistPage />) },
       { path: ROUTES.CHECKOUT, element: wrap(<CheckoutPage />) },
-      { path: ROUTES.ORDERS, element: wrap(<OrdersPage />) },
-      { path: ROUTES.ORDER_DETAIL, element: wrap(<OrdersPage />) },
-      { path: ROUTES.PROFILE, element: wrap(<ProfilePage />) },
-      { path: ROUTES.REFERRAL, element: wrap(<ReferralPage />) },
+      { path: ROUTES.ORDERS, element: wrap(<RequireRole roles={ANY_AUTHENTICATED_ROLE}><OrdersPage /></RequireRole>) },
+      { path: ROUTES.ORDER_DETAIL, element: wrap(<RequireRole roles={ANY_AUTHENTICATED_ROLE}><OrdersPage /></RequireRole>) },
+      { path: ROUTES.PROFILE, element: wrap(<RequireRole roles={ANY_AUTHENTICATED_ROLE}><ProfilePage /></RequireRole>) },
+      { path: ROUTES.REFERRAL, element: wrap(<RequireRole roles={ANY_AUTHENTICATED_ROLE}><ReferralPage /></RequireRole>) },
       { path: ROUTES.BUNDLES, element: wrap(<BundlesPage />) },
-      { path: ROUTES.LOYALTY, element: wrap(<LoyaltyPage />) },
+      { path: ROUTES.LOYALTY, element: wrap(<RequireRole roles={ANY_AUTHENTICATED_ROLE}><LoyaltyPage /></RequireRole>) },
       { path: ROUTES.FLASH_SALES, element: wrap(<FlashSalesPage />) },
-      { path: ROUTES.SUBSCRIPTIONS, element: wrap(<SubscriptionsPage />) },
+      { path: ROUTES.SUBSCRIPTIONS, element: wrap(<RequireRole roles={ANY_AUTHENTICATED_ROLE}><SubscriptionsPage /></RequireRole>) },
       { path: ROUTES.RECIPES, element: wrap(<RecipesPage />) },
       { path: ROUTES.RECIPE_DETAIL, element: wrap(<RecipeDetailPage />) },
       { path: ROUTES.JAPANESE_GROCERY, element: wrap(<JapaneseGroceryPage />) },
