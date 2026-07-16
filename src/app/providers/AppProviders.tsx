@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import { HelmetProvider } from 'react-helmet-async'
 import { store } from '@/store'
 import { AuthInitializer } from '@/features/auth/components/AuthInitializer'
+import { CartSyncBridge } from '@/features/cart/components/CartSyncBridge'
 import { InstallPrompt } from '@/components/shared/InstallPrompt'
 import { FreeChatbot } from '@/components/shared/FreeChatbot'
 
@@ -44,6 +45,7 @@ export function AppProviders({ children }: AppProvidersProps) {
               error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
             }}
           />
+          <CartSyncBridge />
           <InstallPrompt />
           <FreeChatbot />
         </QueryClientProvider>
